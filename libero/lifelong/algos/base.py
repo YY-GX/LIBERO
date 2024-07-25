@@ -104,6 +104,7 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
             data, lambda x: safe_device(x, device=self.cfg.device)
         )
 
+    # yy: where the optimization happens
     def observe(self, data):
         """
         How the algorithm learns on each data point.
@@ -125,6 +126,8 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
             loss = self.policy.compute_loss(data)
         return loss.item()
 
+
+    # yy: This is one where train policy
     def learn_one_task(self, dataset, task_id, benchmark, result_summary):
 
         self.start_task(task_id)
@@ -142,7 +145,7 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
             batch_size=self.cfg.train.batch_size,
             num_workers=self.cfg.train.num_workers,
             sampler=RandomSampler(dataset),
-            persistent_workers=True,
+            persistent_workers=self.cfg.train.num_workers > 0
         )
 
         prev_success_rate = -1.0

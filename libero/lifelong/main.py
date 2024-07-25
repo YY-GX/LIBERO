@@ -115,6 +115,8 @@ def main(hydra_cfg):
                 [x.total_num_sequences for x in dataset.sequence_datasets]
             )
 
+
+
     n_tasks = n_manip_tasks // gsz  # number of lifelong learning tasks
     print("\n=================== Lifelong Benchmark Information  ===================")
     print(f" Name: {benchmark.name}")
@@ -126,6 +128,19 @@ def main(hydra_cfg):
     print(" # demonstrations: " + " ".join(f"({x})" for x in n_demos))
     print(" # sequences: " + " ".join(f"({x})" for x in n_sequences))
     print("=======================================================================\n")
+
+
+    # yy: my analyses
+    # print(type(datasets[0]))
+    # print(len(datasets[0]))  # 3828
+    # print(datasets[0].n_demos)  # 50
+    # print(datasets[1].n_demos)  # 50
+    # print(len(datasets))  # 2
+    # print(descriptions)  # ['close the top drawer of the cabinet',
+    # 'close the top drawer of the cabinet and put the black bowl on top of it']
+    # print(n_tasks)
+    # exit(0)
+
 
     # prepare experiment and update the config
     create_experiment_dir(cfg)

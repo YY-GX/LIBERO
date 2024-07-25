@@ -119,7 +119,9 @@ class Benchmark(abc.ABC):
         else:
             print(f"[info] using task orders {task_orders[self.task_order_index]}")
             self.tasks = [tasks[i] for i in task_orders[self.task_order_index]]
-        self.n_tasks = len(self.tasks)
+        # self.n_tasks = len(self.tasks)
+        # yy: set 1 for just traininig 1 task TODO: modify later
+        self.n_tasks = 1
 
     def get_num_tasks(self):
         return self.n_tasks
