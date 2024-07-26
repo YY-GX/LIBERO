@@ -238,7 +238,7 @@ class BDDLBaseDomain(SingleArmEnv):
                 in VISUAL_CHANGE_OBJECTS_DICT
             ):
                 tracking_object_states_changes.append(object_states_dict[object_name])
-
+        # print(self.object_sites_dict.keys())
         for object_name in self.object_sites_dict.keys():
             if object_name in skip_object_names:
                 continue
