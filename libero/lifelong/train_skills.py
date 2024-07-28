@@ -59,6 +59,7 @@ def main(hydra_cfg):
     cfg.init_states_folder = cfg.init_states_folder or get_libero_path("init_states")
 
     benchmark = get_benchmark(cfg.benchmark_name)(cfg.data.task_order_index)
+    # yy: libero/libero/benchmark/__init__.py - line 123 is responsible for the n_manip_tasks
     n_manip_tasks = benchmark.n_tasks
 
     # prepare datasets from the benchmark
@@ -85,9 +86,11 @@ def main(hydra_cfg):
         print(os.path.join(cfg.folder, benchmark.get_task_demonstration(i)))
         # add language to the vision dataset, hence we call vl_dataset
         task_description = benchmark.get_task(i).language
+        # yy: they maintain a list containing (lang, ds)
         descriptions.append(task_description)
         manip_datasets.append(task_i_dataset)
 
+    # yy: this task_embs seem to be the language embeddings
     task_embs = get_task_embs(cfg, descriptions)
     benchmark.set_task_embs(task_embs)
 
@@ -157,6 +160,7 @@ def main(hydra_cfg):
         "S_fwd": np.zeros((n_manip_tasks,)),  # success AUC, how fast the agent succeeds
     }
 
+    # yy: default is false
     if cfg.eval.save_sim_states:
         # for saving the evaluate simulation states, so we can replay them later
         for k in range(n_manip_tasks):
@@ -171,7 +175,9 @@ def main(hydra_cfg):
                     ]
 
     # define lifelong algorithm
+    # yy: default is sequential
     algo = safe_device(get_algo_class(cfg.lifelong.algo)(n_tasks, cfg), cfg.device)
+    # yy: default is ""
     if cfg.pretrain_model_path != "":  # load a pretrained model if there is any
         try:
             algo.policy.load_state_dict(torch_load_model(cfg.pretrain_model_path)[0])
@@ -231,7 +237,8 @@ def main(hydra_cfg):
             algo.train()
 
             t0 = time.time()
-            s_fwd, l_fwd = algo.learn_one_task(
+            # yy: learn_one_task_no_ll() is the function for training, modified by me
+            s_fwd, l_fwd = algo.learn_one_task_no_ll(
                 datasets[i], i, benchmark, result_summary
             )
             result_summary["S_fwd"][i] = s_fwd
