@@ -86,6 +86,10 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
         """
         self.current_task = task
 
+        # yy: recreate the policy - motivation: initialization
+        if is_no_ll:
+            self.policy = get_policy_class(self.cfg.policy.policy_type)(self.cfg, self.cfg.shape_meta)
+
         # initialize the optimizer and scheduler
         self.optimizer = eval(self.cfg.train.optimizer.name)(
             self.policy.parameters(), **self.cfg.train.optimizer.kwargs
@@ -99,8 +103,7 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
                 **self.cfg.train.scheduler.kwargs,
             )
 
-        if is_no_ll:
-            torch.nn.init.xavier_uniform(self.policy.weight)
+
 
     def map_tensor_to_device(self, data):
         """Move data to the device specified by self.cfg.device."""
