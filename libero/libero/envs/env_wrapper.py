@@ -276,3 +276,52 @@ class DemoRenderEnv(ControlEnv):
 
     def _get_observations(self):
         return self.env._get_observations()
+
+
+class SequentialEnv(OffScreenRenderEnv):
+    """
+    For execute several policies in sequence in several envs
+    """
+
+    def __init__(self, n_tasks, init_states_ls, **kwargs):
+        # yy: note - in this class code, task == env
+
+        self.n_tasks = n_tasks
+        self.init_states_ls = init_states_ls
+
+        self.env_ls = []
+        self.env_id = None
+        self.complete_task = []
+        for i in range(n_tasks):
+            env_args = {
+                "bddl_file_name": kwargs["bddl_file_name"][i],
+                "camera_heights": kwargs["camera_heights"][i],
+                "camera_widths": kwargs["camera_widths"][i],
+            }
+            self.env_ls.append(super(**env_args))
+
+    def reset(self):
+        self.env_id = 0
+        obs, reward, done, info = self.env_ls[0].reset()
+        info['task_index'] = self.env_id
+        return obs, reward, done, info
+
+    def seed(self, seed):
+        for env in self.env_ls:
+            env.seed(seed)
+
+    def set_init_state(self, init_states, env_id):
+        return self.env_ls[env_id].set_init_state(init_states)
+
+    def step(self, action):
+        obs, reward, done, info = self.env_ls[self.env_id].step(action)
+        if done:
+            self.complete_task.append(self.env_id)
+            # yy: if current env_id is already the last one, do nothing
+            # yy: auto initialize state for each new subtask - Note: still need to do this init for the 1st task manually
+            if self.env_id != (self.n_tasks - 1):
+                self.env_id += 1
+                self.set_init_state(self.init_states_ls[self.env_id], self.env_id)
+                done = False
+                info['task_index'] = self.env_id
+        return obs, reward, done, info
