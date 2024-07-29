@@ -50,6 +50,7 @@ import ast
 
 benchmark_map = {
     "libero_10": "LIBERO_10",
+    "libero_90": "LIBERO_90",
     "libero_spatial": "LIBERO_SPATIAL",
     "libero_object": "LIBERO_OBJECT",
     "libero_goal": "LIBERO_GOAL",
@@ -78,7 +79,7 @@ def parse_args():
         "--benchmark",
         type=str,
         required=True,
-        choices=["libero_10", "libero_spatial", "libero_object", "libero_goal"],
+        choices=["libero_10", "libero_spatial", "libero_object", "libero_goal", "libero_90"],
     )
     # parser.add_argument("--task_id", type=int, required=True)
     # yy: load task ids that you want to execute in sequence
