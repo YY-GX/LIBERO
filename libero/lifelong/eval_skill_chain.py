@@ -128,7 +128,7 @@ def main():
 
     experiment_dir = os.path.join(
         args.experiment_dir,
-        f"{benchmark_map[args.benchmark]}/"
+        f"{args.benchmark}/"
         + f"{algo_map[args.algo]}/"
         + f"{policy_map[args.policy]}_seed{args.seed}",
     )
