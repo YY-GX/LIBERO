@@ -150,28 +150,41 @@ def main():
         sys.exit(0)
 
     run_folder = os.path.join(experiment_dir, f"run_{experiment_id:03d}")
-    try:
-        if args.algo == "multitask":
-            model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
-            sd, cfg, previous_mask = torch_load_model(
-                model_path, map_location=args.device_id
-            )
-        else:
-            # yy: load a list of policies, in order to execute these tasks in sequence
-            checkpoints_ls = []
-            cfg_ls = []
-            for i, task_id in enumerate(args.task_id_ls):
-                model_path = os.path.join(run_folder, f"task{task_id}_model.pth")
-                sd, cfg, _ = torch_load_model(
-                    model_path, map_location=args.device_id
-                )
-                checkpoints_ls.append(sd)
-                cfg_ls.append(cfg)
-            cfg = cfg_ls[0]
 
-    except:
-        print(f"[error] cannot find the checkpoint at {str(model_path)}")
-        sys.exit(0)
+
+    # yy: load a list of policies, in order to execute these tasks in sequence
+    checkpoints_ls = []
+    cfg_ls = []
+    for i, task_id in enumerate(args.task_id_ls):
+        model_path = os.path.join(run_folder, f"task{task_id}_model.pth")
+        sd, cfg, _ = torch_load_model(
+            model_path, map_location=args.device_id
+        )
+        checkpoints_ls.append(sd)
+        cfg_ls.append(cfg)
+    cfg = cfg_ls[0]
+    # try:
+    #     if args.algo == "multitask":
+    #         model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
+    #         sd, cfg, previous_mask = torch_load_model(
+    #             model_path, map_location=args.device_id
+    #         )
+    #     else:
+    #         # yy: load a list of policies, in order to execute these tasks in sequence
+    #         checkpoints_ls = []
+    #         cfg_ls = []
+    #         for i, task_id in enumerate(args.task_id_ls):
+    #             model_path = os.path.join(run_folder, f"task{task_id}_model.pth")
+    #             sd, cfg, _ = torch_load_model(
+    #                 model_path, map_location=args.device_id
+    #             )
+    #             checkpoints_ls.append(sd)
+    #             cfg_ls.append(cfg)
+    #         cfg = cfg_ls[0]
+    #
+    # except:
+    #     print(f"[error] cannot find the checkpoint at {str(model_path)}")
+    #     sys.exit(0)
 
     # yy: these are folders, which shall be the same for all tasks
     cfg.folder = get_libero_path("datasets")
