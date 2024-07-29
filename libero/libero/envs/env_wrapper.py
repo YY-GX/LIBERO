@@ -298,7 +298,8 @@ class SequentialEnv(OffScreenRenderEnv):
                 "camera_heights": kwargs["camera_heights"][i],
                 "camera_widths": kwargs["camera_widths"][i],
             }
-            self.env_ls.append(super(**env_args))
+            env_instance = OffScreenRenderEnv(**env_args)  # Initialize the superclass with env_args
+            self.env_ls.append(env_instance)
 
     def reset(self):
         self.env_id = 0
@@ -325,3 +326,7 @@ class SequentialEnv(OffScreenRenderEnv):
                 done = False
                 info['task_index'] = self.env_id
         return obs, reward, done, info
+
+    def close(self):
+        for env in self.env_ls:
+            env.close()

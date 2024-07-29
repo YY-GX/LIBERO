@@ -97,6 +97,7 @@ def parse_args():
         required=True,
         choices=["bc_rnn_policy", "bc_transformer_policy", "bc_vilt_policy"],
     )
+    parser.add_argument("--is_local_eval", type=int, required=True, default=1)
     parser.add_argument("--seed", type=int, required=True)
     # parser.add_argument("--load_task_ls", type=int, required=True)
     # parser.add_argument("--load_task", type=int)
@@ -260,6 +261,8 @@ def main():
         init_states_ls = []
         for i, cfg_ in enumerate(cfg_ls):
             task_ = benchmark.get_task(args.task_id_ls[i])
+            if args.is_local_eval == 1:
+                cfg_.init_states_folder = cfg_.init_states_folder.replace("/mnt/arc/yygx/pkgs_baselines/", "/home/yygx/UNC_Research/pkgs_simu/")
             init_states_path = os.path.join(
                 cfg_.init_states_folder, task_.problem_folder, task_.init_states_file
             )
