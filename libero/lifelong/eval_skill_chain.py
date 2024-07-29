@@ -82,7 +82,7 @@ def parse_args():
     )
     # parser.add_argument("--task_id", type=int, required=True)
     # yy: load task ids that you want to execute in sequence
-    parser.add_argument("--task_id_ls", type=int, required=True)
+    parser.add_argument("--task_id_ls", type=str, required=True)
     # method detail
     parser.add_argument(
         "--algo",
