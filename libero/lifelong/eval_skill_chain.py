@@ -227,23 +227,17 @@ def main():
     ### ======================= start evaluation ============================
 
     # yy: just use get_dataset() to do some necessary initilization
-    try:
-        dataset, shape_meta = get_dataset(
-            dataset_path=os.path.join(
-                cfg.folder, benchmark.get_task_demonstration(args.task_id)
-            ),
-            obs_modality=cfg.data.obs.modality,
-            initialize_obs_utils=True,
-            seq_len=cfg.data.seq_len,
-        )
-        dataset = GroupedTaskDataset(
-            [dataset], task_embs[args.task_id : args.task_id + 1]
-        )
-    except:
-        print(
-            f"[error] failed to load task {args.task_id} name {benchmark.get_task_names()[args.task_id]}"
-        )
-        sys.exit(0)
+    dataset, shape_meta = get_dataset(
+        dataset_path=os.path.join(
+            cfg.folder, benchmark.get_task_demonstration(args.task_id)
+        ),
+        obs_modality=cfg.data.obs.modality,
+        initialize_obs_utils=True,
+        seq_len=cfg.data.seq_len,
+    )
+    dataset = GroupedTaskDataset(
+        [dataset], task_embs[args.task_id: args.task_id + 1]
+    )
 
 
     test_loss = 0.0
