@@ -343,6 +343,8 @@ def main():
                 for k in range(env_num):
                     if info[k]['is_init']:
                         obs_ = env.set_init_state(init_states_, k)
+                    else:
+                        obs_ = obs
                     obs_ls.append(obs_[0])
                 obs = np.stack(obs_ls)
 

@@ -352,7 +352,6 @@ class SequentialEnv(OffScreenRenderEnv):
                 done = False
                 info['is_init'] = True
         info['task_index'] = self.task_id
-        # yy: debug, change back to False later
         info['is_init'] = False
         return obs, reward, done, info
 
