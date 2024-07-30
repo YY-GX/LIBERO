@@ -125,9 +125,9 @@ class ControlEnv:
         self.env._update_observables(force=force)
 
     def set_state(self, mujoco_state):
-        print(type(mujoco_state))
-        print(mujoco_state.shape)
-        exit(0)
+        # print(type(mujoco_state))
+        # print(mujoco_state.shape)
+        # exit(0)
         # yy: mujoco_state shape -> (1, 77)
         self.env.sim.set_state_from_flattened(mujoco_state)
 
