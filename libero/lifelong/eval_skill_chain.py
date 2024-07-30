@@ -336,14 +336,13 @@ def main():
                 obs, reward, done, info = env.step(actions)
                 task_indexes = [kv['task_index'] for kv in info]
                 print(task_indexes)
-                # obs = np.zeros((1, obs.shape[1]))
-                print(obs.shape)
+
+                # yy: obs shape: (20,). In it, each element is an OrderedDict
+                # print(obs.shape)
                 obs_ls = []
                 for k in range(env_num):
                     if info[k]['is_init']:
                         obs_ = env.set_init_state(init_states_, k)
-                    print(obs_.shape)
-                    print(type(obs_[0]))
                     obs_ls.append(obs_[0])
                 obs = np.stack(obs_ls)
 
