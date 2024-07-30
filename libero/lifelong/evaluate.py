@@ -231,6 +231,7 @@ def main():
         f"{args.benchmark}_{args.algo}_{args.policy}_{args.seed}_load{args.load_task}_on{args.task_id}_videos",
     )
 
+
     with Timer() as t, VideoWriter(video_folder, args.save_videos) as video_writer:
         env_args = {
             "bddl_file_name": os.path.join(
@@ -294,8 +295,8 @@ def main():
 
         os.system(f"mkdir -p {args.save_dir}")
         torch.save(eval_stats, save_folder)
-        # yy: save video
-        video_writer.save()
+        # # yy: save video
+        # video_writer.save()
     print(
         f"[info] finish for ckpt at {run_folder} in {t.get_elapsed_time()} sec for rollouts"
     )
