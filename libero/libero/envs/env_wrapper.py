@@ -314,10 +314,11 @@ class SequentialEnv(OffScreenRenderEnv):
             env.seed(seed)
 
     def set_init_state(self, init_states):
-        return self.env_ls[self.task_id].set_init_state(init_states)
+        return self.env_ls[self.task_id].set_init_state(init_states[self.env_id, ...][None, ...])
 
     def step(self, action):
         obs, reward, done, info = self.env_ls[self.task_id].step(action)
+        self.env_id = info['env_id']  # yy: current env's id
         # yy: 0 False 2
         # print(self.task_id, done, self.n_tasks)
         # yy: for debug =>
