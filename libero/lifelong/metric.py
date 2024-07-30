@@ -33,6 +33,8 @@ def raw_obs_to_tensor_obs(obs, task_emb, cfg):
             data["obs"][obs_name] = []
         all_obs_keys += modality_list
 
+    print(f"yy: {all_obs_keys}")
+    print(f"yy: {cfg.data.obs_key_mapping}")
     for k in range(env_num):
         for obs_name in all_obs_keys:
             data["obs"][obs_name].append(
