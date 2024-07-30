@@ -312,14 +312,18 @@ def main():
                     cfg = cfg_ls[task_indexes[k]]
                     algo = algo_ls[task_indexes[k]]
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    print(type(obs), type(data))
-                    print(obs.shape, obs)
-                    for k, v in data['obs'].items():
-                        print(k, type(v), v.size())
-                    print(type(data['task_emb']))
+                    """
+                        agentview_rgb <class 'torch.Tensor'> torch.Size([20, 3, 128, 128])
+                        eye_in_hand_rgb <class 'torch.Tensor'> torch.Size([20, 3, 128, 128])
+                        gripper_states <class 'torch.Tensor'> torch.Size([20, 2])
+                        joint_states <class 'torch.Tensor'> torch.Size([20, 7])
+                    """
+                    for key, v in data['obs'].items():
+                        data['obs'][key] = v[k, ...][None, ...]
+                    data['task_emb'] = data['task_emb'][k, ...][None, ...]
                     # yy: 20 * 768
-                    print(data['task_emb'].size())
-                    actions = np.vstack([actions, algo.policy.get_action(data[k, ...][None, ...])])
+                    # print(data['task_emb'].size())
+                    actions = np.vstack([actions, algo.policy.get_action(data)])
                 actions = actions[1:, ...]
                 obs, reward, done, info = env.step(actions)
                 task_indexes = [kv['task_index'] for kv in info]
