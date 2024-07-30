@@ -289,6 +289,8 @@ def main():
             # print(f"init_states[indices]: {init_states[indices]}, size: {init_states[indices].shape}")
             # yy: init_states[indices],shape -> [20, 77]
             init_states_ls.append(init_states[indices])
+        print(f"len(init_states_ls): {len(init_states_ls)}")
+        print([is_.shape for is_ in init_states_ls])
         # yy: this is for the 1st task
         init_states_ = init_states_ls[0]
 
