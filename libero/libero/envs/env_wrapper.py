@@ -292,7 +292,6 @@ class SequentialEnv(OffScreenRenderEnv):
         self.env_ls = []
         self.task_id = None
         self.complete_task = []
-        self.env_id = None
         for i in range(n_tasks):
             env_args = {
                 "bddl_file_name": kwargs["bddl_file_name"][i],
@@ -315,15 +314,17 @@ class SequentialEnv(OffScreenRenderEnv):
             env.seed(seed)
 
     def set_init_state(self, init_states):
-        if self.env_id:
-            return self.env_ls[self.task_id].set_init_state(init_states[self.env_id, ...][None, ...])
-        else:
-            return self.env_ls[self.task_id].set_init_state(init_states)
+        # yy: init_states -> shape: [20, 77]
+        # if self.env_id:
+        #     return self.env_ls[self.task_id].set_init_state(init_states[self.env_id, ...][None, ...])
+        # else:
+        env_num = init_states.shape[0]
+        rand_idx = np.random.choice(env_num, 1)[0]
+        return self.env_ls[self.task_id].set_init_state(init_states[rand_idx, ...][None, ...])
 
 
     def step(self, action):
         obs, reward, done, info = self.env_ls[self.task_id].step(action)
-        self.env_id = info['env_id']  # yy: current env's id
         # yy: 0 False 2
         # print(self.task_id, done, self.n_tasks)
         # yy: for debug =>
