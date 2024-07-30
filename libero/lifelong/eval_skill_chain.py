@@ -337,14 +337,15 @@ def main():
                 task_indexes = [kv['task_index'] for kv in info]
                 print(task_indexes)
                 # obs = np.zeros((1, obs.shape[1]))
+                print(obs.shape)
+                obs_ls = []
                 for k in range(env_num):
                     if info[k]['is_init']:
                         obs_ = env.set_init_state(init_states_, k)
-                    print("hhhhhhhhhhhhhhh")
                     print(obs_.shape)
-                    print(obs_)
-                    obs = np.stack([obs, obs_])
-                    # print(len(obs_ls))
+                    print(type(obs_[0]))
+                    obs_ls.append(obs_[0])
+                obs = np.stack(obs_ls)
 
 
                 video_writer.append_vector_obs(
