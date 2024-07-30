@@ -317,6 +317,8 @@ class SequentialEnv(OffScreenRenderEnv):
 
     def step(self, action):
         obs, reward, done, info = self.env_ls[self.env_id].step(action)
+        print(type(info))
+        print(info)
         if done:
             self.complete_task.append(self.env_id)
             # yy: if current env_id is already the last one, do nothing
