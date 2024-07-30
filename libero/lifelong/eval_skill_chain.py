@@ -229,7 +229,7 @@ def main():
     # yy: just use get_dataset() to do some necessary initilization
     dataset, shape_meta = get_dataset(
         dataset_path=os.path.join(
-            cfg.folder, benchmark.get_task_demonstration(args.task_id)
+            cfg.folder, benchmark.get_task_demonstration(args.task_id_ls[0])
         ),
         obs_modality=cfg.data.obs.modality,
         initialize_obs_utils=True,
