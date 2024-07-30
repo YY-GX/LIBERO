@@ -339,8 +339,11 @@ def main():
                 obs_ls = []
                 for k in range(env_num):
                     if info[k]['is_init']:
-                        obs = env.set_init_state(init_states_, k)
-                    obs_ls += obs
+                        obs_ = env.set_init_state(init_states_, k)
+                    print("hhhhhhhhhhhhhhh")
+                    print(obs_.shape)
+                    obs_ls += obs_
+                    print(len(obs_ls))
                 obs = np.stack(obs_ls)
 
 
