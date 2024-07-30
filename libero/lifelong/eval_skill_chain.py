@@ -313,7 +313,11 @@ def main():
                     algo = algo_ls[task_indexes[k]]
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     print(type(obs), type(data))
-                    print(obs.size(), data.size())
+                    print(obs.shape)
+                    for k, v in data['obs'].items():
+                        print(k, type(v))
+                    print(type(data['task_emb']))
+                    print(data['task_emb'].size())
                     actions = np.vstack([actions, algo.policy.get_action(data[k, ...][None, ...])])
                 actions = actions[1:, ...]
                 obs, reward, done, info = env.step(actions)
