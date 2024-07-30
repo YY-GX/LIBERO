@@ -332,6 +332,8 @@ class SequentialEnv(OffScreenRenderEnv):
         # print(self.task_id, done, self.n_tasks)
         # yy: for debug =>
         print("start debugging")
+        print(f"len(init_states_ls): {len(self.init_states_ls)}")
+        print([is_.shape for is_ in self.init_states_ls])
         self.set_init_state(self.init_states_ls[1])
         if done:
             self.complete_task.append(self.task_id)
