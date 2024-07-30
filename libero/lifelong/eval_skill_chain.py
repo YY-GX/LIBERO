@@ -300,7 +300,8 @@ def main():
         num_success = 0
         task_index = 0
         for _ in range(5):  # simulate the physics without any actions
-            env.step(np.zeros((env_num, 7)))
+            _, _, done, info = env.step(np.zeros((env_num, 7)))
+            print(done, info)
 
         with torch.no_grad():
             while steps < cfg.eval.max_steps:
