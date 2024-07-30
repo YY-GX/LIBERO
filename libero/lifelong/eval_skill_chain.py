@@ -298,26 +298,25 @@ def main():
         # task_emb = benchmark.get_task_emb(args.task_id)
 
         num_success = 0
-        task_index = 0
+        task_indexes = [0 for _ in range(env_num)]
         for _ in range(5):  # simulate the physics without any actions
-            _, _, done, info = env.step(np.zeros((env_num, 7)))
-            print(done, info)
+            env.step(np.zeros((env_num, 7)))
 
         with torch.no_grad():
             while steps < cfg.eval.max_steps:
                 steps += 1
-                task_emb = benchmark.get_task_emb(args.task_id_ls[task_index])
-                cfg = cfg_ls[task_index]
-                algo = algo_ls[task_index]
 
-                data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                actions = algo.policy.get_action(data)
+                actions = np.zeros((1, 7))
+                for k in range(env_num):
+                    task_emb = benchmark.get_task_emb(args.task_id_ls[task_indexes[k]])
+                    cfg = cfg_ls[task_indexes[k]]
+                    algo = algo_ls[task_indexes[k]]
+                    data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                    actions = np.vstack([actions, algo.policy.get_action(data[k, ...][None, ...])])
+                actions = actions[1:, ...]
                 obs, reward, done, info = env.step(actions)
-                print(actions.shape)
-                print(done, info)
-                # print(type(info))
-                # print(info)
-                task_index = info['task_index']
+                task_indexes = [kv['task_index'] for kv in info]
+                print(task_indexes)
 
                 video_writer.append_vector_obs(
                     obs, dones, camera_name="agentview_image"
