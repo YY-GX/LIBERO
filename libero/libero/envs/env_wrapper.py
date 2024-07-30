@@ -128,6 +128,7 @@ class ControlEnv:
         print(type(mujoco_state))
         print(mujoco_state.shape)
         exit(0)
+        # yy: mujoco_state shape -> (1, 77)
         self.env.sim.set_state_from_flattened(mujoco_state)
 
     def reset_from_xml_string(self, xml_string):
