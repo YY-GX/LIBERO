@@ -312,8 +312,8 @@ class SequentialEnv(OffScreenRenderEnv):
         for env in self.env_ls:
             env.seed(seed)
 
-    def set_init_state(self, init_states, env_id):
-        return self.env_ls[env_id].set_init_state(init_states)
+    def set_init_state(self, init_states):
+        return self.env_ls[self.env_id].set_init_state(init_states)
 
     def step(self, action):
         obs, reward, done, info = self.env_ls[self.env_id].step(action)
@@ -323,7 +323,7 @@ class SequentialEnv(OffScreenRenderEnv):
             # yy: auto initialize state for each new subtask - Note: still need to do this init for the 1st task manually
             if self.env_id != (self.n_tasks - 1):
                 self.env_id += 1
-                self.set_init_state(self.init_states_ls[self.env_id], self.env_id)
+                self.set_init_state(self.init_states_ls[self.env_id])
                 done = False
                 info['task_index'] = self.env_id
         return obs, reward, done, info
