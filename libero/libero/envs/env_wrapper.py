@@ -320,6 +320,9 @@ class SequentialEnv(OffScreenRenderEnv):
         obs, reward, done, info = self.env_ls[self.task_id].step(action)
         # yy: 0 False 2
         # print(self.task_id, done, self.n_tasks)
+        # yy: for debug =>
+        print("start debugging")
+        self.set_init_state(self.init_states_ls[1])
         if done:
             self.complete_task.append(self.task_id)
             # yy: if current task_id is already the last one, do nothing
