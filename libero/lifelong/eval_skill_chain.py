@@ -236,7 +236,7 @@ def main():
         seq_len=cfg.data.seq_len,
     )
     dataset = GroupedTaskDataset(
-        [dataset], task_embs[args.task_id[0]: args.task_id[0] + 1]
+        [dataset], task_embs[args.task_id_ls[0]: args.task_id_ls[0] + 1]
     )
 
 
