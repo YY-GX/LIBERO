@@ -291,8 +291,8 @@ def main():
             init_states_ls.append(init_states[indices])
         print(f"len(init_states_ls): {len(init_states_ls)}")
         print([is_.shape for is_ in init_states_ls])
-        # yy: this is for the 1st task
-        init_states_ = init_states_ls[0]
+        # # yy: this is for the 1st task
+        # init_states_ = init_states_ls[0]
 
         env = SubprocVectorEnv(
             [lambda: SequentialEnv(n_tasks=len(cfg_ls), init_states_ls=init_states_ls, **env_args) for _ in range(env_num)]
@@ -302,7 +302,7 @@ def main():
 
         dones = [False] * env_num
         steps = 0
-        obs = env.set_init_state(init_states_)
+        # obs = env.set_init_state(init_states_)
         # task_emb = benchmark.get_task_emb(args.task_id)
 
         num_success = 0

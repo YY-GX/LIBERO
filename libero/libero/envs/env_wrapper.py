@@ -304,6 +304,7 @@ class SequentialEnv(OffScreenRenderEnv):
     def reset(self):
         self.task_id = 0
         self.env_ls[0].reset()
+        self.set_init_state(self.init_states_ls[0])
         # obs, reward, done, info = self.env_ls[0].reset()
         # info['task_index'] = self.task_id
         # return obs, reward, done, info
