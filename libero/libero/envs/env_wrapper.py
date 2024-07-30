@@ -320,6 +320,7 @@ class SequentialEnv(OffScreenRenderEnv):
         # else:
         env_num = init_states.shape[0]
         rand_idx = np.random.choice(env_num, 1)[0]
+        print(f"init_states[rand_idx, ...][None, ...].shape: {init_states[rand_idx, ...][None, ...].shape}")
         return self.env_ls[self.task_id].set_init_state(init_states[rand_idx, ...][None, ...])
 
 
