@@ -86,9 +86,9 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
         """
         self.current_task = task
 
-        # yy: recreate the policy - motivation: initialization
-        if is_no_ll:
-            self.policy = get_policy_class(self.cfg.policy.policy_type)(self.cfg, self.cfg.shape_meta).to(self.cfg.device)
+        # # yy: recreate the policy - motivation: initialization
+        # if is_no_ll:
+        #     self.policy = get_policy_class(self.cfg.policy.policy_type)(self.cfg, self.cfg.shape_meta).to(self.cfg.device)
 
         # initialize the optimizer and scheduler
         self.optimizer = eval(self.cfg.train.optimizer.name)(
