@@ -336,15 +336,15 @@ def main():
                 obs, reward, done, info = env.step(actions)
                 task_indexes = [kv['task_index'] for kv in info]
                 print(task_indexes)
-                obs_ls = []
+                # obs = np.zeros((1, obs.shape[1]))
                 for k in range(env_num):
                     if info[k]['is_init']:
                         obs_ = env.set_init_state(init_states_, k)
                     print("hhhhhhhhhhhhhhh")
                     print(obs_.shape)
-                    obs_ls += obs_
-                    print(len(obs_ls))
-                obs = np.stack(obs_ls)
+                    print(obs_)
+                    obs = np.stack([obs, obs_])
+                    # print(len(obs_ls))
 
 
                 video_writer.append_vector_obs(
