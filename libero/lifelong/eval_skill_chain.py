@@ -283,10 +283,10 @@ def main():
             )
             print(f"init_states_path: {init_states_path}")
             init_states = torch.load(init_states_path)
-            print(f"init_states: {init_states}, size: {init_states.size()}")
+            print(f"init_states: {init_states}, size: {init_states.shape}")
             indices = np.arange(env_num) % init_states.shape[0]
             print(f"indices: {indices}")
-            print(f"init_states[indices]: {init_states[indices]}, size: {init_states[indices].size()}")
+            print(f"init_states[indices]: {init_states[indices]}, size: {init_states[indices].shape}")
             init_states_ls.append(init_states[indices])
         # yy: this is for the 1st task
         init_states_ = init_states_ls[0]
