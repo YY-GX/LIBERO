@@ -292,6 +292,7 @@ class SequentialEnv(OffScreenRenderEnv):
         self.env_ls = []
         self.task_id = None
         self.complete_task = []
+        self.env_id = None
         for i in range(n_tasks):
             env_args = {
                 "bddl_file_name": kwargs["bddl_file_name"][i],
