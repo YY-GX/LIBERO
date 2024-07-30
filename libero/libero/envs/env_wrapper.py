@@ -309,6 +309,7 @@ class SequentialEnv(OffScreenRenderEnv):
         # return obs, reward, done, info
 
     def seed(self, seed):
+        seed = np.random.seed(seed)
         for env in self.env_ls:
             env.seed(seed)
 
@@ -317,8 +318,7 @@ class SequentialEnv(OffScreenRenderEnv):
 
     def step(self, action):
         obs, reward, done, info = self.env_ls[self.env_id].step(action)
-        print(type(info))
-        print(info)
+        print(self.env_id, done, self.n_tasks)
         if done:
             self.complete_task.append(self.env_id)
             # yy: if current env_id is already the last one, do nothing
