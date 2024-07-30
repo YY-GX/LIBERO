@@ -312,7 +312,8 @@ def main():
                     cfg = cfg_ls[task_indexes[k]]
                     algo = algo_ls[task_indexes[k]]
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    print(obs.shape, data.shape)
+                    print(type(obs), type(data))
+                    print(obs.size(), data.size())
                     actions = np.vstack([actions, algo.policy.get_action(data[k, ...][None, ...])])
                 actions = actions[1:, ...]
                 obs, reward, done, info = env.step(actions)
