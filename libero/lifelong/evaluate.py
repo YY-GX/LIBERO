@@ -294,6 +294,8 @@ def main():
 
         os.system(f"mkdir -p {args.save_dir}")
         torch.save(eval_stats, save_folder)
+        # yy: save video
+        video_writer.save()
     print(
         f"[info] finish for ckpt at {run_folder} in {t.get_elapsed_time()} sec for rollouts"
     )
