@@ -289,10 +289,10 @@ def main():
             # print(f"init_states[indices]: {init_states[indices]}, size: {init_states[indices].shape}")
             # yy: init_states[indices],shape -> [20, 77]
             init_states_ls.append(init_states[indices])
-        print(f"len(init_states_ls): {len(init_states_ls)}")
-        print([is_.shape for is_ in init_states_ls])
+        # print(f"len(init_states_ls): {len(init_states_ls)}")
+        # print([is_.shape for is_ in init_states_ls])
         # yy: this is for the 1st task
-        # init_states_ = init_states_ls[0]
+        init_states_ = init_states_ls[0]
 
         env = SubprocVectorEnv(
             [lambda: SequentialEnv(n_tasks=len(cfg_ls), init_states_ls=init_states_ls, **env_args) for _ in range(env_num)]
@@ -302,7 +302,7 @@ def main():
 
         dones = [False] * env_num
         steps = 0
-        # obs = env.set_init_state(init_states_)
+        obs = env.set_init_state(init_states_)
         # task_emb = benchmark.get_task_emb(args.task_id)
 
         num_success = 0
@@ -336,6 +336,13 @@ def main():
                 obs, reward, done, info = env.step(actions)
                 task_indexes = [kv['task_index'] for kv in info]
                 print(task_indexes)
+                obs_ls = []
+                for k in range(env_num):
+                    if info[k]['is_init']:
+                        obs = env.set_init_state(init_states_, k)
+                    obs_ls += obs
+                obs = np.stack(obs_ls)
+
 
                 video_writer.append_vector_obs(
                     obs, dones, camera_name="agentview_image"

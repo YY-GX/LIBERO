@@ -319,16 +319,18 @@ class SequentialEnv(OffScreenRenderEnv):
             env.seed(seed)
 
     def set_init_state(self, init_states):
-        # yy: init_states -> shape: [20, 77]
-        # if self.env_id:
-        #     return self.env_ls[self.task_id].set_init_state(init_states[self.env_id, ...][None, ...])
-        # else:
-        env_num = init_states.shape[0]
-        rand_idx = np.random.choice(env_num, 1)[0]
-        print(init_states.shape)
-        print(rand_idx)
-        print(f"init_states[rand_idx, ...][None, ...].shape: {init_states[rand_idx, ...][None, ...].shape}")
-        return self.env_ls[self.task_id].set_init_state(init_states[rand_idx, ...][None, ...])
+        # # yy: init_states -> shape: [20, 77]
+        # # if self.env_id:
+        # #     return self.env_ls[self.task_id].set_init_state(init_states[self.env_id, ...][None, ...])
+        # # else:
+        # env_num = init_states.shape[0]
+        # rand_idx = np.random.choice(env_num, 1)[0]
+        # print(init_states.shape)
+        # print(rand_idx)
+        # print(f"init_states[rand_idx, ...][None, ...].shape: {init_states[rand_idx, ...][None, ...].shape}")
+        # return self.env_ls[self.task_id].set_init_state(init_states[rand_idx, ...][None, ...])
+        return self.env_ls[self.task_id].set_init_state(init_states)
+
 
 
     def step(self, action):
@@ -336,19 +338,22 @@ class SequentialEnv(OffScreenRenderEnv):
         # yy: 0 False 2
         # print(self.task_id, done, self.n_tasks)
         # yy: for debug =>
-        print("start debugging")
-        print(f"len(init_states_ls): {len(self.init_states_ls)}")
-        print([is_.shape for is_ in self.init_states_ls])
-        self.set_init_state(self.init_states_ls[1])
+        # print("start debugging")
+        # print(f"len(init_states_ls): {len(self.init_states_ls)}")
+        # print([is_.shape for is_ in self.init_states_ls])
+        # self.set_init_state(self.init_states_ls[1])
         if done:
             self.complete_task.append(self.task_id)
             # yy: if current task_id is already the last one, do nothing
             # yy: auto initialize state for each new subtask - Note: still need to do this init for the 1st task manually
             if self.task_id != (self.n_tasks - 1):
                 self.task_id += 1
-                self.set_init_state(self.init_states_ls[self.task_id])
+                # self.set_init_state(self.init_states_ls[self.task_id])
                 done = False
+                info['is_init'] = True
         info['task_index'] = self.task_id
+        # yy: debug, change back to False later
+        info['is_init'] = True
         return obs, reward, done, info
 
     def close(self):
