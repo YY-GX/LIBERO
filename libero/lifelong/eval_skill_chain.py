@@ -312,6 +312,8 @@ def main():
                 data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                 actions = algo.policy.get_action(data)
                 obs, reward, done, info = env.step(actions)
+                print(actions.shape)
+                print(done, info)
                 # print(type(info))
                 # print(info)
                 task_index = info['task_index']
