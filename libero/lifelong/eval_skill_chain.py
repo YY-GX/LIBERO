@@ -71,9 +71,9 @@ policy_map = {
 }
 
 
-def initialize_robot_state(env, robot_init_sim_state):
+def initialize_robot_state(crr_state, robot_init_sim_state):
     # yy: 0: timestep; 1-40: states; 41-76: vel_info;
-    modified_state = env.get_sim_state().copy()
+    modified_state = crr_state.copy()
     # initial robot states
     modified_state[1:10] = robot_init_sim_state[1:10]
     # zeroize all velocity related states
@@ -354,7 +354,8 @@ def main():
                     if info[k]['is_init']:
                         # TODO: I only wanna initilize the robot
                         # yy: next task's initail state is extracted, and then passed to be modifed as I only wanna change robot related state
-                        init_state_ = initialize_robot_state(env, init_states_ls[task_indexes[k]])
+                        init_state_ = initialize_robot_state(env.get_sim_state()[k], init_states_ls[task_indexes[k]])
+                        print(f"env.get_sim_state()[k]: {env.get_sim_state()[k].shape}")
                         print(f"init_state_.shape: {init_state_.shape}")
                         obs_ = env.set_init_state(init_state_, k)
                     else:

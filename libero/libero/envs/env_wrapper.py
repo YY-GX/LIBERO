@@ -328,7 +328,8 @@ class SequentialEnv(OffScreenRenderEnv):
         # return self.env_ls[self.task_id].set_init_state(init_states[rand_idx, ...][None, ...])
         return self.env_ls[self.task_id].set_init_state(init_states)
 
-
+    def get_sim_state(self):
+        return self.env_ls[self.task_id].sim.get_state().flatten()
 
     def step(self, action):
         obs, reward, done, info = self.env_ls[self.task_id].step(action)
