@@ -349,7 +349,7 @@ class SequentialEnv(OffScreenRenderEnv):
                 done = False
                 info['is_init'] = True
         info['task_index'] = self.task_id
-        info['is_init'] = False
+        info['is_init'] = True
         return obs, reward, done, info
 
     def close(self):
