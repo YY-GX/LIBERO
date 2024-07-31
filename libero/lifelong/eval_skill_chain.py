@@ -71,6 +71,16 @@ policy_map = {
 }
 
 
+def initialize_robot_state(env, robot_init_sim_state):
+    # yy: 0: timestep; 1-40: states; 41-76: vel_info;
+    modified_state = env.get_sim_state().copy()
+    # initial robot states
+    modified_state[1:10] = robot_init_sim_state[1:10]
+    # zeroize all velocity related states
+    modified_state[41:] = robot_init_sim_state[41:]
+    return modified_state
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
     parser.add_argument("--experiment_dir", type=str, default="experiments")
@@ -342,7 +352,11 @@ def main():
                 obs_ls = []
                 for k in range(env_num):
                     if info[k]['is_init']:
-                        obs_ = env.set_init_state(init_states_, k)
+                        # TODO: I only wanna initilize the robot
+                        # yy: next task's initail state is extracted, and then passed to be modifed as I only wanna change robot related state
+                        init_state_ = initialize_robot_state(env, init_states_ls[task_indexes[k]])
+                        print(f"init_state_.shape: {init_state_.shape}")
+                        obs_ = env.set_init_state(init_state_, k)
                     else:
                         obs_ = obs
                     obs_ls.append(obs_[0])
