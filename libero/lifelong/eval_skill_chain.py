@@ -361,7 +361,6 @@ def main():
                     print(task_indexes)
 
                     # yy: obs shape: (20,). In it, each element is an OrderedDict
-                    # print(obs.shape)
                     obs_ls = []
                     for k in range(env_num):
                         if info[k]['is_init']:
@@ -384,6 +383,7 @@ def main():
                     # check whether succeed
                     for k in range(env_num):
                         dones[k] = dones[k] or done[k]
+                    print(dones)
                     if all(dones):
                         break
 
