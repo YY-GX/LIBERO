@@ -46,6 +46,17 @@ import robomimic.utils.tensor_utils as TensorUtils
 
 import time
 import ast
+import time
+from contextlib import contextmanager
+
+@contextmanager
+def timeit():
+    start_time = time.time()
+    yield
+    end_time = time.time()
+    print(f"Elapsed time: {end_time - start_time:.2f} seconds")
+
+
 
 
 benchmark_map = {
@@ -322,57 +333,59 @@ def main():
 
         with torch.no_grad():
             while steps < cfg.eval.max_steps:
-                steps += 1
+                with timeit():
+                    steps += 1
 
-                actions = np.zeros((1, 7))
-                for k in range(env_num):
-                    task_emb = benchmark.get_task_emb(args.task_id_ls[task_indexes[k]])
-                    cfg = cfg_ls[task_indexes[k]]
-                    algo = algo_ls[task_indexes[k]]
-                    data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    """
-                        agentview_rgb <class 'torch.Tensor'> torch.Size([20, 3, 128, 128])
-                        eye_in_hand_rgb <class 'torch.Tensor'> torch.Size([20, 3, 128, 128])
-                        gripper_states <class 'torch.Tensor'> torch.Size([20, 2])
-                        joint_states <class 'torch.Tensor'> torch.Size([20, 7])
-                    """
-                    for key, v in data['obs'].items():
-                        data['obs'][key] = v[k, ...][None, ...]
-                    data['task_emb'] = data['task_emb'][k, ...][None, ...]
-                    # yy: 20 * 768
-                    # print(data['task_emb'].size())
-                    actions = np.vstack([actions, algo.policy.get_action(data)])
-                actions = actions[1:, ...]
-                obs, reward, done, info = env.step(actions)
-                task_indexes = [kv['task_index'] for kv in info]
-                print(task_indexes)
+                    actions = np.zeros((1, 7))
+                    for k in range(env_num):
+                        task_emb = benchmark.get_task_emb(args.task_id_ls[task_indexes[k]])
+                        cfg = cfg_ls[task_indexes[k]]
+                        algo = algo_ls[task_indexes[k]]
+                        data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                        """
+                            agentview_rgb <class 'torch.Tensor'> torch.Size([20, 3, 128, 128])
+                            eye_in_hand_rgb <class 'torch.Tensor'> torch.Size([20, 3, 128, 128])
+                            gripper_states <class 'torch.Tensor'> torch.Size([20, 2])
+                            joint_states <class 'torch.Tensor'> torch.Size([20, 7])
+                        """
+                        for key, v in data['obs'].items():
+                            data['obs'][key] = v[k, ...][None, ...]
+                        data['task_emb'] = data['task_emb'][k, ...][None, ...]
+                        # yy: 20 * 768
+                        # print(data['task_emb'].size())
+                        actions = np.vstack([actions, algo.policy.get_action(data)])
+                    actions = actions[1:, ...]
+                    obs, reward, done, info = env.step(actions)
+                    task_indexes = [kv['task_index'] for kv in info]
+                    print(f"Step: {steps}")
+                    print(task_indexes)
 
-                # yy: obs shape: (20,). In it, each element is an OrderedDict
-                # print(obs.shape)
-                obs_ls = []
-                for k in range(env_num):
-                    if info[k]['is_init']:
-                        # yy: next task's initail state is extracted, and then passed to be modifed as I only wanna change robot related state
-                        print(f"env.get_sim_state()[k]: {env.get_sim_state()[k].shape}")
-                        print(f"init_states_ls[task_indexes[k]]: {init_states_ls[task_indexes[k]][k, :].shape}")
-                        init_state_ = initialize_robot_state(env.get_sim_state()[k], init_states_ls[task_indexes[k]][k, :])[None, ...]
-                        print(f"init_state_.shape: {init_state_.shape}")
-                        obs_ = env.set_init_state(init_state_, k)
-                    else:
-                        obs_ = obs
-                    obs_ls.append(obs_[0])
-                obs = np.stack(obs_ls)
+                    # yy: obs shape: (20,). In it, each element is an OrderedDict
+                    # print(obs.shape)
+                    obs_ls = []
+                    for k in range(env_num):
+                        if info[k]['is_init']:
+                            # yy: next task's initail state is extracted, and then passed to be modifed as I only wanna change robot related state
+                            print(f"env.get_sim_state()[k]: {env.get_sim_state()[k].shape}")
+                            print(f"init_states_ls[task_indexes[k]]: {init_states_ls[task_indexes[k]][k, :].shape}")
+                            init_state_ = initialize_robot_state(env.get_sim_state()[k], init_states_ls[task_indexes[k]][k, :])[None, ...]
+                            print(f"init_state_.shape: {init_state_.shape}")
+                            obs_ = env.set_init_state(init_state_, k)
+                        else:
+                            obs_ = obs
+                        obs_ls.append(obs_[0])
+                    obs = np.stack(obs_ls)
 
 
-                video_writer.append_vector_obs(
-                    obs, dones, camera_name="agentview_image"
-                )
+                    video_writer.append_vector_obs(
+                        obs, dones, camera_name="agentview_image"
+                    )
 
-                # check whether succeed
-                for k in range(env_num):
-                    dones[k] = dones[k] or done[k]
-                if all(dones):
-                    break
+                    # check whether succeed
+                    for k in range(env_num):
+                        dones[k] = dones[k] or done[k]
+                    if all(dones):
+                        break
 
             for k in range(env_num):
                 num_success += int(dones[k])
