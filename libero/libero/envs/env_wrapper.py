@@ -340,6 +340,7 @@ class SequentialEnv(OffScreenRenderEnv):
         # print(f"len(init_states_ls): {len(self.init_states_ls)}")
         # print([is_.shape for is_ in self.init_states_ls])
         # self.set_init_state(self.init_states_ls[1])
+        info['is_init'] = False
         if done:
             self.complete_task.append(self.task_id)
             # yy: if current task_id is already the last one, do nothing
@@ -350,7 +351,6 @@ class SequentialEnv(OffScreenRenderEnv):
                 done = False
                 info['is_init'] = True
         info['task_index'] = self.task_id
-        info['is_init'] = False
         return obs, reward, done, info
 
     def close(self):

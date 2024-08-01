@@ -266,7 +266,7 @@ def main():
 
     video_folder = os.path.join(
         args.save_dir,
-        f"{args.benchmark}_{args.algo}_{args.policy}_{args.seed}_eval_videos",
+        f"{args.benchmark}_{args.algo}_{args.policy}_{args.seed}_eval_skill_chain_videos",
     )
 
     with Timer() as t, VideoWriter(video_folder, args.save_videos) as video_writer:
@@ -352,7 +352,6 @@ def main():
                 obs_ls = []
                 for k in range(env_num):
                     if info[k]['is_init']:
-                        # TODO: I only wanna initilize the robot
                         # yy: next task's initail state is extracted, and then passed to be modifed as I only wanna change robot related state
                         print(f"env.get_sim_state()[k]: {env.get_sim_state()[k].shape}")
                         print(f"init_states_ls[task_indexes[k]]: {init_states_ls[task_indexes[k]][k, :].shape}")
