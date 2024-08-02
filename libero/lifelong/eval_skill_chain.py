@@ -48,6 +48,7 @@ import time
 import ast
 import time
 from contextlib import contextmanager
+from PIL import Image
 
 @contextmanager
 def timeit():
@@ -363,16 +364,40 @@ def main():
                     # yy: obs shape: (20,). In it, each element is an OrderedDict
                     obs_ls = []
                     for k in range(env_num):
+                        print(f"k: {k}")
                         if info[k]['is_init']:
                             # yy: next task's initail state is extracted, and then passed to be modifed as I only wanna change robot related state
+                            print("=====================")
+
+                            img = Image.fromarray(obs[k]["agentview_image"][::-1])
+                            f_pth = f"debug_imgs/{k}"
+                            os.makedirs(f_pth, exist_ok=True)
+                            img.save(os.path.join(f_pth, f"0.png"))
+
                             print(f"env.get_sim_state()[k]: {env.get_sim_state()[k].shape}")
                             print(f"init_states_ls[task_indexes[k]]: {init_states_ls[task_indexes[k]][k, :].shape}")
                             init_state_ = initialize_robot_state(env.get_sim_state()[k], init_states_ls[task_indexes[k]][k, :])[None, ...]
                             print(f"init_state_.shape: {init_state_.shape}")
                             obs_ = env.set_init_state(init_state_, k)
+                            print(type(obs_))
+
+                            img = Image.fromarray(obs_["agentview_image"][::-1])
+                            f_pth = f"debug_imgs/{k}"
+                            os.makedirs(f_pth, exist_ok=True)
+                            img.save(os.path.join(f_pth, f"1.png"))
+
+                            print("=====================")
+                            obs_ls.append(obs_[0])
                         else:
-                            obs_ = obs
-                        obs_ls.append(obs_[0])
+                            img = Image.fromarray(obs[k]["agentview_image"][::-1])
+                            f_pth = f"debug_imgs/{k}"
+                            os.makedirs(f_pth, exist_ok=True)
+                            img.save(os.path.join(f_pth, f"normal_{np.random.random()}.png"))
+
+                            obs_ = obs[k]
+                            print(type(obs_))
+                            obs_ls.append(obs_)
+
                     obs = np.stack(obs_ls)
 
 

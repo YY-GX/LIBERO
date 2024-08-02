@@ -123,7 +123,6 @@ class InitialSceneTemplates:
                 "yaw_rotation": [yaw_rotation],
             }
         }
-        print
         return region_key_value
 
     @property
