@@ -89,7 +89,7 @@ def initialize_robot_state(crr_state, robot_init_sim_state):
     # initial robot states
     modified_state[1:10] = robot_init_sim_state[1:10]
     # zeroize all velocity related states
-    modified_state[41:] = robot_init_sim_state[41:]
+    # modified_state[41:] = robot_init_sim_state[41:]
     return modified_state
 
 
