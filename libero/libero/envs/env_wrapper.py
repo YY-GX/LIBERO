@@ -350,6 +350,12 @@ class SequentialEnv(OffScreenRenderEnv):
                 # self.set_init_state(self.init_states_ls[self.task_id])
                 done = False
                 info['is_init'] = True
+
+                # yy: set new state for the next task env
+                crr_env_state = self.env_ls[self.task_id - 1].get_sim_state()
+                self.env_ls[self.task_id].reset()
+                self.env_ls[self.task_id].set_init_state(crr_env_state)
+
         info['task_index'] = self.task_id
         return obs, reward, done, info
 

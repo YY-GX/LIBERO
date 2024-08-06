@@ -70,6 +70,7 @@ def main(hydra_cfg):
     for i in range(n_manip_tasks):
         # currently we assume tasks from same benchmark have the same shape_meta
         try:
+            # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
             task_i_dataset, shape_meta = get_dataset(
                 dataset_path=os.path.join(
                     cfg.folder, benchmark.get_task_demonstration(i)
