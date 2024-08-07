@@ -43,8 +43,10 @@ class Task(NamedTuple):
     init_states_file: str
 
 
-def grab_language_from_filename(x):
-    if x[0].isupper():  # LIBERO-100
+def grab_language_from_filename(x, is_yy=False):
+    if is_yy:
+        language = " ".join(x.split("SCENE")[-1][1:].split("_"))
+    elif x[0].isupper():  # LIBERO-100
         if "SCENE10" in x:
             language = " ".join(x[x.find("SCENE") + 8 :].split("_"))
         else:
@@ -91,7 +93,7 @@ for yy_suite in yy_suites:
     task_maps[yy_suite] = {}
 
     for task in yy_task_map[yy_suite]:
-        language = grab_language_from_filename(task + ".bddl")
+        language = grab_language_from_filename(task + ".bddl", is_yy=True)
         task_maps[yy_suite][task] = Task(
             name=task,
             language=language,
