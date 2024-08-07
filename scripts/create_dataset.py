@@ -29,7 +29,7 @@ def main():
     parser.add_argument(
         "--dataset-path",
         type=str,
-        default="datasets/",
+        default="/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/yy_try/",
     )
 
     parser.add_argument(
@@ -64,14 +64,27 @@ def main():
 
     bddl_file_name = f["data"].attrs["bddl_file_name"]
 
+
     bddl_file_dir = os.path.dirname(bddl_file_name)
     # replace_bddl_prefix = "/".join(bddl_file_dir.split("bddl_files/")[:-1] + "bddl_files")
 
-    hdf5_path = os.path.join(get_libero_path("datasets"), bddl_file_dir.split("bddl_files/")[-1].replace(".bddl", "_demo.hdf5"))
+    # /home/yygx/UNC_Research/pkgs_simu/LIBERO/notebooks/debug_pddl/creation
+    # hdf5_path = os.path.join(get_libero_path("datasets"), bddl_file_dir.split("bddl_files/")[-1].replace(".bddl", "_demo.hdf5"))
+    hdf5_path = os.path.join(args.dataset_path, os.path.basename(bddl_file_name).replace(".bddl", "_demo.hdf5"))
+
+    """
+    print(hdf5_path)
+    print(get_libero_path("datasets"))
+    print(bddl_file_dir.split("bddl_files/")[-1])
+    
+    /home/yygx/UNC_Research/pkgs_simu/LIBERO/notebooks/debug_pddl/creation
+    /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets
+    /home/yygx/UNC_Research/pkgs_simu/LIBERO/notebooks/debug_pddl/creation
+    """
 
     output_parent_dir = Path(hdf5_path).parent
     output_parent_dir.mkdir(parents=True, exist_ok=True)
-
+    print(hdf5_path)
     h5py_f = h5py.File(hdf5_path, "w")
 
     grp = h5py_f.create_group("data")

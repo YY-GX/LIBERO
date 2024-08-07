@@ -7,6 +7,8 @@ import torch
 from typing import List, NamedTuple, Type
 from libero.libero import get_libero_path
 from libero.libero.benchmark.libero_suite_task_map import libero_task_map
+from libero.libero.benchmark.yy_suite_task_map import yy_task_map
+
 
 BENCHMARK_MAPPING = {}
 
@@ -79,6 +81,28 @@ for libero_suite in libero_suites:
         # print(language, "\n", f"{task}.bddl", "\n")
         # print("")
 
+# yy: add my task
+yy_suites = [
+    "yy_try",
+]
+task_maps = {}
+max_len = 0
+for yy_suite in yy_suites:
+    task_maps[yy_suite] = {}
+
+    for task in yy_task_map[yy_suite]:
+        language = grab_language_from_filename(task + ".bddl")
+        task_maps[yy_suite][task] = Task(
+            name=task,
+            language=language,
+            problem="Libero",
+            problem_folder=yy_suite,
+            bddl_file=f"{task}.bddl",
+            init_states_file=f"{task}.pruned_init",
+        )
+
+
+
 
 task_orders = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -114,14 +138,14 @@ class Benchmark(abc.ABC):
 
     def _make_benchmark(self):
         tasks = list(task_maps[self.name].values())
-        if self.name == "libero_90":
+        if (self.name == "libero_90") or (self.name == "yy_try"):
             self.tasks = tasks
         else:
             print(f"[info] using task orders {task_orders[self.task_order_index]}")
             self.tasks = [tasks[i] for i in task_orders[self.task_order_index]]
         # self.n_tasks = len(self.tasks)
         # yy: set 1 for just traininig 1 task TODO: modify later
-        self.n_tasks = 3
+        self.n_tasks = 1
 
     def get_num_tasks(self):
         return self.n_tasks
@@ -218,4 +242,15 @@ class LIBERO_100(Benchmark):
     def __init__(self, task_order_index=0):
         super().__init__(task_order_index=task_order_index)
         self.name = "libero_100"
+        self._make_benchmark()
+
+
+@register_benchmark
+class yy_try(Benchmark):
+    def __init__(self, task_order_index=0):
+        super().__init__(task_order_index=task_order_index)
+        assert (
+            task_order_index == 0
+        ), "[error] currently only support task order for 10-task suites"
+        self.name = "yy_try"
         self._make_benchmark()
