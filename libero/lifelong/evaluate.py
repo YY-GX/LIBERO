@@ -48,6 +48,7 @@ import time
 
 
 benchmark_map = {
+    "libero_90": "LIBERO_90",
     "libero_10": "LIBERO_10",
     "libero_spatial": "LIBERO_SPATIAL",
     "libero_object": "LIBERO_OBJECT",
