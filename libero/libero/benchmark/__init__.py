@@ -87,8 +87,6 @@ for libero_suite in libero_suites:
 yy_suites = [
     "yy_try",
 ]
-task_maps = {}
-max_len = 0
 for yy_suite in yy_suites:
     task_maps[yy_suite] = {}
 
