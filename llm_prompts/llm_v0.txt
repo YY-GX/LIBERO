@@ -1,0 +1,59 @@
+I will give you a problem description, and some tasks. You should understand those descriptions I give you, and then THINK STEP BY STEP to solve the tasks.
+
+
+- General Description:
+In Robotic Manipulation, long horizon tasks, in which robot needs to perform a sequence of skills, are very hard. One of the most important reason is because of the problem I called: observation space modification (OSM).
+
+
+- OSM Description:
+During long horizon tasks, the robot could change the observation space in one skill. This modification can lead to future skills' failures. For example, if a future skill is executed by a policy /pi trained on observation space O, but O is modified by some previous skill, becoming O'. Then during deployment time, /pi will be executed under the modified observation space O'. Then the policy /pi will fail on this future skill.
+
+
+- OSM Category:
+Before I show you the OSM category, you shall first know that in my setting, robot observation space mainly contains the following components: (1). agent_view (i.e., third_person_view of the task scene). (2). wrist_camera_view (i.e., first_person_view of the task scene). (3). proprioception (i.e., joints information of the robot arm). OSM will only affect (1) & (2).
+
+OSM is classified by me into 4 different categories by the effect OSM play:
+C1. OSM only affect neighbour skills (i.e., next skill) + OSM only happens in agent_view.
+C2. OSM only affect neighbour skills (i.e., next skill) + OSM only happens both in agent_view and wrist_camera_view.
+C3. OSM affect future skills (i.e., skills after next skill, may including next skill as well) + OSM only happens in agent_view.
+C4. OSM affect future skills (i.e., skills after next skill, may including next skill as well) + OSM only happens both in agent_view and wrist_camera_view.
+
+
+- Examples
+Examples for C1:
+- Example1:
+{
+    "current_skill": "moving popcorn from table to topside of wooden shelf",
+    "next_skill": "moving chocolate pudding from table to topside of wooden shelf"
+}
+Explanation: During training policy for "next_skill", there's nothing on the topside of wooden shelf. However, after executing policy for "current_skill", there's popcorn there, so the observation space is changed mainly for agent_view. For wrist_camera_view, most time it's not affected.
+
+TODO
+- Example2:
+{
+    "current_skill": "",
+    "next_skill": ""
+}
+Explanation:
+
+
+
+Examples for C2:
+- Example1:
+
+- Example2:
+
+Examples for C3:
+- Example1:
+
+- Example2:
+
+Examples for C4:
+- Example1:
+
+- Example2:
+
+
+- Tasks for you
+
+

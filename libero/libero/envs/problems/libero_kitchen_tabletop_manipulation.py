@@ -54,6 +54,9 @@ class Libero_Kitchen_Tabletop_Manipulation(BDDLBaseDomain):
 
     def _load_objects_in_arena(self, mujoco_arena):
         objects_dict = self.parsed_problem["objects"]
+        """
+        objects_dict: {'popcorn': ['popcorn_1'], 'chocolate_pudding': ['chocolate_pudding_1'], 'plate': ['plate_1', 'plate_2']}
+        """
         for category_name in objects_dict.keys():
             for object_name in objects_dict[category_name]:
                 self.objects_dict[object_name] = get_object_fn(category_name)(
@@ -64,9 +67,13 @@ class Libero_Kitchen_Tabletop_Manipulation(BDDLBaseDomain):
         # Create site objects
         object_sites_dict = {}
         region_dict = self.parsed_problem["regions"]
+        # print("=========")
+        # print(region_dict.keys())
+        # print("=========")
         for object_region_name in list(region_dict.keys()):
 
             if "kitchen_table" in object_region_name:
+                print(region_dict[object_region_name])
                 ranges = region_dict[object_region_name]["ranges"][0]
                 assert ranges[2] >= ranges[0] and ranges[3] >= ranges[1]
                 zone_size = ((ranges[2] - ranges[0]) / 2, (ranges[3] - ranges[1]) / 2)

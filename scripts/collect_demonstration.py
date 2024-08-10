@@ -278,6 +278,7 @@ if __name__ == "__main__":
     if "TwoArm" in problem_name:
         config["env_configuration"] = args.config
     print(language_instruction)
+    print(TASK_MAPPING[problem_name])
     env = TASK_MAPPING[problem_name](
         bddl_file_name=args.bddl_file,
         **config,

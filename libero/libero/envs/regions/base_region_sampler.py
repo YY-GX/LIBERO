@@ -176,6 +176,15 @@ class MultiRegionRandomSampler(ObjectPositionSampler):
             horizontal_radius = obj.horizontal_radius
             bottom_offset = obj.bottom_offset
             success = False
+
+            print("=================")
+            print(obj)
+            print(horizontal_radius)
+            print(bottom_offset)
+            print(self._sample_x(horizontal_radius) + base_offset[0])
+            print(self._sample_y(horizontal_radius) + base_offset[1])
+            print(placed_objects.values())
+            print(placed_objects.keys())
             for i in range(5000):  # 5000 retries
                 self.idx = np.random.randint(self.num_ranges)
                 object_x = self._sample_x(horizontal_radius) + base_offset[0]
@@ -272,6 +281,7 @@ class SiteRegionRandomSampler(ObjectPositionSampler):
             z_offset=z_offset,
         )
 
+    # y: object_horizontal_radius is 0.025 for popcorn
     def _sample_x(self, object_horizontal_radius):
         """
         Samples the x location for a given object
