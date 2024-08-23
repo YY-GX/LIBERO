@@ -1,4 +1,4 @@
-I will give you a problem description, and some tasks. You should understand those descriptions I give you, and then THINK STEP BY STEP to solve the tasks.
+I will give you a problem description, and some tasks. You shall understand those descriptions I give you, and then **THINK STEP BY STEP** to solve the tasks.
 
 
 - General Description:
@@ -21,39 +21,54 @@ C4. OSM affect future skills (i.e., skills after next skill, may including next 
 
 - Examples
 Examples for C1:
-- Example1:
+* Example1:
 {
     "current_skill": "moving popcorn from table to topside of wooden shelf",
     "next_skill": "moving chocolate pudding from table to topside of wooden shelf"
 }
 Explanation: During training policy for "next_skill", there's nothing on the topside of wooden shelf. However, after executing policy for "current_skill", there's popcorn there, so the observation space is changed mainly for agent_view. For wrist_camera_view, most time it's not affected.
 
-TODO
-- Example2:
+* Example2:
 {
-    "current_skill": "",
-    "next_skill": ""
+    "current_skill": "Place the plate on the dining set group.",
+    "next_skill": "Place the bowl drainer on the dining set group."
 }
-Explanation:
-
+Explanation: During training policy for "next_skill", there's nothing on the dining set group. However, after executing policy for "current_skill", there's plate there, so the observation space is changed mainly for agent_view. For wrist_camera_view, most time it's not affected.
 
 
 Examples for C2:
-- Example1:
+* Example1:
+{
+    "current_skill": "Pick up popcorn",
+    "next_skill": "close the top drawer of wooden cabinet"
+}
+Explanation: During training policy for "next_skill", there's nothing grasped by the robot's end-effector. However, after executing policy for "current_skill", there's popcorn on robot's end-effector. The wrist camera can keep seeing popcorn inside the plate. So the observation space is changed both for agent_view and wrist_camera_view.
 
-- Example2:
+* Example2:
+{
+    "current_skill": "Place popcorn inside the plate.",
+    "next_skill": "Move plate on the topside of wooden shelf."
+}
+Explanation: During training policy for "next_skill", there's nothing inside the plate. However, after executing policy for "current_skill", there's popcorn inside the plate. The wrist camera can keep seeing popcorn inside the plate. So the observation space is changed both for agent_view and wrist_camera_view.
 
 Examples for C3:
-- Example1:
+* Example1:
 
-- Example2:
+* Example2:
 
 Examples for C4:
-- Example1:
+* Example1:
 
-- Example2:
+* Example2:
 
 
 - Tasks for you
 
 
+
+['akita_black_bowl', 'alphabet_soup', 'basin_faucet', 'basket', 'bbq_sauce', 'black_book', 'bowl_drainer', 'butter',
+'chefmate_8_frypan', 'cherries', 'chocolate_pudding', 'cookies', 'corn', 'cream_cheese', 'desk_caddy', 'dining_set_group',
+'faucet', 'flat_stove', 'glazed_rim_porcelain_ramekin', 'ketchup', 'macaroni_and_cheese', 'mayo', 'microwave', 'milk', 'moka_pot',
+'new_salad_dressing', 'orange_juice', 'plate', 'popcorn', 'porcelain_mug', 'rack', 'red_coffee_mug', 'salad_dressing', 'short_cabinet',
+'short_fridge', 'slide_cabinet', 'target_zone', 'tomato_sauce', 'white_bowl', 'white_cabinet', 'white_storage_box', 'white_yellow_mug',
+'window', 'wine_bottle', 'wine_rack', 'wooden_cabinet', 'wooden_shelf', 'wooden_tray', 'wooden_two_layer_shelf', 'yellow_book']
