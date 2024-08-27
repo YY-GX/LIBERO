@@ -106,7 +106,7 @@ def compute_flops(algo, dataset, cfg):
     return GFLOPs, MParams
 
 
-def create_experiment_dir(cfg):
+def create_experiment_dir(cfg, version=None):
     prefix = "experiments"
     if cfg.pretrain_model_path != "":
         prefix += "_finetune"
@@ -121,10 +121,16 @@ def create_experiment_dir(cfg):
     if cfg.task_embedding_format == "roberta":
         prefix += f"_roberta"
 
-    experiment_dir = (
-        f"./{prefix}/{cfg.benchmark_name}/{cfg.lifelong.algo}/"
-        + f"{cfg.policy.policy_type}_seed{cfg.seed}"
-    )
+    if version:
+        experiment_dir = (
+                f"./{prefix}/{cfg.benchmark_name}/{version}/{cfg.lifelong.algo}/"
+                + f"{cfg.policy.policy_type}_seed{cfg.seed}"
+        )
+    else:
+        experiment_dir = (
+            f"./{prefix}/{cfg.benchmark_name}/{cfg.lifelong.algo}/"
+            + f"{cfg.policy.policy_type}_seed{cfg.seed}"
+        )
 
     if not os.path.exists(experiment_dir):
         os.makedirs(experiment_dir)

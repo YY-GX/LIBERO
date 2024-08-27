@@ -147,7 +147,7 @@ def main(hydra_cfg):
 
 
     # prepare experiment and update the config
-    create_experiment_dir(cfg)
+    create_experiment_dir(cfg, version=cfg.version)
     cfg.shape_meta = shape_meta
 
     if cfg.use_wandb:
