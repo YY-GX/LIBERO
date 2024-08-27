@@ -132,9 +132,10 @@ task_orders = [
 class Benchmark(abc.ABC):
     """A Benchmark."""
 
-    def __init__(self, task_order_index=0):
+    def __init__(self, task_order_index=0, n_tasks_=None):
         self.task_embs = None
         self.task_order_index = task_order_index
+        self.n_tasks_ = n_tasks_
 
     def _make_benchmark(self):
         tasks = list(task_maps[self.name].values())
@@ -145,7 +146,8 @@ class Benchmark(abc.ABC):
             self.tasks = [tasks[i] for i in task_orders[self.task_order_index]]
         # self.n_tasks = len(self.tasks)
         # yy: set 1 for just traininig 1 task TODO: modify later
-        self.n_tasks = 3
+        if self.n_tasks_:
+            self.n_tasks = self.n_tasks_
 
     def get_num_tasks(self):
         return self.n_tasks
@@ -247,8 +249,8 @@ class LIBERO_100(Benchmark):
 
 @register_benchmark
 class yy_try(Benchmark):
-    def __init__(self, task_order_index=0):
-        super().__init__(task_order_index=task_order_index)
+    def __init__(self, task_order_index=0, n_tasks_=1):
+        super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         assert (
             task_order_index == 0
         ), "[error] currently only support task order for 10-task suites"

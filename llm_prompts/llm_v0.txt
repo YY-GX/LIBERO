@@ -1,26 +1,28 @@
 I will give you a problem description, and some tasks. You shall understand those descriptions I give you, and then **THINK STEP BY STEP** to solve the tasks.
 
 
-- General Description:
-In Robotic Manipulation, long horizon tasks, in which robot needs to perform a sequence of skills, are very hard. One of the most important reason is because of the problem I called: observation space modification (OSM).
+# General Description:
+In Robotic Manipulation, long horizon tasks, in which robot needs to perform a sequence of skills (i.e., subtasks), are very hard. One of the most important reason is because of the problem I called: observation space modification (OSM).
 
 
-- OSM Description:
-During long horizon tasks, the robot could change the observation space in one skill. This modification can lead to future skills' failures. For example, if a future skill is executed by a policy /pi trained on observation space O, but O is modified by some previous skill, becoming O'. Then during deployment time, /pi will be executed under the modified observation space O'. Then the policy /pi will fail on this future skill.
+# OSM Description:
+During long horizon tasks, the robot could change the observation space in one skill. This modification can lead to future skills' failures. For example, if a future skill is executed by a policy \pi trained on observation space O, but O is modified by some previous skill, becoming O'. Then during deployment time, /pi will be executed under the modified observation space O'. Then the policy /pi will fail on this future skill.
 
 
-- OSM Category:
+# OSM Category:
 Before I show you the OSM category, you shall first know that in my setting, robot observation space mainly contains the following components: (1). agent_view (i.e., third_person_view of the task scene). (2). wrist_camera_view (i.e., first_person_view of the task scene). (3). proprioception (i.e., joints information of the robot arm). OSM will only affect (1) & (2).
 
 OSM is classified by me into 4 different categories by the effect OSM play:
 C1. OSM only affect neighbour skills (i.e., next skill) + OSM only happens in agent_view.
 C2. OSM only affect neighbour skills (i.e., next skill) + OSM only happens both in agent_view and wrist_camera_view.
+* Notes for C2:
+ - The key is that the current skill modifies the observation space in such a way that the next skill, which did not anticipate these changes during training, is impacted in both the agent_view and wrist_camera_view.
+ - It shall be practical. We only have 1 robot arm with 1 gripper. So the robot cannot perform some complex tasks (e.g., "open", "place", "turn on") when holding something.
 C3. OSM affect future skills (i.e., skills after next skill, may including next skill as well) + OSM only happens in agent_view.
-C4. OSM affect future skills (i.e., skills after next skill, may including next skill as well) + OSM only happens both in agent_view and wrist_camera_view.
 
 
-- Examples
-Examples for C1:
+# Examples
+## Examples for C1:
 * Example1:
 {
     "current_skill": "moving popcorn from table to topside of wooden shelf",
@@ -36,14 +38,14 @@ Explanation: During training policy for "next_skill", there's nothing on the top
 Explanation: During training policy for "next_skill", there's nothing on the dining set group. However, after executing policy for "current_skill", there's plate there, so the observation space is changed mainly for agent_view. For wrist_camera_view, most time it's not affected.
 
 
-Examples for C2:
+## Examples for C2:
 * Example1:
 {
     "current_skill": "Pick up popcorn",
     "next_skill": "close the top drawer of wooden cabinet"
 }
 Explanation: During training policy for "next_skill", there's nothing grasped by the robot's end-effector. However, after executing policy for "current_skill", there's popcorn on robot's end-effector. The wrist camera can keep seeing popcorn inside the plate. So the observation space is changed both for agent_view and wrist_camera_view.
-
+TODO
 * Example2:
 {
     "current_skill": "Place popcorn inside the plate.",
@@ -51,24 +53,67 @@ Explanation: During training policy for "next_skill", there's nothing grasped by
 }
 Explanation: During training policy for "next_skill", there's nothing inside the plate. However, after executing policy for "current_skill", there's popcorn inside the plate. The wrist camera can keep seeing popcorn inside the plate. So the observation space is changed both for agent_view and wrist_camera_view.
 
-Examples for C3:
+* Bad Example:
+{
+    "current_skill": "Pick up the black_book.",
+    "next_skill": "Place the black_book on the wooden_shelf."
+}
+Explanation: When training "next_skill", black_book is already viewed by wrist camera. So OSM will not happen when current skill is pick up the black_book.
+
+## Examples for C3:
 * Example1:
+{
+    "current_skill": "moving popcorn_1 from table to topside of wooden shelf",
+    "next_skill": "moving popcorn_2 from table into a plate",
+    "some_future_skill": "moving chocolate pudding from table to topside of wooden shelf",
+}
+Explanation: When executing "next_skill", it's independent with "current_skill", so OSM doesn't happen in "next_skill". During training policy for "next_skill", there's nothing on the topside of wooden shelf. However, after executing policy for "current_skill", there's popcorn on the topside of wooden shelf, so the observation space for "some_future_skill" is changed mainly for agent_view. For wrist_camera_view, most time it's not affected. Therefore, "some_future_skill" is affected.
 
 * Example2:
-
-Examples for C4:
-* Example1:
-
-* Example2:
-
-
-- Tasks for you
+{
+    "current_skill": "Place the plate on the dining set group.",
+    "next_skill": "Open the top drawer of the wooden cabinet",
+    "some_future_skill": "Place the bowl drainer on the dining set group."
+}
+Explanation: When executing "next_skill", it's independent with "current_skill", so OSM doesn't happen in "next_skill". During training policy for "next_skill", there's nothing on the dining set group. However, after executing policy for "current_skill", there's plate there, so the observation space is changed mainly for agent_view. For wrist_camera_view, most time it's not affected.
 
 
 
-['akita_black_bowl', 'alphabet_soup', 'basin_faucet', 'basket', 'bbq_sauce', 'black_book', 'bowl_drainer', 'butter',
-'chefmate_8_frypan', 'cherries', 'chocolate_pudding', 'cookies', 'corn', 'cream_cheese', 'desk_caddy', 'dining_set_group',
-'faucet', 'flat_stove', 'glazed_rim_porcelain_ramekin', 'ketchup', 'macaroni_and_cheese', 'mayo', 'microwave', 'milk', 'moka_pot',
-'new_salad_dressing', 'orange_juice', 'plate', 'popcorn', 'porcelain_mug', 'rack', 'red_coffee_mug', 'salad_dressing', 'short_cabinet',
-'short_fridge', 'slide_cabinet', 'target_zone', 'tomato_sauce', 'white_bowl', 'white_cabinet', 'white_storage_box', 'white_yellow_mug',
-'window', 'wine_bottle', 'wine_rack', 'wooden_cabinet', 'wooden_shelf', 'wooden_tray', 'wooden_two_layer_shelf', 'yellow_book']
+# Tasks for you
+Understand information I give you above and perform the following 2 tasks.
+
+## Task 1
+For each category, generate 5 different robot tasks by imitating examples I gave you (also remember to avoid bad examples I showed you). Requirements:
+Here's a list of objects you can make use of: ['akita_black_bowl', 'alphabet_soup', 'basin_faucet', 'basket', 'bbq_sauce', 'black_book', 'bowl_drainer', 'butter', 'chefmate_8_frypan', 'cherries', 'chocolate_pudding', 'cookies', 'corn', 'cream_cheese', 'desk_caddy', 'dining_set_group', 'faucet', 'flat_stove', 'glazed_rim_porcelain_ramekin', 'ketchup', 'macaroni_and_cheese', 'mayo', 'microwave', 'milk', 'moka_pot', 'new_salad_dressing', 'orange_juice', 'plate', 'popcorn', 'porcelain_mug', 'rack', 'red_coffee_mug', 'salad_dressing', 'short_cabinet', 'short_fridge', 'slide_cabinet', 'target_zone', 'tomato_sauce', 'white_bowl', 'white_cabinet', 'white_storage_box', 'white_yellow_mug', 'window', 'wine_bottle', 'wine_rack', 'wooden_cabinet', 'wooden_shelf', 'wooden_tray', 'wooden_two_layer_shelf', 'yellow_book']
+Here's some predicates that you can use to create the task: ['true', 'false', 'in', 'on', 'up', 'printjointstate', 'open', 'close', 'turnon', 'turnoff']
+
+Each robot task shall be written in json file format. Example:
+```
+  "C1": [
+    {
+      "task": "Preparing a Snack",
+      "subtasks": [
+        "Move the popcorn from the shelf to the table.",
+        "Place the chocolate pudding on the table."
+      ],
+      "used_objects": ["wooden_shelf", "popcorn", "chocolate_pudding"],
+      "explanation": "why this subtask belong to C1"
+    },
+    ...
+  ]
+```
+
+Note: For generating task, you shall also consider whether the task is practical. For example, for this list of subtasks:
+        ["Pick up the akita_black_bowl.",
+        "Place the black_book on the table."],
+      It looks like belong to C2, but it's not practical because we only have 1 robot arm and you cannot place things after already holding something.
+
+## Task 2
+I will give you some robot task descriptions later. You shall tell me:
+1). What category this task is in? It can belong to one of the 3 categories, or it's possible that NO OSM happens in this task (i.e., the robot can complete this long horizon task easily).
+2). If it doesn't belong to any 3 categories, do NOTHING. If it belongs to one of the 3 categories, which skill (i.e., subtask) will be affected by the OSM problem? For example, for category 1, next skill will be affected.
+
+---
+Think step by step!
+
+

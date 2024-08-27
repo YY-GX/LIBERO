@@ -21,4 +21,5 @@ task_embedding_format: "bert"
 task_embedding_one_hot_offset: 1
 pretrain: false
 pretrain_model_path: ""
-benchmark_name: "LIBERO_90"
+#benchmark_name: "LIBERO_90"
+benchmark_name: "yy_try"

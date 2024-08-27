@@ -6,7 +6,6 @@ from libero.libero.utils.mu_utils import register_mu, InitialSceneTemplates
 from libero.libero.utils.task_generation_utils import register_task_info, get_task_info, generate_bddl_from_task_info
 
 
-
 # yy: Define the scene
 # yy: Because I use the kitchentable problem set, so if object's initial region is not target at the table,
 #  it will not be correctly randomly placed
@@ -77,7 +76,6 @@ class ShelfTableScene(InitialSceneTemplates):
 
         # special init
         # yy: Define special initialization region here
-
 
         print(states)
         return states

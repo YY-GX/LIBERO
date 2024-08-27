@@ -273,7 +273,7 @@ def main():
     else:
         save_folder = os.path.join(
             args.save_dir,
-            f"{args.benchmark}_{args.algo}_{args.policy}_{args.seed}_eval.stats",
+            f"{args.benchmark}_{args.algo}_{args.policy}_{args.seed}_eval_skill_chain.stats",
         )
 
     video_folder = os.path.join(
