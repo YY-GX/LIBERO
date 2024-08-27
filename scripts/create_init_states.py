@@ -7,7 +7,7 @@ suite_name = "yy_try"
 # bddl_file_name = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}/SHELF_TABLE_SCENE_moving_potato_from_shelf_to_the_plate_on_the_table.bddl"
 # out_file = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/init_files/{suite_name}"
 
-bddl_file_name = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}/KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet.bddl"
+bddl_file_name = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}/KITCHEN_SCENE_put_the_black_bowl_in_the_top_drawer_of_the_cabinet.bddl"
 out_file = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/init_files/{suite_name}"
 out_file = os.path.join(out_file, bddl_file_name.split(suite_name)[-1].replace(".bddl", ".pruned_init").lstrip('/'))
 
