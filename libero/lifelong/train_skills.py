@@ -68,20 +68,6 @@ def main(hydra_cfg):
     shape_meta = None
 
 
-    i = 0
-    task_i_dataset, shape_meta = get_dataset(
-        dataset_path=os.path.join(
-            cfg.folder, benchmark.get_task_demonstration(i)
-        ),
-        obs_modality=cfg.data.obs.modality,
-        initialize_obs_utils=(i == 0),
-        seq_len=cfg.data.seq_len,
-    )
-
-    exit(0)
-
-
-
     for i in range(n_manip_tasks):
         # currently we assume tasks from same benchmark have the same shape_meta
         try:
@@ -91,7 +77,8 @@ def main(hydra_cfg):
                     cfg.folder, benchmark.get_task_demonstration(i)
                 ),
                 obs_modality=cfg.data.obs.modality,
-                initialize_obs_utils=(i == 0),
+                # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
+                initialize_obs_utils=True,
                 seq_len=cfg.data.seq_len,
             )
         except Exception as e:
