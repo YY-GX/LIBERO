@@ -177,14 +177,14 @@ class MultiRegionRandomSampler(ObjectPositionSampler):
             bottom_offset = obj.bottom_offset
             success = False
 
-            print("=================")
-            print(obj)
-            print(horizontal_radius)
-            print(bottom_offset)
-            print(self._sample_x(horizontal_radius) + base_offset[0])
-            print(self._sample_y(horizontal_radius) + base_offset[1])
-            print(placed_objects.values())
-            print(placed_objects.keys())
+            # print("=================")
+            # print(obj)
+            # print(horizontal_radius)
+            # print(bottom_offset)
+            # print(self._sample_x(horizontal_radius) + base_offset[0])
+            # print(self._sample_y(horizontal_radius) + base_offset[1])
+            # print(placed_objects.values())
+            # print(placed_objects.keys())
             for i in range(5000):  # 5000 retries
                 self.idx = np.random.randint(self.num_ranges)
                 object_x = self._sample_x(horizontal_radius) + base_offset[0]

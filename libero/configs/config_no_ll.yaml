@@ -23,4 +23,5 @@ pretrain: false
 pretrain_model_path: ""
 #benchmark_name: "LIBERO_90"
 benchmark_name: "yy_try"
-version: "kitchen_v0"
+#version: "kitchen_v0"
+version: "shelf_move_potato_v0"

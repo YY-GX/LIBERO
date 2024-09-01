@@ -63,6 +63,7 @@ def main():
     demos = list(f["data"].keys())
 
     bddl_file_name = f["data"].attrs["bddl_file_name"]
+    # bddl_file_name = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/yy_try/KITCHEN_SCENE_put_the_black_bowl_in_the_top_drawer_of_the_cabinet.bddl"
 
 
     bddl_file_dir = os.path.dirname(bddl_file_name)
@@ -136,6 +137,7 @@ def main():
     cap_index = 5
 
     for (i, ep) in enumerate(demos):
+        # yy: the sequence of new generated h5 is different from the original one
         print("Playing back random episode... (press ESC to quit)")
 
         # # select an episode randomly

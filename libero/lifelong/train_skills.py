@@ -233,8 +233,8 @@ def main(hydra_cfg):
 
             torch.save(result_summary, os.path.join(cfg.experiment_dir, f"result.pt"))
     else:
-        for i in range(n_tasks-1, -1, -1):
-        # for i in range(n_tasks):
+        # for i in range(n_tasks-1, -1, -1):
+        for i in range(n_tasks):
             algo = safe_device(get_algo_class(cfg.lifelong.algo)(n_tasks, cfg), cfg.device)
             print(f"[info] start training on task {i}")
             algo.train()
@@ -295,3 +295,5 @@ if __name__ == "__main__":
     if multiprocessing.get_start_method(allow_none=True) != "spawn":  
         multiprocessing.set_start_method("spawn", force=True)
     main()
+
+

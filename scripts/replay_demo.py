@@ -13,9 +13,33 @@ from robosuite import load_controller_config
 from robosuite.wrappers import DataCollectionWrapper, VisualizationWrapper
 from robosuite.utils.input_utils import input2action
 
-
+import numpy as np
 import libero.libero.envs.bddl_utils as BDDLUtils
 from libero.libero.envs import *
+import h5py
+
+def hdf5_to_dict(group):
+    result = {}
+    for key, item in group.items():
+        if isinstance(item, h5py.Group):  # If the item is a group, recursively convert it
+            result[key] = hdf5_to_dict(item)
+        elif isinstance(item, h5py.Dataset):  # If the item is a dataset, convert it to a numpy array
+            result[key] = item[()]
+        else:
+            raise TypeError(f"Unsupported HDF5 item type: {type(item)}")
+    return result
+
+def load_hdf5_file_to_dict(file_path):
+    with h5py.File(file_path, 'r') as f:
+        return hdf5_to_dict(f)
+
+def set_init_state(env, init_state):
+    env.sim.set_state_from_flattened(init_state)
+    env.sim.forward()
+    env._check_success()
+    env._post_process()
+    env._update_observables(force=True)
+    return env._get_observations()
 
 
 def collect_human_trajectory(
@@ -291,72 +315,45 @@ if __name__ == "__main__":
         control_freq=20,
     )
 
+    # print(env.__class__.__bases__[0].__name__)
+    # print(env.sim.set_state_from_flattened)
+    # exit(0)
+
+
     # Wrap this with visualization wrapper
     env = VisualizationWrapper(env)
+    env.reset()
+    env.render()
 
-    # Grab reference to controller config and convert it to json-encoded string
-    env_info = json.dumps(config)
+    demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/yy_try/KITCHEN_SCENE_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_demo.hdf5"
+    demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/yy_try/KITCHEN_SCENE_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_demo.hdf5"
+    # demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_demo.hdf5"
+    demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/yy_try/SHELF_TABLE_SCENE_moving_popcorn_from_table_to_topside_of_wooden_shelf_demo.hdf5"
+    data_dict = load_hdf5_file_to_dict(demo_pth)['data']
+    action_to_remove_1 = np.array([0., 0., 0., 0., 0., -0., -1.])
+    action_to_remove_2 = np.array([0., 0., 0., 0., 0., -0., 1.])
+    print(data_dict.keys())
 
-    # wrap the environment with data collection wrapper
-    tmp_directory = "demonstration_data/tmp/{}_ln_{}/{}".format(
-        problem_name,
-        language_instruction.replace(" ", "_").strip('""'),
-        str(time.time()).replace(".", "_"),
-    )
+    for demo_idx in list(data_dict.keys()):
+        # demo_idx = "demo_1"
+        print(f">> demo_idx: {demo_idx}")
+        demo = data_dict[demo_idx]
+        actions = demo['actions']
+        set_init_state(env, demo['states'][0])
+        for i, action in enumerate(actions):
+            # if np.all(action == action_to_remove_1) or np.all(action == action_to_remove_2):
+            #     print("======= JUMP =======")
+            #     continue
+            print(f"> action idx: {i}")
+            print(action)
+            env.step(action)
+            env.render()
+        env.reset()
+        env.render()
 
-    env = DataCollectionWrapper(env, tmp_directory)
+    env.close()
 
-    # initialize device
-    if args.device == "keyboard":
-        from robosuite.devices import Keyboard
 
-        device = Keyboard(
-            pos_sensitivity=args.pos_sensitivity, rot_sensitivity=args.rot_sensitivity
-        )
 
-        # env.viewer.add_keypress_callback("any", device.on_press)
-        # env.viewer.add_keyup_callback("any", device.on_release)
-        # env.viewer.add_keyrepeat_callback("any", device.on_press)
 
-        env.viewer.add_keypress_callback(device.on_press)
-        # env.viewer.add_keyup_callback(device.on_release)
-        # env.viewer.add_keyrepeat_callback(device.on_press)
-    elif args.device == "spacemouse":
-        from robosuite.devices import SpaceMouse
 
-        device = SpaceMouse(
-            args.vendor_id,
-            args.product_id,
-            pos_sensitivity=args.pos_sensitivity,
-            rot_sensitivity=args.rot_sensitivity,
-        )
-    else:
-        raise Exception(
-            "Invalid device choice: choose either 'keyboard' or 'spacemouse'."
-        )
-
-    # make a new timestamped directory
-    t1, t2 = str(time.time()).split(".")
-    new_dir = os.path.join(
-        args.directory,
-        f"{domain_name}_ln_{problem_name}_{t1}_{t2}_"
-        + language_instruction.replace(" ", "_").strip('""'),
-    )
-
-    os.makedirs(new_dir)
-
-    # collect demonstrations
-
-    remove_directory = []
-    i = 0
-    while i < args.num_demonstration:
-        print(">> Demo idx: ", i)
-        saving = collect_human_trajectory(
-            env, device, args.arm, args.config, problem_info, remove_directory
-        )
-        if saving:
-            print(remove_directory)
-            gather_demonstrations_as_hdf5(
-                tmp_directory, new_dir, env_info, args, remove_directory
-            )
-            i += 1
