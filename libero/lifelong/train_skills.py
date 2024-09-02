@@ -114,7 +114,7 @@ def main(hydra_cfg):
 
     if cfg.is_split:
         split_dataset(os.path.join(
-                    cfg.folder, benchmark.get_task_demonstration(i)
+                    cfg.folder, benchmark.get_task_demonstration(0)
                 ))
 
     for i in range(n_manip_tasks):
