@@ -117,6 +117,43 @@ def main(hydra_cfg):
                     cfg.folder, benchmark.get_task_demonstration(0)
                 ))
 
+
+
+    i = 0
+    if cfg.is_split:
+        # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
+        task_i_dataset, shape_meta = get_dataset(
+            dataset_path=os.path.join(
+                cfg.folder, f"{benchmark.get_task_demonstration(i)}_train"
+            ),
+            obs_modality=cfg.data.obs.modality,
+            # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
+            initialize_obs_utils=True,
+            seq_len=cfg.data.seq_len,
+        )
+        task_i_dataset_eval, shape_meta_eval = get_dataset(
+            dataset_path=os.path.join(
+                cfg.folder, f"{benchmark.get_task_demonstration(i)}_eval"
+            ),
+            obs_modality=cfg.data.obs.modality,
+            # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
+            initialize_obs_utils=True,
+            seq_len=cfg.data.seq_len,
+        )
+    else:
+        # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
+        task_i_dataset, shape_meta = get_dataset(
+            dataset_path=os.path.join(
+                cfg.folder, benchmark.get_task_demonstration(i)
+            ),
+            obs_modality=cfg.data.obs.modality,
+            # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
+            initialize_obs_utils=True,
+            seq_len=cfg.data.seq_len,
+        )
+    exit(0)
+
+
     for i in range(n_manip_tasks):
         # currently we assume tasks from same benchmark have the same shape_meta
         try:
