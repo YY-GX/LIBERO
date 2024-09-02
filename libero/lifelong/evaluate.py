@@ -94,6 +94,7 @@ def parse_args():
         required=True,
         choices=["bc_rnn_policy", "bc_transformer_policy", "bc_vilt_policy"],
     )
+    parser.add_argument("--version", type=str, required=True)
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--ep", type=int)
     parser.add_argument("--load_task", type=int)
@@ -102,7 +103,7 @@ def parse_args():
     # parser.add_argument('--save_dir',  type=str, required=True)
     args = parser.parse_args()
     args.device_id = "cuda:" + str(args.device_id)
-    args.save_dir = f"{args.experiment_dir}_saved"
+    args.save_dir = f"{args.experiment_dir}_saved/{args.version}/"
 
     if args.algo == "multitask":
         assert args.ep in list(
@@ -122,12 +123,14 @@ def main():
     experiment_dir = os.path.join(
         args.experiment_dir,
         f"{args.benchmark}/"
+        + f"{args.version}/"
         + f"{algo_map[args.algo]}/"
         + f"{policy_map[args.policy]}_seed{args.seed}",
     )
 
     # find the checkpoint
-    experiment_id = 0
+    # yy: experiment_id decides which run_0id to use
+    experiment_id = 12
     for path in Path(experiment_dir).glob("run_*"):
         if not path.is_dir():
             continue
