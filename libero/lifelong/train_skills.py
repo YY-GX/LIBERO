@@ -33,6 +33,50 @@ from libero.lifelong.utils import (
     get_task_embs,
 )
 
+import h5py
+
+
+def split_dataset(h5_location):
+    # Open the HDF5 file
+    with h5py.File(h5_location, 'r') as f:
+        # Get the keys from the 'data' group
+        data_keys = list(f['data'].keys())
+
+        # Sort the keys to maintain order
+        data_keys.sort()
+
+        # Split the data into 40 for training and 10 for evaluation
+        train_keys = data_keys[:40]
+        eval_keys = data_keys[40:]
+
+        # Determine the new file names
+        base_name = os.path.splitext(os.path.basename(h5_location))[0]
+        folder = os.path.dirname(h5_location)
+        train_file_name = os.path.join(folder, f"{base_name}_train.h5")
+        eval_file_name = os.path.join(folder, f"{base_name}_eval.h5")
+
+        # Save the training data
+        with h5py.File(train_file_name, 'w') as train_file:
+            train_group = train_file.create_group('data')
+            for key in train_keys:
+                train_group.copy(f['data'][key], key)
+
+        # Save the evaluation data
+        with h5py.File(eval_file_name, 'w') as eval_file:
+            eval_group = eval_file.create_group('data')
+            for key in eval_keys:
+                eval_group.copy(f['data'][key], key)
+
+    print(f"Dataset split into {train_file_name} and {eval_file_name}.")
+
+
+# Example usage:
+# split_dataset(os.path.join(cfg.folder, benchmark.get_task_demonstration(i)))
+
+
+# Example usage:
+# split_dataset(os.path.join(cfg.folder, benchmark.get_task_demonstration(i)))
+
 
 @hydra.main(config_path="../configs", config_name="config_no_ll", version_base=None)
 def main(hydra_cfg):
@@ -64,23 +108,50 @@ def main(hydra_cfg):
 
     # prepare datasets from the benchmark
     manip_datasets = []
+    manip_datasets_eval = []
     descriptions = []
     shape_meta = None
 
+    if cfg.is_split:
+        split_dataset(os.path.join(
+                    cfg.folder, benchmark.get_task_demonstration(i)
+                ))
 
     for i in range(n_manip_tasks):
         # currently we assume tasks from same benchmark have the same shape_meta
         try:
-            # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
-            task_i_dataset, shape_meta = get_dataset(
-                dataset_path=os.path.join(
-                    cfg.folder, benchmark.get_task_demonstration(i)
-                ),
-                obs_modality=cfg.data.obs.modality,
-                # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
-                initialize_obs_utils=True,
-                seq_len=cfg.data.seq_len,
-            )
+            # yy: seq_length seems to be an important hyper-param
+            if cfg.is_split:
+                # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
+                task_i_dataset, shape_meta = get_dataset(
+                    dataset_path=os.path.join(
+                        cfg.folder, f"{benchmark.get_task_demonstration(i)}_train"
+                    ),
+                    obs_modality=cfg.data.obs.modality,
+                    # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
+                    initialize_obs_utils=True,
+                    seq_len=cfg.data.seq_len,
+                )
+                task_i_dataset_eval, shape_meta_eval = get_dataset(
+                    dataset_path=os.path.join(
+                        cfg.folder, f"{benchmark.get_task_demonstration(i)}_eval"
+                    ),
+                    obs_modality=cfg.data.obs.modality,
+                    # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
+                    initialize_obs_utils=True,
+                    seq_len=cfg.data.seq_len,
+                )
+            else:
+                # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
+                task_i_dataset, shape_meta = get_dataset(
+                    dataset_path=os.path.join(
+                        cfg.folder, benchmark.get_task_demonstration(i)
+                    ),
+                    obs_modality=cfg.data.obs.modality,
+                    # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
+                    initialize_obs_utils=True,
+                    seq_len=cfg.data.seq_len,
+                )
         except Exception as e:
             print(
                 f"[error] failed to load task {i} name {benchmark.get_task_names()[i]}"
@@ -92,6 +163,7 @@ def main(hydra_cfg):
         # yy: they maintain a list containing (lang, ds)
         descriptions.append(task_description)
         manip_datasets.append(task_i_dataset)
+        manip_datasets_eval.append(task_i_dataset_eval)
 
     # yy: this task_embs seem to be the language embeddings
     task_embs = get_task_embs(cfg, descriptions)
@@ -101,6 +173,9 @@ def main(hydra_cfg):
     if gsz == 1:  # each manipulation task is its own lifelong learning task
         datasets = [
             SequenceVLDataset(ds, emb) for (ds, emb) in zip(manip_datasets, task_embs)
+        ]
+        datasets_eval = [
+            SequenceVLDataset(ds, emb) for (ds, emb) in zip(manip_datasets_eval, task_embs)
         ]
         n_demos = [data.n_demos for data in datasets]
         n_sequences = [data.total_num_sequences for data in datasets]
@@ -207,6 +282,7 @@ def main(hydra_cfg):
 
         # evalute on all seen tasks at the end if eval.eval is true
         if cfg.eval.eval:
+            # yy: where obtain eval loss
             L = evaluate_loss(cfg, algo, benchmark, datasets)
             S = evaluate_success(
                 cfg=cfg,
@@ -243,16 +319,24 @@ def main(hydra_cfg):
 
             t0 = time.time()
             # yy: learn_one_task_no_ll() is the function for training, modified by me
-            s_fwd, l_fwd = algo.learn_one_task_no_ll(
-                datasets[i], i, benchmark, result_summary
-            )
+            if cfg.is_split:
+                s_fwd, l_fwd = algo.learn_one_task_no_ll(
+                    datasets[i], datasets_eval[i], algo, i, benchmark, result_summary
+                )
+            else:
+                s_fwd, l_fwd = algo.learn_one_task_no_ll(
+                    datasets[i], None, algo, i, benchmark, result_summary
+                )
             result_summary["S_fwd"][i] = s_fwd
             result_summary["L_fwd"][i] = l_fwd
             t1 = time.time()
 
             # evalute on all seen tasks at the end of learning each task
             if cfg.eval.eval:
-                L = evaluate_loss(cfg, algo, benchmark, datasets[: i + 1])
+                if cfg.is_split:
+                    L = evaluate_loss(cfg, algo, benchmark, datasets_eval[: i + 1])
+                else:
+                    L = evaluate_loss(cfg, algo, benchmark, datasets[: i + 1])
                 t2 = time.time()
                 S = evaluate_success(
                     cfg=cfg,
@@ -297,7 +381,6 @@ if __name__ == "__main__":
     # yy: I comment this
     # if multiprocessing.get_start_method(allow_none=True) != "spawn":
     #     multiprocessing.set_start_method("spawn", force=True)
-
 
     main()
 

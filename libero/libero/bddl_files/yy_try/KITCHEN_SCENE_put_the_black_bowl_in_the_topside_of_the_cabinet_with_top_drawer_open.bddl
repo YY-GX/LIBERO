@@ -1,6 +1,6 @@
 (define (problem LIBERO_Kitchen_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language put the black bowl in the top drawer of the cabinet)
+  (:language put the black bowl in the topside of the cabinet with top drawer open)
     (:regions
       (wooden_cabinet_init_region
           (:target kitchen_table)

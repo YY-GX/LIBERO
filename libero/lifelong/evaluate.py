@@ -103,6 +103,7 @@ def parse_args():
     # parser.add_argument('--save_dir',  type=str, required=True)
     args = parser.parse_args()
     args.device_id = "cuda:" + str(args.device_id)
+    # yy: TODO: I modify here - change back when not yy_try
     args.save_dir = f"{args.experiment_dir}_saved/{args.version}/"
 
     if args.algo == "multitask":
