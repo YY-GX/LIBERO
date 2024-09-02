@@ -265,7 +265,7 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
 
 
     # yy: This is one where train policy
-    def learn_one_task_no_ll(self, dataset, datasets_eval, algo, task_id, benchmark, result_summary):
+    def learn_one_task_no_ll(self, dataset, datasets_eval, algo, task_id, benchmark, result_summary, cfg):
 
         self.start_task(task_id, is_no_ll=True)
 

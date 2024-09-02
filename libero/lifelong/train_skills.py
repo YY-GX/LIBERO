@@ -324,11 +324,11 @@ def main(hydra_cfg):
             # yy: learn_one_task_no_ll() is the function for training, modified by me
             if cfg.is_split:
                 s_fwd, l_fwd = algo.learn_one_task_no_ll(
-                    datasets[i], datasets_eval[i], algo, i, benchmark, result_summary
+                    datasets[i], datasets_eval[i], algo, i, benchmark, result_summary, cfg
                 )
             else:
                 s_fwd, l_fwd = algo.learn_one_task_no_ll(
-                    datasets[i], None, algo, i, benchmark, result_summary
+                    datasets[i], None, algo, i, benchmark, result_summary, cfg
                 )
             result_summary["S_fwd"][i] = s_fwd
             result_summary["L_fwd"][i] = l_fwd
