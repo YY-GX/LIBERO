@@ -298,7 +298,8 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
         task = benchmark.get_task(task_id)
         task_emb = benchmark.get_task_emb(task_id)
 
-        L = evaluate_loss(cfg, algo, benchmark, datasets_eval)
+        L = evaluate_loss(cfg, algo, benchmark, [datasets_eval])
+        exit(0)
 
         # start training
         for epoch in range(0, self.cfg.train.n_epochs + 1):
