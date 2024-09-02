@@ -14,9 +14,9 @@ from typing import Any, Callable, List, Optional, Tuple, Union
 
 import multiprocessing
 
-# yy: I comment this
-if multiprocessing.get_start_method(allow_none=True) != "spawn":
-    multiprocessing.set_start_method("spawn", force=True)
+# # yy: I comment this
+# if multiprocessing.get_start_method(allow_none=True) != "spawn":
+#     multiprocessing.set_start_method("spawn", force=True)
 
 gym_old_venv_step_type = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
 gym_new_venv_step_type = Tuple[
@@ -935,6 +935,10 @@ class SubprocVectorEnv(BaseVectorEnv):
     """
 
     def __init__(self, env_fns: List[Callable[[], gym.Env]], **kwargs: Any) -> None:
+        # yy: I comment this
+        if multiprocessing.get_start_method(allow_none=True) != "spawn":
+            multiprocessing.set_start_method("spawn", force=True)
+
         def worker_fn(fn: Callable[[], gym.Env]) -> SubprocEnvWorker:
             return SubprocEnvWorker(fn, share_memory=False)
 

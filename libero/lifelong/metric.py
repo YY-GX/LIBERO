@@ -14,7 +14,7 @@ from libero.libero.envs import OffScreenRenderEnv, SubprocVectorEnv, DummyVector
 from libero.libero.utils.time_utils import Timer
 from libero.libero.utils.video_utils import VideoWriter
 from libero.lifelong.utils import *
-
+import multiprocessing
 
 def raw_obs_to_tensor_obs(obs, task_emb, cfg):
     """
@@ -160,6 +160,10 @@ def evaluate_one_task_success(
         env.close()
         gc.collect()
     print(f"[info] evaluate task {task_id} takes {t.get_elapsed_time():.1f} seconds")
+    # yy: set it back to None
+    if multiprocessing.get_start_method(allow_none=True) is not None:
+        multiprocessing.set_start_method(None, force=True)
+
     return success_rate
 
 
