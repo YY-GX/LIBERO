@@ -78,7 +78,7 @@ def parse_args():
         "--benchmark",
         type=str,
         required=True,
-        choices=["libero_10", "libero_90", "libero_spatial", "libero_object", "libero_goal"],
+        choices=["libero_10", "libero_90", "libero_spatial", "libero_object", "libero_goal", "yy_try"],
     )
     parser.add_argument("--task_id", type=int, required=True)
     # method detail
