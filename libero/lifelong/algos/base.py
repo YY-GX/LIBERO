@@ -372,9 +372,9 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
             if epoch % self.cfg.eval.eval_every == 0:
                 t0 = time.time()
                 if datasets_eval:
-                    L = evaluate_loss(cfg, algo, benchmark, datasets_eval)
+                    L = evaluate_loss(cfg, algo, benchmark, [datasets_eval])
                 else:
-                    L = evaluate_loss(cfg, algo, benchmark, datasets)
+                    L = evaluate_loss(cfg, algo, benchmark, [datasets])
                 t1 = time.time()
                 print(
                     f"[info] Epoch: {epoch:3d} | eval loss: {training_loss:5.2f} | time: {(t1 - t0) / 60:4.2f}"
