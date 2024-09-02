@@ -371,7 +371,7 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
 
             if epoch % self.cfg.eval.eval_every == 0:
                 t0 = time.time()
-                if cfg.is_split:
+                if datasets_eval:
                     L = evaluate_loss(cfg, algo, benchmark, datasets_eval)
                 else:
                     L = evaluate_loss(cfg, algo, benchmark, datasets)
