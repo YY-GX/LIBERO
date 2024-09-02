@@ -70,14 +70,6 @@ def split_dataset(h5_location):
     print(f"Dataset split into {train_file_name} and {eval_file_name}.")
 
 
-# Example usage:
-# split_dataset(os.path.join(cfg.folder, benchmark.get_task_demonstration(i)))
-
-
-# Example usage:
-# split_dataset(os.path.join(cfg.folder, benchmark.get_task_demonstration(i)))
-
-
 @hydra.main(config_path="../configs", config_name="config_no_ll", version_base=None)
 def main(hydra_cfg):
     # preprocessing
@@ -117,7 +109,8 @@ def main(hydra_cfg):
                     cfg.folder, benchmark.get_task_demonstration(0)
                 )
         h5_folder = os.path.dirname(h5_file_location)
-        split_dataset(h5_file_location)
+        if not os.path.exists(h5_file_location):
+            split_dataset(h5_file_location)
 
 
     for i in range(n_manip_tasks):
