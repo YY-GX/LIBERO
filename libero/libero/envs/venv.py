@@ -13,8 +13,10 @@ from multiprocessing.context import Process
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 import multiprocessing
-if multiprocessing.get_start_method(allow_none=True) != "spawn":
-    multiprocessing.set_start_method("spawn", force=True)
+
+# yy: I comment this
+# if multiprocessing.get_start_method(allow_none=True) != "spawn":
+#     multiprocessing.set_start_method("spawn", force=True)
 
 gym_old_venv_step_type = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
 gym_new_venv_step_type = Tuple[

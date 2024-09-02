@@ -1,7 +1,7 @@
 # training
 n_epochs: 50
 batch_size: 32  # ori: 32
-num_workers: 0  # ori: 0
+num_workers: 8  # ori: 0
 grad_clip: 100.
 loss_scale: 1.0
 
