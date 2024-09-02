@@ -116,6 +116,7 @@ def main(hydra_cfg):
         h5_file_location = os.path.join(
                     cfg.folder, benchmark.get_task_demonstration(0)
                 )
+        h5_folder = os.path.dirname(h5_file_location)
         split_dataset(h5_file_location)
 
 
@@ -125,7 +126,7 @@ def main(hydra_cfg):
         # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
         task_i_dataset, shape_meta = get_dataset(
             dataset_path=os.path.join(
-                cfg.folder, f"{os.path.splitext(os.path.basename(h5_file_location))[0]}_train.h5"
+                h5_folder, f"{os.path.splitext(os.path.basename(h5_file_location))[0]}_train.h5"
             ),
             obs_modality=cfg.data.obs.modality,
             # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
@@ -134,7 +135,7 @@ def main(hydra_cfg):
         )
         task_i_dataset_eval, shape_meta_eval = get_dataset(
             dataset_path=os.path.join(
-                cfg.folder, f"{os.path.splitext(os.path.basename(h5_file_location))[0]}_eval.h5"
+                h5_folder, f"{os.path.splitext(os.path.basename(h5_file_location))[0]}_eval.h5"
             ),
             obs_modality=cfg.data.obs.modality,
             # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
