@@ -3,7 +3,7 @@ eval: true
 batch_size: 64  # ori: 64
 num_workers: 8  # ori: 4
 n_eval: 10  # ori: 20
-eval_every: 10  # ori: 5
+eval_every: 5  # ori: 5
 max_steps: 800  # ori: 600
 use_mp: true
 num_procs: 10  # ori: 20
