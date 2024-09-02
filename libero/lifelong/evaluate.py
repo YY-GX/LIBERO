@@ -130,7 +130,7 @@ def main():
 
     # find the checkpoint
     # yy: experiment_id decides which run_0id to use
-    experiment_id = 12
+    experiment_id = 13
     for path in Path(experiment_dir).glob("run_*"):
         if not path.is_dir():
             continue
