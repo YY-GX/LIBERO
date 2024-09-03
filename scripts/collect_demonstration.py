@@ -12,8 +12,6 @@ from glob import glob
 from robosuite import load_controller_config
 from robosuite.wrappers import DataCollectionWrapper, VisualizationWrapper
 from robosuite.utils.input_utils import input2action
-
-
 import libero.libero.envs.bddl_utils as BDDLUtils
 from libero.libero.envs import *
 

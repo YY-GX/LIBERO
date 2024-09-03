@@ -407,9 +407,10 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
         )
 
         # pretend that the agent stops learning once it reaches the peak performance
-        losses[idx_at_best_succ:] = losses[idx_at_best_succ]
-        successes[idx_at_best_succ:] = successes[idx_at_best_succ]
-        return successes.sum() / cumulated_counter, losses.sum() / cumulated_counter
+        # losses[idx_at_best_succ:] = losses[idx_at_best_succ]
+        # successes[idx_at_best_succ:] = successes[idx_at_best_succ]
+        # return successes.sum() / cumulated_counter, losses.sum() / cumulated_counter
+        return 0, 0
 
 
 

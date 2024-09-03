@@ -353,6 +353,7 @@ def main(hydra_cfg):
 
             # evalute on all seen tasks at the end of learning each task
             if cfg.eval.eval:
+                print("=========== YY: Start Evaluation (Rollouts) ===========")
                 if cfg.is_split:
                     L = evaluate_loss(cfg, algo, benchmark, datasets_eval[: i + 1])
                 else:
