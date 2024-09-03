@@ -145,6 +145,8 @@ def main():
         print(f"[error] cannot find the checkpoint under {experiment_dir}")
         sys.exit(0)
 
+    # yy: directly modify here for run files
+    experiment_id = 0
     run_folder = os.path.join(experiment_dir, f"run_{experiment_id:03d}")
     try:
         if args.algo == "multitask":
