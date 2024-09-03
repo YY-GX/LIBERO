@@ -324,7 +324,7 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
             wandb.log({f"task{task_id}/train_loss": training_loss, "epoch": epoch})
 
 
-            if False:
+            if not self.cfg.is_customize_task:
                 if epoch % self.cfg.eval.eval_every == 0:  # evaluate BC loss
                     # every eval_every epoch, we evaluate the agent on the current task,
                     # then we pick the best performant agent on the current task as
@@ -368,19 +368,19 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
                         flush=True,
                     )
                     wandb.log({f"task{task_id}/success_rate": success_rate, "epoch": epoch})
-
-            if epoch % self.cfg.eval.eval_every == 0:
-                t0 = time.time()
-                if datasets_eval:
-                    L = evaluate_loss(cfg, algo, benchmark, [datasets_eval])
-                else:
-                    L = evaluate_loss(cfg, algo, benchmark, [datasets])
-                t1 = time.time()
-                torch_save_model(self.policy, model_checkpoint_name, cfg=self.cfg)
-                print(
-                    f"[info] Epoch: {epoch:3d} | eval loss: {training_loss:5.2f} | time: {(t1 - t0) / 60:4.2f}"
-                )
-                wandb.log({f"task{task_id}/eval_loss": L, "epoch": epoch})
+            else:
+                if epoch % self.cfg.eval.eval_every == 0:
+                    t0 = time.time()
+                    if datasets_eval:
+                        L = evaluate_loss(cfg, algo, benchmark, [datasets_eval])
+                    else:
+                        L = evaluate_loss(cfg, algo, benchmark, [dataset])
+                    t1 = time.time()
+                    torch_save_model(self.policy, model_checkpoint_name, cfg=self.cfg)
+                    print(
+                        f"[info] Epoch: {epoch:3d} | eval loss: {training_loss:5.2f} | time: {(t1 - t0) / 60:4.2f}"
+                    )
+                    wandb.log({f"task{task_id}/eval_loss": L, "epoch": epoch})
 
             if self.scheduler is not None and epoch > 0:
                 self.scheduler.step()

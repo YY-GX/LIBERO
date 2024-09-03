@@ -26,3 +26,4 @@ benchmark_name: "yy_try"
 #version: "kitchen_v0"
 version: "shelf_move_potato_v0"
 is_split: true
+is_customize_task: true
