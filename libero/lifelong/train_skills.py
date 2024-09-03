@@ -146,6 +146,8 @@ def main(hydra_cfg):
         initialize_obs_utils=True,
         seq_len=cfg.data.seq_len,
     )
+
+    print(cfg.is_split)
     exit(0)
 
     for i in range(n_manip_tasks):
