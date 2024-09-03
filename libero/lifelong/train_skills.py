@@ -115,7 +115,7 @@ def main(hydra_cfg):
             split_dataset(h5_file_location)
 
     # yy: For debug
-    i = 0
+    # i = 0
     # # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
     # task_i_dataset, shape_meta = get_dataset(
     #     dataset_path=os.path.join(
@@ -135,20 +135,7 @@ def main(hydra_cfg):
     #     initialize_obs_utils=True,
     #     seq_len=cfg.data.seq_len,
     # )
-
-    # yy: /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets/libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_demo.hdf5
-    task_i_dataset, shape_meta = get_dataset(
-        dataset_path=os.path.join(
-            cfg.folder, benchmark.get_task_demonstration(i)
-        ),
-        obs_modality=cfg.data.obs.modality,
-        # initialize_obs_utils=(i == 0),  # yy: ori, but in my case, everytime is a new restart
-        initialize_obs_utils=True,
-        seq_len=cfg.data.seq_len,
-    )
-
-    print(cfg.is_split)
-    exit(0)
+    # exit(0)
 
     for i in range(n_manip_tasks):
         # currently we assume tasks from same benchmark have the same shape_meta
@@ -196,7 +183,8 @@ def main(hydra_cfg):
         # yy: they maintain a list containing (lang, ds)
         descriptions.append(task_description)
         manip_datasets.append(task_i_dataset)
-        manip_datasets_eval.append(task_i_dataset_eval)
+        if cfg.is_split:
+            manip_datasets_eval.append(task_i_dataset_eval)
 
     # yy: this task_embs seem to be the language embeddings
     task_embs = get_task_embs(cfg, descriptions)
@@ -207,9 +195,10 @@ def main(hydra_cfg):
         datasets = [
             SequenceVLDataset(ds, emb) for (ds, emb) in zip(manip_datasets, task_embs)
         ]
-        datasets_eval = [
-            SequenceVLDataset(ds, emb) for (ds, emb) in zip(manip_datasets_eval, task_embs)
-        ]
+        if cfg.is_split:
+            datasets_eval = [
+                SequenceVLDataset(ds, emb) for (ds, emb) in zip(manip_datasets_eval, task_embs)
+            ]
         n_demos = [data.n_demos for data in datasets]
         n_sequences = [data.total_num_sequences for data in datasets]
     else:  # group gsz manipulation tasks into a lifelong task, currently not used
