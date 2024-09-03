@@ -366,6 +366,8 @@ def main(hydra_cfg):
                     task_ids=list(range((i + 1) * gsz)),
                     result_summary=result_summary if cfg.eval.save_sim_states else None,
                 )
+                print(f">> Success Rate: {S}")
+                wandb.log({f"task0/success_rate": S, "epoch": 0})
                 t3 = time.time()
                 result_summary["L_conf_mat"][i][: i + 1] = L
                 result_summary["S_conf_mat"][i][: i + 1] = S

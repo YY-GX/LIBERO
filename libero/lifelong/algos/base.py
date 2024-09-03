@@ -376,6 +376,7 @@ class Sequential(nn.Module, metaclass=AlgoMeta):
                 else:
                     L = evaluate_loss(cfg, algo, benchmark, [datasets])
                 t1 = time.time()
+                torch_save_model(self.policy, model_checkpoint_name, cfg=self.cfg)
                 print(
                     f"[info] Epoch: {epoch:3d} | eval loss: {training_loss:5.2f} | time: {(t1 - t0) / 60:4.2f}"
                 )
