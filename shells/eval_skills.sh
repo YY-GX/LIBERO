@@ -14,7 +14,7 @@ sbatch_command="sbatch --gpus 1 --cpus-per-task=8 \
 
 # Loop over task_id and load_task from 0 to 9
 for i in {0..9}; do
-    sbatch_command+="python lifelong/evaluate.py --run_id 2 --task_id $i --load_task $i --version \\\"eval_original_libero_90\\\" --seed 10000  --device_id 0 --benchmark \\\"libero_90\\\" --policy \\\"bc_transformer_policy\\\" --algo \\\"base\\\" --save-videos "
+    sbatch_command+="python lifelong/evaluate.py --run_id 2 --task_id $i --load_task $i --version \\\"eval_original_libero_90\\\" --seed 10000  --device_id 0 --benchmark \\\"libero_90\\\" --policy \\\"bc_transformer_policy\\\" --algo \\\"base\\\" --save-videos && "
 done
 
 # Close the wrap command
