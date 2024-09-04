@@ -206,6 +206,19 @@ def main():
 
     ### ======================= start evaluation ============================
 
+    dataset, shape_meta = get_dataset(
+        dataset_path=os.path.join(
+            cfg.folder, benchmark.get_task_demonstration(args.task_id)
+        ),
+        obs_modality=cfg.data.obs.modality,
+        initialize_obs_utils=True,
+        seq_len=cfg.data.seq_len,
+    )
+    dataset = GroupedTaskDataset(
+        [dataset], task_embs[args.task_id: args.task_id + 1]
+    )
+    exit(0)
+
     # 1. evaluate dataset loss
     try:
         dataset, shape_meta = get_dataset(
