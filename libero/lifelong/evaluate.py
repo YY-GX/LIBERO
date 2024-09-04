@@ -269,7 +269,8 @@ def main():
         dones = [False] * env_num
         steps = 0
         obs = env.set_init_state(init_states_)
-        task_emb = benchmark.get_task_emb(args.task_id)
+        # task_emb = benchmark.get_task_emb(args.task_id)
+        task_emb = benchmark.get_task_emb(0)
 
         num_success = 0
         for _ in range(5):  # simulate the physics without any actions

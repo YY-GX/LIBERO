@@ -196,7 +196,6 @@ class Benchmark(abc.ABC):
     def set_task_embs(self, task_embs):
         self.task_embs = task_embs
 
-
 @register_benchmark
 class LIBERO_SPATIAL(Benchmark):
     def __init__(self, task_order_index=0):
