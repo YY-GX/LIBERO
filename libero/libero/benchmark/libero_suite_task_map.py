@@ -140,17 +140,19 @@ libero_task_map = {
     #     "STUDY_SCENE4_pick_up_the_book_on_the_right_and_place_it_under_the_cabinet_shelf",
     # ],
     "libero_90": [
-        # "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet",
-        # "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet",
-        # "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet",
-        # "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet",
-        # "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate",
-        # "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet",
-        # "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet",
-        # "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate",
-        # "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate",
-        # "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate",
+        # 00_09 == run_002
+        "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet",
+        "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet",
+        "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet",
+        "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet",
+        "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate",
+        "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet",
+        "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet",
+        "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate",
+        "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate",
+        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate",
 
+        # 10_19 == run_003
         # "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet",
         # "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle",
         # "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl",
@@ -162,6 +164,7 @@ libero_task_map = {
         # "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet",
         # "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet",
 
+        # 20_29 == run_004
         "KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack",
         "KITCHEN_SCENE5_close_the_top_drawer_of_the_cabinet",
         "KITCHEN_SCENE5_put_the_black_bowl_in_the_top_drawer_of_the_cabinet",

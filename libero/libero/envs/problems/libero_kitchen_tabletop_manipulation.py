@@ -73,7 +73,7 @@ class Libero_Kitchen_Tabletop_Manipulation(BDDLBaseDomain):
         for object_region_name in list(region_dict.keys()):
 
             if "kitchen_table" in object_region_name:
-                print(region_dict[object_region_name])
+                # print(region_dict[object_region_name])
                 ranges = region_dict[object_region_name]["ranges"][0]
                 assert ranges[2] >= ranges[0] and ranges[3] >= ranges[1]
                 zone_size = ((ranges[2] - ranges[0]) / 2, (ranges[3] - ranges[1]) / 2)
