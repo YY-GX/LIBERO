@@ -139,6 +139,7 @@ class Benchmark(abc.ABC):
         self.n_tasks_ = n_tasks_
 
     def _make_benchmark(self):
+        print(task_maps.keys())
         tasks = list(task_maps[self.name].values())
         if (self.name == "libero_90") or (self.name == "yy_try"):
             self.tasks = tasks
