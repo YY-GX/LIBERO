@@ -73,7 +73,7 @@ policy_map = {
 """
 TODO check this:
 Example command: 
-python lifelong/evaluate_on_modified_task.py --seed 1 --benchmark "modified_libero" --device_id 1 --policy "bc_transformer_policy" --algo "base" --task_id 0 --load_task 0 --version "modify_v0" --device_id 0 --save-videos --seed 10000 --model_path "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/train_base_90_v0/Sequential/BCTransformerPolicy_seed10000/00_09/task0_model.pth" 
+python lifelong/evaluate_on_modified_task.py --seed 1 --benchmark "modified_libero" --policy "bc_transformer_policy" --algo "base" --task_id 0 --load_task 0 --version "modify_v0" --device_id 0 --save-videos --seed 10000 --model_path "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/train_base_90_v0/Sequential/BCTransformerPolicy_seed10000/00_09/task0_model.pth" 
 """
 
 def parse_args():
@@ -135,6 +135,12 @@ def main():
     #     + f"{policy_map[args.policy]}_seed{args.seed}",
     # )
     # experiment_dir = args.experiment_dir
+
+    model_path = args.model_path
+    sd, cfg, previous_mask = torch_load_model(
+        model_path, map_location=args.device_id
+    )
+    exit(0)
 
     # find the checkpoint
     try:
