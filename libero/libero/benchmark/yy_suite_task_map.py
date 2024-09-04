@@ -5,5 +5,8 @@ yy_task_map = {
         "SHELF_TABLE_SCENE_moving_popcorn_from_table_to_topside_of_wooden_shelf",
         # "SHELF_TABLE_SCENE_moving_chocolate_pudding_from_table_to_topside_of_wooden_shelf"
     ],
+    "modified_libero": [
+
+    ]
 
 }

@@ -69,6 +69,12 @@ policy_map = {
     "bc_vilt_policy": "BCViLTPolicy",
 }
 
+# TODO
+"""
+TODO check this:
+Example command: 
+python lifelong/evaluate.py --seed 1 --benchmark "modified_libero" --policy "bc_transformer_policy" --algo "base" --task_id 0 --load_task 0 --version "shelf_move_potato_v1_finetune" --device_id 0 --save-videos --seed 10000
+"""
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
@@ -105,7 +111,7 @@ def parse_args():
     args = parser.parse_args()
     args.device_id = "cuda:" + str(args.device_id)
     # yy: TODO: I modify here - change back when not yy_try
-    args.save_dir = f"{args.experiment_dir}_saved/{args.version}/"
+    args.save_dir = f"experiments_saved/{args.benchmark}/{args.version}/"
 
     if args.algo == "multitask":
         assert args.ep in list(
@@ -122,30 +128,18 @@ def main():
     args = parse_args()
     # e.g., experiments/LIBERO_SPATIAL/Multitask/BCRNNPolicy_seed100/
 
-    experiment_dir = os.path.join(
-        args.experiment_dir,
-        f"{args.benchmark}/"
-        + f"{args.version}/"
-        + f"{algo_map[args.algo]}/"
-        + f"{policy_map[args.policy]}_seed{args.seed}",
-    )
+    # TODO: modify here - this affect what checkpoint you use
+    # yy: I feel that i only need to modify this as the original one. For all the other ones, I could use the modified one (?)
+    # experiment_dir = os.path.join(
+    #     args.experiment_dir,
+    #     f"{args.benchmark}/"
+    #     + f"{args.version}/"
+    #     + f"{algo_map[args.algo]}/"
+    #     + f"{policy_map[args.policy]}_seed{args.seed}",
+    # )
+    experiment_dir = args.experiment_dir
 
     # find the checkpoint
-    # yy: experiment_id decides which run_0id to use
-    experiment_id = 13
-    for path in Path(experiment_dir).glob("run_*"):
-        if not path.is_dir():
-            continue
-        try:
-            folder_id = int(str(path).split("run_")[-1])
-            if folder_id > experiment_id:
-                experiment_id = folder_id
-        except BaseException:
-            pass
-    if experiment_id == 0:
-        print(f"[error] cannot find the checkpoint under {experiment_dir}")
-        sys.exit(0)
-
     # yy: directly modify here for run files
     experiment_id = args.run_id
     run_folder = os.path.join(experiment_dir, f"run_{experiment_id:03d}")
