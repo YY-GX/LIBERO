@@ -40,7 +40,6 @@ from libero.lifelong.utils import (
 )
 
 from libero.lifelong.main import get_task_embs
-
 import robomimic.utils.obs_utils as ObsUtils
 import robomimic.utils.tensor_utils as TensorUtils
 
@@ -205,38 +204,26 @@ def main():
     task = benchmark.get_task(args.task_id)
 
     ### ======================= start evaluation ============================
+    ObsUtils.initialize_obs_utils_with_obs_specs({"obs": cfg.data.obs.modality})
 
-    dataset, shape_meta = get_dataset(
-        dataset_path=os.path.join(
-            cfg.folder, benchmark.get_task_demonstration(args.task_id)
-        ),
-        obs_modality=cfg.data.obs.modality,
-        initialize_obs_utils=True,
-        seq_len=cfg.data.seq_len,
-    )
-    dataset = GroupedTaskDataset(
-        [dataset], task_embs[args.task_id: args.task_id + 1]
-    )
-    exit(0)
-
-    # 1. evaluate dataset loss
-    try:
-        dataset, shape_meta = get_dataset(
-            dataset_path=os.path.join(
-                cfg.folder, benchmark.get_task_demonstration(args.task_id)
-            ),
-            obs_modality=cfg.data.obs.modality,
-            initialize_obs_utils=True,
-            seq_len=cfg.data.seq_len,
-        )
-        dataset = GroupedTaskDataset(
-            [dataset], task_embs[args.task_id : args.task_id + 1]
-        )
-    except:
-        print(
-            f"[error] failed to load task {args.task_id} name {benchmark.get_task_names()[args.task_id]}"
-        )
-        sys.exit(0)
+    # # 1. evaluate dataset loss
+    # try:
+    #     dataset, shape_meta = get_dataset(
+    #         dataset_path=os.path.join(
+    #             cfg.folder, benchmark.get_task_demonstration(args.task_id)
+    #         ),
+    #         obs_modality=cfg.data.obs.modality,
+    #         initialize_obs_utils=True,
+    #         seq_len=cfg.data.seq_len,
+    #     )
+    #     dataset = GroupedTaskDataset(
+    #         [dataset], task_embs[args.task_id : args.task_id + 1]
+    #     )
+    # except:
+    #     print(
+    #         f"[error] failed to load task {args.task_id} name {benchmark.get_task_names()[args.task_id]}"
+    #     )
+    #     sys.exit(0)
 
     algo.eval()
 
