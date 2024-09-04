@@ -361,15 +361,22 @@ def main(hydra_cfg):
                 else:
                     L = evaluate_loss(cfg, algo, benchmark, datasets[: i + 1])
                 t2 = time.time()
+                # S = evaluate_success(
+                #     cfg=cfg,
+                #     algo=algo,
+                #     benchmark=benchmark,
+                #     task_ids=list(range((i + 1) * gsz)),
+                #     result_summary=result_summary if cfg.eval.save_sim_states else None,
+                # )
                 S = evaluate_success(
                     cfg=cfg,
                     algo=algo,
                     benchmark=benchmark,
-                    task_ids=list(range((i + 1) * gsz)),
+                    task_ids=[i],
                     result_summary=result_summary if cfg.eval.save_sim_states else None,
                 )
                 print(f">> Success Rate: {S}")
-                wandb.log({f"task0/success_rate": S, "epoch": 0})
+                wandb.log({f"task{i}/success_rate": S, "epoch": 0})
                 t3 = time.time()
                 result_summary["L_conf_mat"][i][: i + 1] = L
                 result_summary["S_conf_mat"][i][: i + 1] = S

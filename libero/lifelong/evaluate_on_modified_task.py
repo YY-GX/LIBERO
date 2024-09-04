@@ -205,7 +205,7 @@ def main():
 
     ### ======================= start evaluation ============================
     ObsUtils.initialize_obs_utils_with_obs_specs({"obs": cfg.data.obs.modality})
-
+    # yy: the commented code is just used for some necessary initialization, which I've done in the above line of code
     # # 1. evaluate dataset loss
     # try:
     #     dataset, shape_meta = get_dataset(
