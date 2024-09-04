@@ -136,11 +136,11 @@ def main():
     # )
     # experiment_dir = args.experiment_dir
 
-    model_path = args.model_path
-    sd, cfg, previous_mask = torch_load_model(
-        model_path, map_location=args.device_id
-    )
-    exit(0)
+    # model_path = args.model_path
+    # sd, cfg, previous_mask = torch_load_model(
+    #     model_path, map_location=args.device_id
+    # )
+    # exit(0)
 
     # find the checkpoint
     try:
