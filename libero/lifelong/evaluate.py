@@ -105,7 +105,7 @@ def parse_args():
     args = parser.parse_args()
     args.device_id = "cuda:" + str(args.device_id)
     # yy: TODO: I modify here - change back when not yy_try
-    args.save_dir = f"{args.experiment_dir}_saved/{args.version}/"
+    args.save_dir = f"{args.experiment_dir}_saved/{args.version}/{args.run_id}"
 
     if args.algo == "multitask":
         assert args.ep in list(
