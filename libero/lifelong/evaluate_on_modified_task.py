@@ -73,12 +73,13 @@ policy_map = {
 """
 TODO check this:
 Example command: 
-python lifelong/evaluate.py --seed 1 --benchmark "modified_libero" --policy "bc_transformer_policy" --algo "base" --task_id 0 --load_task 0 --version "shelf_move_potato_v1_finetune" --device_id 0 --save-videos --seed 10000
+python lifelong/evaluate.py --seed 1 --benchmark "modified_libero" --policy "bc_transformer_policy" --algo "base" --task_id 0 --load_task 0 --version "modify_v0" --device_id 0 --save-videos --seed 10000 --experiment_dir --model_path "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/train_base_90_v0/Sequential/BCTransformerPolicy_seed10000/00_09/task0_model.pth" 
 """
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
-    parser.add_argument("--experiment_dir", type=str, default="experiments")
+    # parser.add_argument("--experiment_dir", type=str, default="experiments")
+    parser.add_argument("--model_path", type=str, default="/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/train_base_90_v0/Sequential/BCTransformerPolicy_seed10000/00_09/task0_model.pth")
     # for which task suite
     parser.add_argument(
         "--benchmark",
@@ -111,7 +112,7 @@ def parse_args():
     args = parser.parse_args()
     args.device_id = "cuda:" + str(args.device_id)
     # yy: TODO: I modify here - change back when not yy_try
-    args.save_dir = f"experiments_saved/{args.benchmark}/{args.version}/"
+    args.save_dir = f"experiments_saved/modified/{args.benchmark}/{args.version}/"
 
     if args.algo == "multitask":
         assert args.ep in list(
@@ -126,9 +127,6 @@ def parse_args():
 
 def main():
     args = parse_args()
-    # e.g., experiments/LIBERO_SPATIAL/Multitask/BCRNNPolicy_seed100/
-
-    # TODO: modify here - this affect what checkpoint you use
     # yy: I feel that i only need to modify this as the original one. For all the other ones, I could use the modified one (?)
     # experiment_dir = os.path.join(
     #     args.experiment_dir,
@@ -137,20 +135,22 @@ def main():
     #     + f"{algo_map[args.algo]}/"
     #     + f"{policy_map[args.policy]}_seed{args.seed}",
     # )
-    experiment_dir = args.experiment_dir
+    # experiment_dir = args.experiment_dir
 
     # find the checkpoint
     # yy: directly modify here for run files
     experiment_id = args.run_id
-    run_folder = os.path.join(experiment_dir, f"run_{experiment_id:03d}")
+    # run_folder = os.path.join(experiment_dir, f"run_{experiment_id:03d}")
     try:
         if args.algo == "multitask":
-            model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
+            # model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
+            model_path = args.model_path
             sd, cfg, previous_mask = torch_load_model(
                 model_path, map_location=args.device_id
             )
         else:
-            model_path = os.path.join(run_folder, f"task{args.load_task}_model.pth")
+            # model_path = os.path.join(run_folder, f"task{args.load_task}_model.pth")
+            model_path = args.model_path
             sd, cfg, previous_mask = torch_load_model(
                 model_path, map_location=args.device_id
             )
@@ -302,7 +302,7 @@ def main():
         # # yy: save video
         # video_writer.save()
     print(
-        f"[info] finish for ckpt at {run_folder} in {t.get_elapsed_time()} sec for rollouts"
+        f"[info] finish for ckpt at {args.model_path} in {t.get_elapsed_time()} sec for rollouts"
     )
     print(f"Results are saved at {save_folder}")
     print(test_loss, success_rate)

@@ -160,6 +160,7 @@ libero_task_map = {
         "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet",
         "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet",
         "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet",
+
         "KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack",
         "KITCHEN_SCENE5_close_the_top_drawer_of_the_cabinet",
         "KITCHEN_SCENE5_put_the_black_bowl_in_the_top_drawer_of_the_cabinet",
