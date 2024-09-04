@@ -101,7 +101,6 @@ def parse_args():
         required=True,
         choices=["bc_rnn_policy", "bc_transformer_policy", "bc_vilt_policy"],
     )
-    parser.add_argument("--run_id", type=int, default=1)
     parser.add_argument("--version", type=str, required=True)
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--ep", type=int)
@@ -138,9 +137,6 @@ def main():
     # experiment_dir = args.experiment_dir
 
     # find the checkpoint
-    # yy: directly modify here for run files
-    experiment_id = args.run_id
-    # run_folder = os.path.join(experiment_dir, f"run_{experiment_id:03d}")
     try:
         if args.algo == "multitask":
             # model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
@@ -157,6 +153,15 @@ def main():
     except:
         print(f"[error] cannot find the checkpoint at {str(model_path)}")
         sys.exit(0)
+
+    """
+    What I need to modify in cfg:
+    - benchmark_name
+    - version
+    """
+    # yy: modify these attributes
+    cfg.benchmark_name = args.benchmark
+    cfg.version = args.version
 
     cfg.folder = get_libero_path("datasets")
     cfg.bddl_folder = get_libero_path("bddl_files")
@@ -185,7 +190,7 @@ def main():
 
     # get the benchmark the task belongs to
     benchmark = get_benchmark(cfg.benchmark_name)(cfg.data.task_order_index)
-    # yy: TODO: I modify here - change back when not yy_try
+    # yy: TODO: I modify here - change back when need to eval a chain of skills
     # descriptions = [benchmark.get_task(i).language for i in range(10)]
     descriptions = [benchmark.get_task(i).language for i in range(1)]
     task_embs = get_task_embs(cfg, descriptions)

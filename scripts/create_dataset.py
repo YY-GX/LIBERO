@@ -29,7 +29,7 @@ def main():
     parser.add_argument(
         "--dataset-path",
         type=str,
-        default="/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/yy_try/",
+        default="/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/modified_libero/",
     )
 
     parser.add_argument(
