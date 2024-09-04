@@ -86,6 +86,7 @@ for libero_suite in libero_suites:
 # yy: add my task
 yy_suites = [
     "yy_try",
+    "modified_libero"
 ]
 for yy_suite in yy_suites:
     task_maps[yy_suite] = {}
