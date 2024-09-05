@@ -277,6 +277,7 @@ def main():
         steps = 0
         obs = env.set_init_state(init_states_)
         # task_emb = benchmark.get_task_emb(args.task_id)
+        # yy: I modified this - change back if need to eval a chain of skills
         task_emb = benchmark.get_task_emb(0)
 
         num_success = 0

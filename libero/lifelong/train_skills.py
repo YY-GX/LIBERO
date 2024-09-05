@@ -398,7 +398,7 @@ def main(hydra_cfg):
                     + f"eval success time {(t3-t2)/60:.1f}"
                 )
                 print(("[Task %2d loss ] " + " %4.2f |" * (i + 1)) % (i, *L))
-                print(("[Task %2d succ.] " + " %4.2f |" * (i + 1)) % (i, *S))
+                # print(("[Task %2d succ.] " + " %4.2f |" * (i + 1)) % (i, *S))
                 torch.save(
                     result_summary, os.path.join(cfg.experiment_dir, f"result.pt")
                 )
