@@ -46,6 +46,46 @@ import robomimic.utils.tensor_utils as TensorUtils
 import time
 
 
+# yy: map from modified benchmark to original path:
+modified_mapping = {
+    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet": [
+        "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl"],
+    "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet": [
+        "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl",
+        "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_with_popcorn_in_the_top_drawer.bddl"],
+    "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet": [
+        "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet_with_top_drawer_open.bddl"],
+    "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet": [
+        "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl"],
+    "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate": [
+        "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate_with_popcorn_in_the_bowl.bddl"],
+    "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet": [
+        "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet_with_popcorn_in_the_bowl.bddl"],
+    "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet": [
+        "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet_with_the_bottom_drawer_open.bddl"],
+    "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate": [
+        "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate_with_popcorn_in_the_bowl.bddl"],
+    "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate": [
+        "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate_with_popcorn_in_the_bowl.bddl"],
+    "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate": [
+        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate_with_popcorn_in_the_bowl.bddl"],
+}
+
+
+def create_index_mapping(dict_map):
+    output_map = {}
+    key_index = 0
+    value_index = 0
+
+    for key, values in dict_map.items():
+        for _ in values:
+            output_map[value_index] = key_index
+            value_index += 1
+        key_index += 1
+
+    return output_map
+
+
 benchmark_map = {
     "libero_90": "LIBERO_90",
     "libero_10": "LIBERO_10",
@@ -142,19 +182,21 @@ def main():
     # exit(0)
 
     # find the checkpoint
+    index_mapping = create_index_mapping(modified_mapping)
+    model_index = index_mapping[args.task_id]
     model_path = ""
     try:
         if args.algo == "multitask":
             # model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
             model_path = args.model_path_folder
-            model_path = os.path.join(model_path, f"task{args.task_id}_model.pth")
+            model_path = os.path.join(model_path, f"task{model_index}_model.pth")
             sd, cfg, previous_mask = torch_load_model(
                 model_path, map_location=args.device_id
             )
         else:
             # model_path = os.path.join(run_folder, f"task{args.load_task}_model.pth")
             model_path = args.model_path_folder
-            model_path = os.path.join(model_path, f"task{args.task_id}_model.pth")
+            model_path = os.path.join(model_path, f"task{model_index}_model.pth")
             sd, cfg, previous_mask = torch_load_model(
                 model_path, map_location=args.device_id
             )
