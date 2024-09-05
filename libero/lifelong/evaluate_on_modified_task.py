@@ -142,6 +142,7 @@ def main():
     # exit(0)
 
     # find the checkpoint
+    model_path = ""
     try:
         if args.algo == "multitask":
             # model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
@@ -315,7 +316,7 @@ def main():
         # # yy: save video
         # video_writer.save()
     print(
-        f"[info] finish for ckpt at {args.model_path} in {t.get_elapsed_time()} sec for rollouts"
+        f"[info] finish for ckpt at {model_path} in {t.get_elapsed_time()} sec for rollouts"
     )
     print(f"Results are saved at {save_folder}")
     print(test_loss, success_rate)

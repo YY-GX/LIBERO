@@ -149,6 +149,13 @@ def main():
     # yy: directly modify here for run files
     experiment_id = args.run_id
     run_folder = os.path.join(experiment_dir, f"run_{experiment_id:03d}")
+
+    model_path = os.path.join(run_folder, f"task{args.load_task}_model.pth")
+    sd, cfg, previous_mask = torch_load_model(
+        model_path, map_location=args.device_id
+    )
+    exit(0)
+
     try:
         if args.algo == "multitask":
             model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
