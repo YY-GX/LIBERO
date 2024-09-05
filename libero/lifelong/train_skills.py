@@ -94,7 +94,7 @@ def main(hydra_cfg):
     cfg.bddl_folder = cfg.bddl_folder or get_libero_path("bddl_files")
     cfg.init_states_folder = cfg.init_states_folder or get_libero_path("init_states")
 
-    benchmark = get_benchmark(cfg.benchmark_name)(cfg.data.task_order_index)
+    benchmark = get_benchmark(cfg.benchmark_name)(cfg.data.task_order_index, n_tasks_=1)
     # yy: libero/libero/benchmark/__init__.py - line 123 is responsible for the n_manip_tasks
     n_manip_tasks = benchmark.n_tasks
 
