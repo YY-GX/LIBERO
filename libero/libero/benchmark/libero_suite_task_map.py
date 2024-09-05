@@ -154,15 +154,15 @@ libero_task_map = {
 
 
         # 10_19 == run_003
-        # "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet",
-        # "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle",
-        # "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl",
-        # "KITCHEN_SCENE3_put_the_frying_pan_on_the_stove",
-        # "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove",
-        # "KITCHEN_SCENE3_turn_on_the_stove",
-        # "KITCHEN_SCENE4_close_the_bottom_drawer_of_the_cabinet",
-        # "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet",
-        # "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet",
+        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet",
+        "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle",
+        "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl",
+        "KITCHEN_SCENE3_put_the_frying_pan_on_the_stove",
+        "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove",
+        "KITCHEN_SCENE3_turn_on_the_stove",
+        "KITCHEN_SCENE4_close_the_bottom_drawer_of_the_cabinet",
+        "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet",
+        "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet",
         "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet",
 
         # 20_29 == run_004

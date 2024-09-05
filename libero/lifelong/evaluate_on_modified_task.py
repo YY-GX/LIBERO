@@ -157,9 +157,10 @@ def parse_args():
             range(0, 50, 5)
         ), "[error] ep should be in [0, 5, ..., 50]"
     else:
+        # yy: modified by me - original is 10
         assert args.load_task in list(
-            range(10)
-        ), "[error] load_task should be in [0, ..., 9]"
+            range(100)
+        ), "[error] load_task should be in [0, ..., 99]"
     return args
 
 
@@ -368,3 +369,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
