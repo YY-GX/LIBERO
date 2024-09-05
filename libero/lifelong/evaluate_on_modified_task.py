@@ -78,7 +78,7 @@ python lifelong/evaluate_on_modified_task.py --seed 1 --benchmark "modified_libe
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
     # parser.add_argument("--experiment_dir", type=str, default="experiments")
-    parser.add_argument("--model_path", type=str, default="/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/train_base_90_v0/Sequential/BCTransformerPolicy_seed10000/00_09/task0_model.pth")
+    parser.add_argument("--model_path_folder", type=str, default="/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/train_base_90_v0/Sequential/BCTransformerPolicy_seed10000/00_09/task0_model.pth")
     # for which task suite
     parser.add_argument(
         "--benchmark",
@@ -145,13 +145,15 @@ def main():
     try:
         if args.algo == "multitask":
             # model_path = os.path.join(run_folder, f"multitask_model_ep{args.ep}.pth")
-            model_path = args.model_path
+            model_path = args.model_path_folder
+            model_path = os.path.join(model_path, f"task{args.task_id}_model.pth")
             sd, cfg, previous_mask = torch_load_model(
                 model_path, map_location=args.device_id
             )
         else:
             # model_path = os.path.join(run_folder, f"task{args.load_task}_model.pth")
-            model_path = args.model_path
+            model_path = args.model_path_folder
+            model_path = os.path.join(model_path, f"task{args.task_id}_model.pth")
             sd, cfg, previous_mask = torch_load_model(
                 model_path, map_location=args.device_id
             )

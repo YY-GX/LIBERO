@@ -33,5 +33,5 @@ sbatch --gpus 1 --cpus-per-task=8 \
 #python lifelong/evaluate.py --run_id 3 --task_id 7 --load_task 7 --version "train_base_90_v0" --seed 10000 --device_id 0 --benchmark "libero_90" --policy "bc_transformer_policy" --algo "base" --save-videos && \
 #python lifelong/evaluate.py --run_id 3 --task_id 8 --load_task 8 --version "train_base_90_v0" --seed 10000 --device_id 0 --benchmark "libero_90" --policy "bc_transformer_policy" --algo "base" --save-videos && \
 #python lifelong/evaluate.py --run_id 3 --task_id 9 --load_task 9 --version "train_base_90_v0" --seed 10000 --device_id 0 --benchmark "libero_90" --policy "bc_transformer_policy" --algo "base" --save-videos
-
+#
 
