@@ -42,6 +42,8 @@ def create_init(bddl_file_name, suite_name):
 suite_name = "modified_libero"
 folder = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/modified_libero"
 for bddl_file_name in os.listdir(folder):
+    if not (".bddl" in bddl_file_name):
+        continue
     print(bddl_file_name)
     bddl_file_name_pth = os.path.join(folder, bddl_file_name)
     create_init(bddl_file_name_pth, suite_name)
