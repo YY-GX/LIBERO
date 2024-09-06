@@ -271,6 +271,9 @@ def main():
     # yy: TODO: I modify here - change back when need to eval a chain of skills
     # descriptions = [benchmark.get_task(i).language for i in range(10)]
     descriptions = [benchmark.get_task(i).language for i in range(1)]
+    print("======= Task Language =======")
+    print(f"{descriptions[0]}")
+    print("======= Task Language =======")
     task_embs = get_task_embs(cfg, descriptions)
     benchmark.set_task_embs(task_embs)
 
