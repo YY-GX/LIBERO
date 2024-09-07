@@ -21,11 +21,12 @@ task_embedding_format: "bert"
 task_embedding_one_hot_offset: 1
 pretrain: false
 pretrain_model_path: ""
-#benchmark_name: "LIBERO_90"
-benchmark_name: "yy_try"
+benchmark_name: "libero_90"
+#benchmark_name: "yy_try"
 #version: "kitchen_v0"
-version: "shelf_move_potato_v0"
+version: "training_eval_skills_original_env"
 # yy: Do you wanna to split the 50 demos into 40 & 10?
-is_split: true
-#yy: Do you wanna skill rollout eval (only do once after all training)?
+is_split: false
+# yy: Do you wanna disable skill rollout eval (only do once after all training)?
 is_customize_task: true
+task_num_to_use: 2

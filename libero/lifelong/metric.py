@@ -51,8 +51,10 @@ def raw_obs_to_tensor_obs(obs, task_emb, cfg):
     return data
 
 
+# yy: I add the `@torch.no_grad()`
+@torch.no_grad()
 def evaluate_one_task_success(
-    cfg, algo, task, task_emb, task_id, sim_states=None, task_str=""
+    cfg, algo, task, task_emb, task_id, sim_states=None, task_str="", video_folder=""
 ):
     """
     Evaluate a single task's success rate
@@ -78,6 +80,7 @@ def evaluate_one_task_success(
         }
 
         env_num = min(cfg.eval.num_procs, cfg.eval.n_eval) if cfg.eval.use_mp else 1
+        # yy: 1
         eval_loop_num = (cfg.eval.n_eval + env_num - 1) // env_num
 
         # Try to handle the frame buffer issue
@@ -108,6 +111,10 @@ def evaluate_one_task_success(
         )
         init_states = torch.load(init_states_path)
         num_success = 0
+
+        if video_folder:
+            video_writer_agentview = VideoWriter(os.path.join(video_folder, "agentview"), save_video=True, single_video=False)
+            video_writer_wristcameraview = VideoWriter(os.path.join(video_folder, "wristcameraview"), save_video=True, single_video=False)
         for i in range(eval_loop_num):
             env.reset()
             indices = np.arange(i * env_num, (i + 1) * env_num) % init_states.shape[0]
@@ -136,6 +143,13 @@ def evaluate_one_task_success(
                 actions = algo.policy.get_action(data)
 
                 obs, reward, done, info = env.step(actions)
+                if video_folder:
+                    video_writer_agentview.append_vector_obs(
+                        obs, dones, camera_name="agentview_image"
+                    )
+                    video_writer_wristcameraview.append_vector_obs(
+                        obs, dones, camera_name="robot0_eye_in_hand_image"
+                    )
 
                 # record the sim states for replay purpose
                 if task_str != "":
@@ -156,6 +170,9 @@ def evaluate_one_task_success(
                 if i * env_num + k < cfg.eval.n_eval:
                     num_success += int(dones[k])
 
+        if video_folder:
+            video_writer_agentview.save(save_video_name="video_agentview")
+            video_writer_wristcameraview.save(save_video_name="video_wristcameraview")
         success_rate = num_success / cfg.eval.n_eval
         env.close()
         gc.collect()
@@ -168,7 +185,7 @@ def evaluate_one_task_success(
     return success_rate
 
 
-def evaluate_success(cfg, algo, benchmark, task_ids, result_summary=None):
+def evaluate_success(cfg, algo, benchmark, task_ids, result_summary=None, video_folder=""):
     """
     Evaluate the success rate for all task in task_ids.
     """
@@ -180,7 +197,7 @@ def evaluate_success(cfg, algo, benchmark, task_ids, result_summary=None):
         task_str = f"k{task_ids[-1]}_p{i}"
         curr_summary = result_summary[task_str] if result_summary is not None else None
         success_rate = evaluate_one_task_success(
-            cfg, algo, task_i, task_emb, i, sim_states=curr_summary, task_str=task_str
+            cfg, algo, task_i, task_emb, i, sim_states=curr_summary, task_str=task_str, video_folder=video_folder
         )
         successes.append(success_rate)
     return np.array(successes)
