@@ -28,6 +28,8 @@ from libero.lifelong.utils import (
     create_experiment_dir,
     get_task_embs,
 )
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 # Used when need to train based on my customized demos
