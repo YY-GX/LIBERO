@@ -233,6 +233,7 @@ class LIBERO_GOAL(Benchmark):
 class LIBERO_90(Benchmark):
     def __init__(self, task_order_index=0, n_tasks_=10):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
+        # yy: I comment this
         # assert (
         #     task_order_index == 0
         # ), "[error] currently only support task order for 10-task suites"
