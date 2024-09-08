@@ -140,6 +140,7 @@ class Benchmark(abc.ABC):
         self.task_embs = None
         self.task_order_index = task_order_index
         self.n_tasks_ = n_tasks_
+        print(f"[INFO] Benchmark task order index: {self.task_order_index}")
 
     def _make_benchmark(self):
         tasks = list(task_maps[self.name].values())
