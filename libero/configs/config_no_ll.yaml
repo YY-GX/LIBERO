@@ -29,4 +29,4 @@ version: "training_eval_skills_original_env"
 is_split: false
 # yy: Do you wanna disable skill rollout eval (only do once after all training)?
 is_customize_task: true
-task_num_to_use: 2
+task_num_to_use: null
