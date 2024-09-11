@@ -162,6 +162,7 @@ def parse_args():
     parser.add_argument("--device_id", type=int)
     args = parser.parse_args()
     args.device_id = "cuda:" + str(args.device_id)
+    return args
 
 def main():
     args = parse_args()
