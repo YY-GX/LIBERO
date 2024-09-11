@@ -277,8 +277,5 @@ class yy_try(Benchmark):
 class modified_libero(Benchmark):
     def __init__(self, task_order_index=0, n_tasks_=1):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
-        assert (
-            task_order_index == 0
-        ), "[error] currently only support task order for 10-task suites"
         self.name = "modified_libero"
         self._make_benchmark()
