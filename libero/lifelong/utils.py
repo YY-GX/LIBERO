@@ -108,18 +108,18 @@ def compute_flops(algo, dataset, cfg):
 
 def create_experiment_dir(cfg, version=None):
     prefix = "experiments"
-    if cfg.pretrain_model_path != "":
-        prefix += "_finetune"
-    if cfg.data.task_order_index > 0:
-        prefix += f"_permute{cfg.data.task_order_index}"
-    if cfg.task_embedding_format == "one-hot":
-        prefix += f"_onehot"
-    if cfg.task_embedding_format == "clip":
-        prefix += f"_clip"
-    if cfg.task_embedding_format == "gpt2":
-        prefix += f"_gpt2"
-    if cfg.task_embedding_format == "roberta":
-        prefix += f"_roberta"
+    # if cfg.pretrain_model_path != "":
+    #     prefix += "_finetune"
+    # if cfg.data.task_order_index > 0:
+    #     prefix += f"_permute{cfg.data.task_order_index}"
+    # if cfg.task_embedding_format == "one-hot":
+    #     prefix += f"_onehot"
+    # if cfg.task_embedding_format == "clip":
+    #     prefix += f"_clip"
+    # if cfg.task_embedding_format == "gpt2":
+    #     prefix += f"_gpt2"
+    # if cfg.task_embedding_format == "roberta":
+    #     prefix += f"_roberta"
 
     if version:
         experiment_dir = (
