@@ -3,8 +3,8 @@
 defaults:
   - _self_
   - data: default
-#  - policy: bc_transformer_policy
-  - policy: bc_rnn_policy
+  - policy: bc_transformer_policy
+#  - policy: bc_rnn_policy
 #  - policy: bc_vilt_policy
   - train: default
   - eval: default
