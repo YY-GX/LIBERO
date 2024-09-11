@@ -146,7 +146,7 @@ algo_map = {
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
-    parser.add_argument("--model_path_folder", type=str, default="/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/run_001/task0_model.pth")
+    parser.add_argument("--model_path_folder", type=str, default="/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/00_09/")
     parser.add_argument(
         "--benchmark",
         type=str,
@@ -157,7 +157,7 @@ def parse_args():
     parser.add_argument("--task_num_to_use", type=int,
                         default=None)
     parser.add_argument("--task_order_index", type=int,
-                        default=0)
+                        default=4)
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--device_id", type=int)
     args = parser.parse_args()
@@ -167,7 +167,7 @@ def main():
     args = parse_args()
     
     # Get the benchmarks
-    benchmark = get_benchmark(args.benchmark_name)(args.task_order_index, n_tasks_=args.task_num_to_use)
+    benchmark = get_benchmark(args.benchmark)(args.task_order_index, n_tasks_=args.task_num_to_use)
     n_tasks = benchmark.n_tasks
 
     # Obtain language descriptions
