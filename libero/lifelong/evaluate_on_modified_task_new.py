@@ -21,6 +21,9 @@ from libero.lifelong.utils import (
 from libero.lifelong.main import get_task_embs
 import robomimic.utils.obs_utils as ObsUtils
 from libero.lifelong.algos import get_algo_class
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 # yy: map from modified benchmark to original path:
 # 00-09 (00-10 for modified)
@@ -179,7 +182,8 @@ def main():
     print("======= Tasks Language =======")
 
     succ_list = []
-    for task_idx in range(n_tasks):    
+    for task_idx in range(n_tasks):
+        print(f">> Evaluate on modified Task{task_idx}")
         # Obtain useful info from saved model - checkpoints / cfg
         index_mapping = create_index_mapping(modified_mapping)
         model_index = index_mapping[task_idx]  # model_index is the id for original model index
@@ -196,6 +200,7 @@ def main():
         cfg.init_states_folder = get_libero_path("init_states")
         cfg.device = args.device_id
         save_dir = os.path.join(cfg.experiment_dir, f"evaluation_task{task_idx}_on_modified_envs")
+        print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
 
         # Create algo
