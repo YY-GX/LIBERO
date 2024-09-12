@@ -182,6 +182,7 @@ def main():
     print("======= Tasks Language =======")
 
     succ_list = []
+    eval_task_id = []
     for task_idx in range(n_tasks):
         print(f">> Evaluate on modified Task{task_idx}")
         # Obtain useful info from saved model - checkpoints / cfg
@@ -189,6 +190,10 @@ def main():
         model_index = index_mapping[task_idx]  # model_index is the id for original model index
         model_path = args.model_path_folder
         model_path = os.path.join(model_path, f"task{model_index}_model.pth")
+        if not os.path.exists(model_path):
+            print(f">> {model_path} does NOT exist!")
+            print(f">> Modified env_{task_idx} evaluation fails.")
+            continue
         sd, cfg, previous_mask = torch_load_model(
             model_path, map_location=args.device_id
         )
@@ -311,7 +316,9 @@ def main():
         )
         print(f"Results are saved at {save_stats_pth}")
         print(test_loss, success_rate)
+        eval_task_id.append(task_idx)
 
+    print(f"[INFO] Finish evaluating modified env list: {eval_task_id}")
 
 if __name__ == "__main__":
     main()
