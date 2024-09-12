@@ -204,7 +204,7 @@ def main():
         cfg.bddl_folder = get_libero_path("bddl_files")
         cfg.init_states_folder = get_libero_path("init_states")
         cfg.device = args.device_id
-        save_dir = os.path.join(model_path, f"evaluation_task{task_idx}_on_modified_envs")
+        save_dir = os.path.join(args.model_path_folder, f"evaluation_task{task_idx}_on_modified_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
 
