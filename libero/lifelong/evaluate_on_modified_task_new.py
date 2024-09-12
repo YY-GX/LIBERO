@@ -199,7 +199,7 @@ def main():
         cfg.bddl_folder = get_libero_path("bddl_files")
         cfg.init_states_folder = get_libero_path("init_states")
         cfg.device = args.device_id
-        save_dir = os.path.join(cfg.experiment_dir, f"evaluation_task{task_idx}_on_modified_envs")
+        save_dir = os.path.join(model_path, f"evaluation_task{task_idx}_on_modified_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
 
@@ -220,7 +220,7 @@ def main():
         algo.eval()
         test_loss = 0.0
 
-        save_folder = os.path.join(
+        save_stats_pth = os.path.join(
             save_dir,
             f"load_ori_{model_index}_on_modified_{task_idx}.stats",
         )
@@ -230,7 +230,6 @@ def main():
             f"load_ori_{model_index}_on_modified_{task_idx}_videos",
         )
 
-        os.system(f"mkdir -p {save_folder}")
         os.system(f"mkdir -p {video_folder}")
 
         with Timer() as t:
@@ -301,14 +300,16 @@ def main():
             }
 
             succ_list.append(success_rate)
-            torch.save(eval_stats, save_folder)
+            torch.save(eval_stats, save_stats_pth)
+            with open(os.path.join(cfg.experiment_dir, f"succ_list_evaluation_on_modified_envs.npy"), 'wb') as f:
+                np.save(f, np.array(succ_list))
 
         with open(os.path.join(cfg.experiment_dir, f"succ_list_evaluation_on_modified_envs.npy"), 'wb') as f:
             np.save(f, np.array(succ_list))
         print(
             f"[info] finish for ckpt at {model_path} in {t.get_elapsed_time()} sec for rollouts"
         )
-        print(f"Results are saved at {save_folder}")
+        print(f"Results are saved at {save_stats_pth}")
         print(test_loss, success_rate)
 
 
