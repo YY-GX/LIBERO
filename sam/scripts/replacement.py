@@ -36,6 +36,7 @@ def obtain_mask(
         points_prompt,
 ):
     """
+
     Input:
         img: numpy arr - [512, 512, 3]
         points_prompt: numpy arr N*2 - [[p_x_1, p_y_1], [p_x_2, p_y_2]]
