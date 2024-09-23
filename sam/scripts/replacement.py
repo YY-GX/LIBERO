@@ -154,7 +154,7 @@ def inpainting(
     # remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
     # pipeline.enable_xformers_memory_efficient_attention()
     image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=img, mask_image=mask_img).images[0]
-    output_dir = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/sam/outputs_test/inpaint_img.png"
+    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/inpaint_img.png"
     image.save(output_dir)
     image = np.array(image)
     print(type(image), image.shape)
