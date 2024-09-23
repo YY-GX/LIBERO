@@ -158,7 +158,7 @@ def add_ori_obj(
     pass
 
 if __name__ == "__main__":
-    img_path = ""
+    img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
     img, _ = groundingdino.util.inference.load_image(img_path)
     mask = obtain_mask(
         img,
