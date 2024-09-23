@@ -187,3 +187,9 @@ if __name__ == "__main__":
     )
     print(mask)
     print(mask.shape)
+    inpainting(
+        img=img,
+        mask_img=mask,
+        prompt="",
+        negative_prompt="bad anatomy, deformed, ugly, disfigured"
+    )
