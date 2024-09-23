@@ -168,3 +168,4 @@ if __name__ == "__main__":
     )
     print(mask)
     print(mask.shape)
+    print(np.sum(mask == 1) / np.size(mask))
