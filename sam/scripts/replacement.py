@@ -12,6 +12,7 @@ from sam2.sam2_image_predictor import SAM2ImagePredictor
 import groundingdino
 import groundingdino.datasets.transforms as T
 from groundingdino.util.inference import load_model, predict, annotate
+from PIL import Image
 
 
 def load_image(image):
@@ -22,11 +23,10 @@ def load_image(image):
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ]
     )
-    print(image.shape)
-    a = transform(image, None)
-    print(a)
-    image_transformed, _ = transform(image, None)
+    image_transformed, _ = transform(Image.fromarray(image), None)
     return image, image_transformed
+
+
 
 # =======================================
 
