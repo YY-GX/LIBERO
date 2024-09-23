@@ -153,6 +153,8 @@ def inpainting(
     pipeline.enable_model_cpu_offload()
     # remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
     # pipeline.enable_xformers_memory_efficient_attention()
+    print(type(img), img.shape)
+    print(type(mask_img), mask_img.shape)
     image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=img, mask_image=mask_img).images[0]
     output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/inpaint_img.png"
     image.save(output_dir)
