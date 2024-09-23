@@ -9,9 +9,9 @@ from pathlib import Path
 from torchvision.ops import box_convert
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
-# import groundingdino
+import groundingdino
 import groundingdino.datasets.transforms as T
-from groundingdino.util.inference import load_model, load_image, predict, annotate
+from groundingdino.util.inference import load_model, predict, annotate
 
 
 def load_image(image):
@@ -159,7 +159,7 @@ def add_ori_obj(
 
 if __name__ == "__main__":
     img_path = ""
-    img, _ = load_image(img_path)
+    img, _ = groundingdino.util.inference.load_image(img_path)
     mask = obtain_mask(
         img,
         text_prompt="popcorn box."
