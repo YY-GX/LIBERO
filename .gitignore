@@ -17,3 +17,5 @@ logs/
 libero.egg-info/
 .vscode/
 videos/
+./sam/grounded_outputs
+./sam/try_imgs

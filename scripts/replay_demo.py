@@ -289,6 +289,8 @@ if __name__ == "__main__":
     config = {
         "robots": args.robots,
         "controller_configs": controller_config,
+        "camera_heights": 128,
+        "camera_widths": 128,
     }
 
     assert os.path.exists(args.bddl_file)
@@ -303,14 +305,15 @@ if __name__ == "__main__":
         config["env_configuration"] = args.config
     print(language_instruction)
     print(TASK_MAPPING[problem_name])
+    print(args.bddl_file)
     env = TASK_MAPPING[problem_name](
         bddl_file_name=args.bddl_file,
         **config,
         has_renderer=True,
-        has_offscreen_renderer=False,
+        has_offscreen_renderer=True,
         render_camera=args.camera,
         ignore_done=True,
-        use_camera_obs=False,
+        use_camera_obs=True,
         reward_shaping=True,
         control_freq=20,
     )
@@ -329,6 +332,8 @@ if __name__ == "__main__":
     demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/yy_try/KITCHEN_SCENE_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_demo.hdf5"
     # demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_demo.hdf5"
     demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/yy_try/SHELF_TABLE_SCENE_moving_popcorn_from_table_to_topside_of_wooden_shelf_demo.hdf5"
+    demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_demo.hdf5"
+    demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle_demo.hdf5"
     data_dict = load_hdf5_file_to_dict(demo_pth)['data']
     action_to_remove_1 = np.array([0., 0., 0., 0., 0., -0., -1.])
     action_to_remove_2 = np.array([0., 0., 0., 0., 0., -0., 1.])
@@ -339,14 +344,25 @@ if __name__ == "__main__":
         print(f">> demo_idx: {demo_idx}")
         demo = data_dict[demo_idx]
         actions = demo['actions']
-        set_init_state(env, demo['states'][0])
+        # set_init_state(env, demo['states'][0])
         for i, action in enumerate(actions):
             # if np.all(action == action_to_remove_1) or np.all(action == action_to_remove_2):
             #     print("======= JUMP =======")
             #     continue
-            print(f"> action idx: {i}")
-            print(action)
-            env.step(action)
+            # print(f"> action idx: {i}")
+            # print(action)
+
+            obs, _, _, _ = env.step(action)
+            # print(obs.keys())
+            # print(obs['agentview_image'].shape)
+            # from PIL import Image
+            # import numpy as np
+            # # Convert the NumPy array to an image
+            # image = Image.fromarray(obs['agentview_image'])
+            # # Save the image
+            # image.save("image_128.png")
+            # exit(0)
+
             env.render()
         env.reset()
         env.render()
