@@ -14,6 +14,11 @@ import groundingdino.datasets.transforms as T
 from groundingdino.util.inference import load_model, predict, annotate
 from PIL import Image
 
+import torch
+from diffusers import AutoPipelineForInpainting
+from diffusers.utils import load_image, make_image_grid
+
+
 
 def load_image(image):
     transform = T.Compose(
@@ -28,7 +33,7 @@ def load_image(image):
 
 
 
-# =======================================
+# --------------------------------------------------------------------------------------------------------------------
 
 def obtain_mask(
         img,
@@ -136,13 +141,27 @@ def inpainting(
     """
     Input:
         img [512, 512, 3]
-        mask_img
+        mask_img [512, 512]
         prompt: str
         text_prompt: str
     Return:
         img [512, 512, 3]
     """
-    pass
+    pipeline = AutoPipelineForInpainting.from_pretrained(
+        "kandinsky-community/kandinsky-2-2-decoder-inpaint", torch_dtype=torch.float16
+    )
+    pipeline.enable_model_cpu_offload()
+    # remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
+    pipeline.enable_xformers_memory_efficient_attention()
+    image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=img, mask_image=mask_img).images[0]
+    print(type(image), image.shape)
+
+    output_dir = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/sam/outputs_test"
+    image = Image.fromarray(image)
+    image.save(output_dir)
+    return image
+
+
 
 
 def add_ori_obj(
@@ -168,4 +187,3 @@ if __name__ == "__main__":
     )
     print(mask)
     print(mask.shape)
-    print(np.sum(mask == 1) / np.size(mask))
