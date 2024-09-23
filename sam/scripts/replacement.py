@@ -22,6 +22,9 @@ def load_image(image):
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ]
     )
+    print(image.shape)
+    a = transform(image, None)
+    print(a)
     image_transformed, _ = transform(image, None)
     return image, image_transformed
 
