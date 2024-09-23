@@ -29,8 +29,8 @@ def load_image(image):
 
 def obtain_mask(
         img,
+        text_prompt,
         points_prompt,
-        text_prompt
 ):
     """
     Input:
@@ -162,7 +162,8 @@ if __name__ == "__main__":
     img, _ = groundingdino.util.inference.load_image(img_path)
     mask = obtain_mask(
         img,
-        text_prompt="popcorn box."
+        text_prompt="popcorn box.",
+        points_prompt=None
     )
     print(mask)
     print(mask.shape)
