@@ -185,8 +185,9 @@ if __name__ == "__main__":
         text_prompt="popcorn box.",
         points_prompt=None
     )
-    print(mask)
     print(mask.shape)
+    img = img[:2048, :2048]
+    mask = mask[:2048, :2048]
     img = inpainting(
         img=img,
         mask_img=mask,
