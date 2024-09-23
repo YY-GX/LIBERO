@@ -115,7 +115,7 @@ def obtain_mask(
             multimask_output=False,
         )
 
-    if masks == None:
+    if not masks:
         raise TypeError("masks object is None! Ensure either text or points_prompt to be not NoneType")
 
     # convert the shape to (n, H, W)
