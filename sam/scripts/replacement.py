@@ -9,15 +9,17 @@ from pathlib import Path
 from torchvision.ops import box_convert
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
-import groundingdino
+# import groundingdino
+import groundingdino.datasets.transforms as T
+from groundingdino.util.inference import load_model, load_image, predict, annotate
 
 
 def load_image(image):
-    transform = groundingdino.T.Compose(
+    transform = T.Compose(
         [
-            groundingdino.T.RandomResize([800], max_size=1333),
-            groundingdino.T.ToTensor(),
-            groundingdino.T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+            T.RandomResize([800], max_size=1333),
+            T.ToTensor(),
+            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ]
     )
     image_transformed, _ = transform(image, None)
@@ -57,7 +59,7 @@ def obtain_mask(
     sam2_predictor = SAM2ImagePredictor(sam2_model)
 
     # build grounding dino model
-    grounding_model = groundingdino.load_model(
+    grounding_model = load_model(
         model_config_path=GROUNDING_DINO_CONFIG,
         model_checkpoint_path=GROUNDING_DINO_CHECKPOINT,
         device=DEVICE
@@ -69,7 +71,7 @@ def obtain_mask(
     sam2_predictor.set_image(image_source)
 
     if text:
-        boxes, confidences, labels = groundingdino.predict(
+        boxes, confidences, labels = predict(
             model=grounding_model,
             image=image,
             caption=text,
@@ -157,7 +159,7 @@ def add_ori_obj(
 
 if __name__ == "__main__":
     img_path = ""
-    img, _ = groundingdino.load_image(img_path)
+    img, _ = load_image(img_path)
     mask = obtain_mask(
         img,
         text_prompt="popcorn box."
