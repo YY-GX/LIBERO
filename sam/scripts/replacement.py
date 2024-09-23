@@ -152,13 +152,13 @@ def inpainting(
     )
     pipeline.enable_model_cpu_offload()
     # remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
-    pipeline.enable_xformers_memory_efficient_attention()
+    # pipeline.enable_xformers_memory_efficient_attention()
     image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=img, mask_image=mask_img).images[0]
     print(type(image), image.shape)
 
     output_dir = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/sam/outputs_test"
-    image = Image.fromarray(image)
-    image.save(output_dir)
+    image_save = Image.fromarray(image)
+    image_save.save(output_dir)
     return image
 
 
@@ -187,9 +187,10 @@ if __name__ == "__main__":
     )
     print(mask)
     print(mask.shape)
-    inpainting(
+    img = inpainting(
         img=img,
         mask_img=mask,
         prompt="",
         negative_prompt="bad anatomy, deformed, ugly, disfigured"
     )
+    print(img.shape)
