@@ -178,6 +178,7 @@ def add_ori_obj(
 
 if __name__ == "__main__":
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
+    img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCViLTPolicy_seed10000/all/eval_tasks_on_modified_envs_seed10000/evaluation_task1_on_modified_envs/load_ori_1_on_modified_1_videos/agentview/video_agentview_0/high_res_v3.png"
     img, _ = groundingdino.util.inference.load_image(img_path)
     mask = obtain_mask(
         img,
