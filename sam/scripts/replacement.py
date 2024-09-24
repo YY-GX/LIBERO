@@ -143,6 +143,8 @@ def obtain_mask(
             multimask_output=False,
         )
 
+        confidences = np.array(confidences)
+
     else:
         # build SAM2 image predictor
         sam2_checkpoint = SAM2_CHECKPOINT
