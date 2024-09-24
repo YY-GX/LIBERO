@@ -214,7 +214,6 @@ def visualize_mask(
         class_id=class_ids
     )
 
-
     box_annotator = sv.BoxAnnotator()
     annotated_frame = box_annotator.annotate(scene=img.copy(), detections=detections)
 
