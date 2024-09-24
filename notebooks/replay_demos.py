@@ -56,7 +56,9 @@ for demo_idx in list(data_dict.keys()):
         if is_wrist:
             image = Image.fromarray(obs['robot0_eye_in_hand_image'])
         else:
-            image = Image.fromarray(obs['agentview_image'])
+            image = obs['agentview_image']
+            image = np.flip(image, axis=0)
+            image = Image.fromarray(image)
         image.save(os.path.join(img_saved_folder, f"demo_{demo_idx}_idx{i}.png"))
     env.reset()
     exit(0)

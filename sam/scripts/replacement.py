@@ -18,6 +18,13 @@ import torch
 from diffusers import AutoPipelineForInpainting
 from diffusers.utils import load_image, make_image_grid
 
+# dds cloudapi for Grounding DINO 1.5
+from dds_cloudapi_sdk import Config
+from dds_cloudapi_sdk import Client
+from dds_cloudapi_sdk import DetectionTask
+from dds_cloudapi_sdk import TextPrompt
+from dds_cloudapi_sdk import DetectionModel
+from dds_cloudapi_sdk import DetectionTarget
 
 
 def load_image(image):
@@ -39,6 +46,7 @@ def obtain_mask(
         img,
         text_prompt,
         points_prompt,
+        is_dino15=False
 ):
     """
 
@@ -61,42 +69,72 @@ def obtain_mask(
     GROUNDING_DINO_CHECKPOINT = "/mnt/arc/yygx/pkgs_baselines/Grounded-SAM-2/gdino_checkpoints/groundingdino_swint_ogc.pth"
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-    # build SAM2 image predictor
-    sam2_checkpoint = SAM2_CHECKPOINT
-    model_cfg = SAM2_MODEL_CONFIG
-    sam2_model = build_sam2(model_cfg, sam2_checkpoint, device=DEVICE)
-    sam2_predictor = SAM2ImagePredictor(sam2_model)
+    if is_dino15:
+        API_TOKEN = "3ada5c5a6347921ce6fec191f01a3b63"
+        GROUNDING_MODEL = DetectionModel.GDino1_5_Pro
 
-    # build grounding dino model
-    grounding_model = load_model(
-        model_config_path=GROUNDING_DINO_CONFIG,
-        model_checkpoint_path=GROUNDING_DINO_CHECKPOINT,
-        device=DEVICE
-    )
+        """
+        Prompt Grounding DINO 1.5 with Text for Box Prompt Generation with Cloud API
+        """
+        # Step 1: initialize the config
+        token = API_TOKEN
+        config = Config(token)
 
-    # setup the input image and text prompt for SAM 2 and Grounding DINO
-    text = TEXT_PROMPT
-    image_source, image = load_image(img)
-    sam2_predictor.set_image(image_source)
+        # Step 2: initialize the client
+        client = Client(config)
 
-    if text:
-        boxes, confidences, labels = predict(
-            model=grounding_model,
-            image=image,
-            caption=text,
-            box_threshold=BOX_THRESHOLD,
-            text_threshold=TEXT_THRESHOLD,
+        # Step 3: run the task by DetectionTask class
+        # image_url = "https://algosplt.oss-cn-shenzhen.aliyuncs.com/test_files/tasks/detection/iron_man.jpg"
+        # if you are processing local image file, upload them to DDS server to get the image url
+        Image.fromarray(img).save('./tmp_img.png')
+        img_path = './tmp_img.png'
+        image_url = client.upload_file(img_path)
+
+        task = DetectionTask(
+            image_url=image_url,
+            prompts=[TextPrompt(text=TEXT_PROMPT)],
+            targets=[DetectionTarget.BBox],  # detect bbox
+            model=GROUNDING_MODEL,  # detect with GroundingDino-1.5-Pro model
         )
 
-        # process the box prompt for SAM 2
-        h, w, _ = image_source.shape
-        boxes = boxes * torch.Tensor([w, h, w, h])
-        input_boxes = box_convert(boxes=boxes, in_fmt="cxcywh", out_fmt="xyxy").numpy()
-        torch.autocast(device_type="cuda", dtype=torch.bfloat16).__enter__()
+        client.run_task(task)
+        result = task.result
+
+        objects = result.objects  # the list of detected objects
+
+        input_boxes = []
+        confidences = []
+        class_names = []
+
+        for idx, obj in enumerate(objects):
+            input_boxes.append(obj.bbox)
+            confidences.append(obj.score)
+            class_names.append(obj.category)
+
+        input_boxes = np.array(input_boxes)
+
+        """
+        Init SAM 2 Model and Predict Mask with Box Prompt
+        """
+
+        # environment settings
+        # use bfloat16
+        torch.autocast(device_type=DEVICE, dtype=torch.bfloat16).__enter__()
+
         if torch.cuda.get_device_properties(0).major >= 8:
             # turn on tfloat32 for Ampere GPUs (https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices)
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
+
+        # build SAM2 image predictor
+        sam2_checkpoint = SAM2_CHECKPOINT
+        model_cfg = SAM2_MODEL_CONFIG
+        sam2_model = build_sam2(model_cfg, sam2_checkpoint, device=DEVICE)
+        sam2_predictor = SAM2ImagePredictor(sam2_model)
+
+        image = Image.open(img_path)
+
+        sam2_predictor.set_image(np.array(image.convert("RGB")))
 
         masks, scores, logits = sam2_predictor.predict(
             point_coords=None,
@@ -105,21 +143,67 @@ def obtain_mask(
             multimask_output=False,
         )
 
-    if points_prompt:
-        """
-          point_coords (np.ndarray or None): A Nx2 array of point prompts to the
-            model. Each point is in (X,Y) in pixels.
-          point_labels (np.ndarray or None): A length N array of labels for the
-            point prompts. 1 indicates a foreground point and 0 indicates a
-            background point.
-        """
-        masks, scores, logits = sam2_predictor.predict(
-            point_coords=points_prompt,
-            point_labels=None,
-            box=None,
-            multimask_output=False,
+    else:
+        # build SAM2 image predictor
+        sam2_checkpoint = SAM2_CHECKPOINT
+        model_cfg = SAM2_MODEL_CONFIG
+        sam2_model = build_sam2(model_cfg, sam2_checkpoint, device=DEVICE)
+        sam2_predictor = SAM2ImagePredictor(sam2_model)
+
+        # build grounding dino model
+        grounding_model = load_model(
+            model_config_path=GROUNDING_DINO_CONFIG,
+            model_checkpoint_path=GROUNDING_DINO_CHECKPOINT,
+            device=DEVICE
         )
 
+        # setup the input image and text prompt for SAM 2 and Grounding DINO
+        text = TEXT_PROMPT
+        image_source, image = load_image(img)
+        sam2_predictor.set_image(image_source)
+
+        if text:
+            boxes, confidences, labels = predict(
+                model=grounding_model,
+                image=image,
+                caption=text,
+                box_threshold=BOX_THRESHOLD,
+                text_threshold=TEXT_THRESHOLD,
+            )
+
+            # process the box prompt for SAM 2
+            h, w, _ = image_source.shape
+            boxes = boxes * torch.Tensor([w, h, w, h])
+            input_boxes = box_convert(boxes=boxes, in_fmt="cxcywh", out_fmt="xyxy").numpy()
+            torch.autocast(device_type="cuda", dtype=torch.bfloat16).__enter__()
+            if torch.cuda.get_device_properties(0).major >= 8:
+                # turn on tfloat32 for Ampere GPUs (https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices)
+                torch.backends.cuda.matmul.allow_tf32 = True
+                torch.backends.cudnn.allow_tf32 = True
+
+            masks, scores, logits = sam2_predictor.predict(
+                point_coords=None,
+                point_labels=None,
+                box=input_boxes,
+                multimask_output=False,
+            )
+
+        if points_prompt:
+            """
+              point_coords (np.ndarray or None): A Nx2 array of point prompts to the
+                model. Each point is in (X,Y) in pixels.
+              point_labels (np.ndarray or None): A length N array of labels for the
+                point prompts. 1 indicates a foreground point and 0 indicates a
+                background point.
+            """
+            masks, scores, logits = sam2_predictor.predict(
+                point_coords=points_prompt,
+                point_labels=None,
+                box=None,
+                multimask_output=False,
+            )
+
+    debug_info = [input_boxes, masks, confidences]
     # convert the shape to (n, H, W)
     if masks.ndim == 4:
         masks = masks.squeeze(1)
@@ -128,7 +212,6 @@ def obtain_mask(
     max_confidence_index = np.argmax(confidences)
     best_mask = masks[max_confidence_index]
 
-    debug_info = [input_boxes, masks, confidences, labels]
 
     return best_mask, debug_info
 
@@ -185,7 +268,6 @@ def visualize_mask(
         img,
         input_boxes,
         masks,
-        labels,
         confidences,
         OUTPUT_DIR
 
@@ -195,23 +277,13 @@ def visualize_mask(
     # labels = [labels]
     # confidences = [confidences]
 
-    class_names = labels
-
-    class_ids = np.array(list(range(len(class_names))))
-
-    labels = [
-        f"{class_name} {confidence:.2f}"
-        for class_name, confidence
-        in zip(class_names, confidences)
-    ]
-
     """
     Visualize image with supervision useful API
     """
     detections = sv.Detections(
         xyxy=input_boxes,  # (n, 4)
         mask=masks.astype(bool),  # (n, h, w)
-        class_id=class_ids
+        class_id=[i for i in masks.shape[0]]
     )
 
     box_annotator = sv.BoxAnnotator()
@@ -230,25 +302,25 @@ if __name__ == "__main__":
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
     output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
-    text_prompt = "wooden drawer."
+    text_prompt = "black drawer"
 
     img, _ = groundingdino.util.inference.load_image(img_path)
     mask, debug_info = obtain_mask(
         img,
         text_prompt=text_prompt,
         points_prompt=None,
+        is_dino15=True
     )
     print(mask.shape)
 
     # visualize
-    input_boxes, masks, confidences, labels = debug_info
+    input_boxes, masks, confidences = debug_info
     print(len(input_boxes))
     print(confidences)
     visualize_mask(
         img,
         input_boxes,
         masks,
-        labels,
         confidences,
         output_dir
     )
