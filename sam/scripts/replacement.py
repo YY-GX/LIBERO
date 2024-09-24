@@ -315,7 +315,7 @@ def OSM_correction(
         modified_img,
         text_prompts,
         output_dir,
-        color_threshold=30,
+        color_threshold=10,
         area_fraction=0.05,
         is_debug=True
 ):
@@ -364,6 +364,7 @@ def OSM_correction(
 
         # Calculate the absolute difference
         diff = np.abs(modified_masked_img - ori_masked_img)
+        print(diff)
 
         # Create a mask where the difference is greater than the color threshold
         color_diff_mask = np.any(diff > color_threshold, axis=-1).astype(np.uint8)
@@ -386,6 +387,8 @@ def OSM_correction(
         component_area_threshold = area_fraction * total_area_ori_mask
 
         for region in regionprops(labeled_mask):
+            if is_debug:
+                print(f"[DEBUG] region.area: {region.area}")
             if region.area > component_area_threshold:
                 # Create a binary mask for the current region
                 mask = (labeled_mask == region.label).astype(np.uint8)
