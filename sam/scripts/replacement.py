@@ -572,7 +572,7 @@ def test_replacement():
     ori_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs_ori/demo_demo_0_idx0.png"
     modified_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
     output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
-    text_prompts = ["black drawer"]
+    text_prompts = ["black cabinet"]
     modified_img, _ = groundingdino.util.inference.load_image(modified_img_path)
     ori_img, _ = groundingdino.util.inference.load_image(ori_img_path)
     restored_img_resized, restored_img = OSM_correction(
