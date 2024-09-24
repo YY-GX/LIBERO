@@ -190,10 +190,10 @@ def visualize_mask(
         OUTPUT_DIR
 
 ):
-    input_boxes = np.expand_dims(input_boxes, 0)
-    masks = np.expand_dims(masks, 0)
-    labels = [labels]
-    confidences = [confidences]
+    # input_boxes = np.expand_dims(input_boxes, 0)
+    # masks = np.expand_dims(masks, 0)
+    # labels = [labels]
+    # confidences = [confidences]
 
     class_names = labels
 
