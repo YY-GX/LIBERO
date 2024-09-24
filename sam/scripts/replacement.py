@@ -379,8 +379,8 @@ def OSM_correction(
 
         # yy: debug
         if is_debug:
-            imageio.imwrite(f'{results_output_dir}/mask_ori.png', ori_mask * 255)
-            imageio.imwrite(f'{results_output_dir}/mask_modified.png', modified_mask * 255)
+            imageio.imwrite(f'{results_output_dir}/mask_ori.png', (ori_mask * 255).astype(np.uint8))
+            imageio.imwrite(f'{results_output_dir}/mask_modified.png', (modified_mask * 255).astype(np.uint8))
             combined_mask = np.abs(modified_mask - ori_mask)
 
         # Label the connected components in the combined mask
