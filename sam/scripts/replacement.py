@@ -285,7 +285,7 @@ def visualize_mask(
     detections = sv.Detections(
         xyxy=input_boxes,  # (n, 4)
         mask=masks.astype(bool),  # (n, h, w)
-        class_id=[i for i in range(masks.shape[0])]
+        class_id=np.array([i for i in range(masks.shape[0])])
     )
 
     box_annotator = sv.BoxAnnotator()
