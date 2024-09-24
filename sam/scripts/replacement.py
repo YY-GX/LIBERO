@@ -315,6 +315,7 @@ def OSM_correction(
         modified_img,
         text_prompts,
         output_dir,
+        color_threshold=30,
         area_fraction=0.05,
         is_debug=True
 ):
@@ -329,6 +330,9 @@ def OSM_correction(
     for text_prompt in text_prompts:
         results_output_dir = Path(f"{output_dir}/{text_prompt}/results/")
         results_output_dir.mkdir(parents=True, exist_ok=True)
+        if is_debug:
+            Image.fromarray(ori_img).save(f'{results_output_dir}/ori_img.png')
+            Image.fromarray(modified_img).save(f'{results_output_dir}/modified_img.png')
         # yy: obtain seg for the object via text prompt
         ori_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/ori/")
         ori_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
@@ -361,15 +365,19 @@ def OSM_correction(
         # Calculate the absolute difference
         diff = np.abs(modified_masked_img - ori_masked_img)
 
-        # Create a mask where the difference is greater than 0
-        diff_mask = np.any(diff > 0, axis=-1).astype(np.uint8)
+        # Create a mask where the difference is greater than the color threshold
+        color_diff_mask = np.any(diff > color_threshold, axis=-1).astype(np.uint8)
 
-        # Label the connected components in the difference mask
-        labeled_mask = label(diff_mask)
+        # Combine the color difference mask with the original mask
+        combined_mask = color_diff_mask & (modified_mask & ori_mask)  # Keep only where both masks are true
+
+        # Label the connected components in the combined mask
+        labeled_mask = label(combined_mask)
 
         # Create a list to store masks larger than the threshold
         replacement_masks = []
 
+        # Calculate the area threshold based on the original mask
         total_area_ori_mask = np.sum(ori_mask)
         component_area_threshold = area_fraction * total_area_ori_mask
 
