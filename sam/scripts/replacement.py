@@ -315,7 +315,7 @@ def OSM_correction(
         modified_img,
         text_prompts,
         output_dir,
-        color_threshold=30,
+        color_threshold=20,
         area_fraction=0.05,
         is_debug=True,
         N_sampled_points=10
