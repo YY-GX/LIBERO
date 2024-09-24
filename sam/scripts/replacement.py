@@ -327,6 +327,7 @@ def OSM_correction(
     """
     for text_prompt in text_prompts:
         results_output_dir = Path(f"{output_dir}/{text_prompt}/results/")
+        results_output_dir.mkdir(parents=True, exist_ok=True)
         # yy: obtain seg for the object via text prompt
         ori_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/ori/")
         ori_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
