@@ -315,9 +315,10 @@ def OSM_correction(
         modified_img,
         text_prompts,
         output_dir,
-        color_threshold=30,
+        color_threshold=5,
         area_fraction=0.05,
-        is_debug=True
+        is_debug=True,
+        N_sampled_points=10
 ):
     """
     Input:
@@ -403,6 +404,75 @@ def OSM_correction(
         restored_img = paste_copy(replacement_masks_arr, ori_img, modified_img)
         # TODO: need to think about whether this is reasonable?
         modified_img = restored_img
+
+
+
+
+
+
+        # # yy: find diff part between ori_seg and modified_seg.
+        # # yy: if diff part is similar size as ori_seg, then it's a whole object.
+        # # yy: otherwise, it's a component object.
+        # # Create masked images
+        # ori_masked_img = ori_img * ori_mask[:, :, np.newaxis]
+        # modified_masked_img = modified_img * modified_mask[:, :, np.newaxis]
+        # # Calculate the absolute difference
+        # diff = np.abs(modified_masked_img - ori_masked_img)
+        # # Create a mask where the difference is greater than 0
+        # diff_mask = np.any(diff > 0, axis=-1).astype(np.uint8)
+        # # Label the connected components in the difference mask
+        # labeled_mask = label(diff_mask)
+        # # Create a list to store masks larger than the threshold
+        # component_masks = []
+        # object_mask = []
+        # total_area_ori_mask = np.sum(ori_mask)
+        # component_area_threshold = area_fraction * total_area_ori_mask
+        # for region in regionprops(labeled_mask):
+        #     area_ratio = region.area / total_area_ori_mask
+        #     if (area_ratio > .95) and (area_ratio < 1.05):
+        #         # Create a binary mask for the current region
+        #         mask = (labeled_mask == region.label).astype(np.uint8)
+        #         object_mask.append(mask[np.newaxis, :, :])
+        #         continue
+        #     if region.area > component_area_threshold:
+        #         # Create a binary mask for the current region
+        #         mask = (labeled_mask == region.label).astype(np.uint8)
+        #         component_masks.append(mask)
+        # # logging
+        # print(f"[INFO] length of object_mask: {len(object_mask)}")
+        # print(f"[INFO] length of component_masks: {len(component_masks)}")
+        # replacement_masks_ls = object_mask
+        # for i, mask in enumerate(component_masks):
+        #     y_indices, x_indices = np.nonzero(mask)
+        #     sampled_points = np.column_stack(
+        #         (x_indices[np.random.choice(len(y_indices), N_sampled_points, replace=False)],
+        #          y_indices[np.random.choice(len(y_indices), N_sampled_points, replace=False)]))
+        #     smaller_modified_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/smaller_modified/{i}").mkdir(
+        #         parents=True, exist_ok=True)
+        #     replacement_masks = obtain_mask(
+        #         modified_img,
+        #         text_prompt=None,
+        #         points_prompt=sampled_points,
+        #         output_dir=smaller_modified_save_npy_pkl_output_dir,
+        #         is_dino15=False,
+        #         return_best_mask=False
+        #     )
+        #     replacement_masks_ls += replacement_masks[np.newaxis, :, :]
+        #
+        # # logging
+        # print(f"[INFO] Length of replacement_masks: {len(replacement_masks_ls)}")
+        # replacement_masks_arr = np.vstack(replacement_masks_ls)
+        # if is_debug:
+        #     for i in range(replacement_masks_arr.shape[0]):
+        #         imageio.imwrite(f'{results_output_dir}/mask_{i}.png', replacement_masks_arr[i] * 255)
+        # restored_img = paste_copy(replacement_masks_arr, ori_img, modified_img)
+        # # TODO: need to think about whether this is reasonable?
+        # modified_img = restored_img
+
+
+
+
+
 
     # TODO: anti_aliasing may need to be set as False
     restored_img_resized = resize(restored_img, (128, 128), anti_aliasing=True)
