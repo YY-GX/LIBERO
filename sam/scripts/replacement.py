@@ -368,8 +368,12 @@ def OSM_correction(
         # Create a mask where the difference is greater than the color threshold
         color_diff_mask = np.any(diff > color_threshold, axis=-1).astype(np.uint8)
 
-        # Combine the color difference mask with the original mask
-        combined_mask = color_diff_mask & (modified_mask & ori_mask)  # Keep only where both masks are true
+        # Convert masks to boolean
+        modified_mask_bool = modified_mask.astype(bool)
+        ori_mask_bool = ori_mask.astype(bool)
+
+        # Combine the color difference mask with the original masks
+        combined_mask = color_diff_mask & (modified_mask_bool & ori_mask_bool)  # Keep only where both masks are true
 
         # Label the connected components in the combined mask
         labeled_mask = label(combined_mask)
