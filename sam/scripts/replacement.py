@@ -364,7 +364,6 @@ def OSM_correction(
 
         # Calculate the absolute difference
         diff = np.abs(modified_masked_img - ori_masked_img)
-        print(diff)
 
         # Create a mask where the difference is greater than the color threshold
         color_diff_mask = np.any(diff > color_threshold, axis=-1).astype(np.uint8)
@@ -374,7 +373,7 @@ def OSM_correction(
         ori_mask_bool = ori_mask.astype(bool)
 
         # Combine the color difference mask with the original masks
-        combined_mask = color_diff_mask & (modified_mask_bool & ori_mask_bool)  # Keep only where both masks are true
+        combined_mask = color_diff_mask  # & (modified_mask_bool & ori_mask_bool)  # Keep only where both masks are true
 
         # Label the connected components in the combined mask
         labeled_mask = label(combined_mask)
@@ -385,6 +384,7 @@ def OSM_correction(
         # Calculate the area threshold based on the original mask
         total_area_ori_mask = np.sum(ori_mask)
         component_area_threshold = area_fraction * total_area_ori_mask
+        print(f"[INFO] component_area_threshold: {component_area_threshold}")
 
         for region in regionprops(labeled_mask):
             if is_debug:
