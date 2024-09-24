@@ -127,9 +127,10 @@ def obtain_mask(
     confidences = confidences.numpy().tolist()
     max_confidence_index = np.argmax(confidences)
     best_mask = masks[max_confidence_index]
-    input_boxes = input_boxes[max_confidence_index]
 
-    return best_mask, input_boxes, np.max(confidences)
+    debug_info = [input_boxes, masks, confidences, labels]
+
+    return best_mask, debug_info
 
 
 
@@ -217,9 +218,9 @@ def visualize_mask(
     box_annotator = sv.BoxAnnotator()
     annotated_frame = box_annotator.annotate(scene=img.copy(), detections=detections)
 
-    label_annotator = sv.LabelAnnotator()
-    annotated_frame = label_annotator.annotate(scene=annotated_frame, detections=detections, labels=labels)
-    cv2.imwrite(os.path.join(OUTPUT_DIR, "groundingdino_annotated_image.jpg"), annotated_frame)
+    # label_annotator = sv.LabelAnnotator()
+    # annotated_frame = label_annotator.annotate(scene=annotated_frame, detections=detections, labels=labels)
+    # cv2.imwrite(os.path.join(OUTPUT_DIR, "groundingdino_annotated_image.jpg"), annotated_frame)
 
     mask_annotator = sv.MaskAnnotator()
     annotated_frame = mask_annotator.annotate(scene=annotated_frame, detections=detections)
@@ -233,7 +234,7 @@ if __name__ == "__main__":
     text_prompt = "cabinet drawer."
 
     img, _ = groundingdino.util.inference.load_image(img_path)
-    mask, box, confidence = obtain_mask(
+    mask, debug_info = obtain_mask(
         img,
         text_prompt=text_prompt,
         points_prompt=None,
@@ -241,12 +242,15 @@ if __name__ == "__main__":
     print(mask.shape)
 
     # visualize
+    input_boxes, masks, confidences, labels = debug_info
+    print(len(input_boxes))
+    print(confidences)
     visualize_mask(
         img,
-        box,
-        mask,
-        text_prompt,
-        confidence,
+        input_boxes,
+        masks,
+        labels,
+        confidences,
         output_dir
     )
 
