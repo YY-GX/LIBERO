@@ -308,8 +308,7 @@ def OSM_correction(
         modified_img,
         text_prompts,
         output_dir,
-        area_fraction=0.05,
-        N_sampled_points=20
+        area_fraction=0.05
 ):
     """
     Input:
@@ -337,6 +336,8 @@ def OSM_correction(
             output_dir=modified_save_npy_pkl_output_dir,
             is_dino15=True,
         )
+        print(f"[INFO] Shape of ori_mask: ori_mask.shape")
+        print(f"[INFO] Shape of modified_mask: modified_mask.shape")
 
 
         # yy: find diff part between ori_seg and modified_seg. Replace diff part directly.
@@ -367,7 +368,7 @@ def OSM_correction(
                 replacement_masks.append(mask)
 
         # logging
-        print(f"[INFO] length of replacement_mask_ls: {len(replacement_masks)}")
+        print(f"[INFO] Length of replacement_masks: {len(replacement_masks)}")
         replacement_masks_arr = np.vstack(replacement_masks)
         restored_img = paste_copy(replacement_masks_arr, ori_img, modified_img)
         # TODO: need to think about whether this is reasonable?
