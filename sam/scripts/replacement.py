@@ -340,13 +340,13 @@ if __name__ == "__main__":
         output_dir
     )
 
+    inpaint_prompt = "Fill the masked area to match the texture and color of the surrounding environment."
+    inpaint_file_name = "_".join(text_prompt.split(" ")) + "___" + "_".join(inpaint_prompt.split(" "))
     img = inpainting(
         img=img,
         mask_img=mask,
-        prompt="complete the image with surrounding environment",
+        prompt=inpaint_prompt,
         negative_prompt="bad anatomy, deformed, ugly, disfigured",
-        output_dir=os.path.join(output_dir, "inpaint_img_agent.png")
+        output_dir=os.path.join(output_dir, f"inpaint_img_{inpaint_file_name}.png")
     )
     print(img.shape)
-
-
