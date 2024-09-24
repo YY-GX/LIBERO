@@ -377,7 +377,7 @@ def OSM_correction(
     # TODO: anti_aliasing may need to be set as False
     restored_img_resized = resize(restored_img, (128, 128), anti_aliasing=True)
 
-    return restored_img_resized
+    return restored_img_resized, restored_img
 
 
 def visualize_mask(
@@ -414,7 +414,8 @@ def visualize_mask(
     cv2.imwrite(os.path.join(OUTPUT_DIR, "grounded_sam2_annotated_image_with_mask.jpg"), annotated_frame)
 
 
-if __name__ == "__main__":
+
+def test_detection_segmentation_inpainting():
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
     output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
@@ -452,3 +453,25 @@ if __name__ == "__main__":
         output_dir=os.path.join(output_dir, f"inpaint_img_{inpaint_file_name}.png")
     )
     print(img.shape)
+
+def test_replacement():
+    ori_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs_ori/demo_demo_0_idx0.png"
+    modified_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
+    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
+    text_prompts = ["black drawer"]
+    modified_img, _ = groundingdino.util.inference.load_image(modified_img_path)
+    ori_img, _ = groundingdino.util.inference.load_image(ori_img_path)
+    restored_img_resized, restored_img = OSM_correction(
+        ori_img,
+        modified_img,
+        text_prompts,
+        output_dir,
+        area_fraction=0.05
+    )
+    Image.fromarray(restored_img_resized).save('replacement_results/restored_img_resized.png')
+    Image.fromarray(restored_img).save('replacement_results/restored_img.png')
+
+
+if __name__ == "__main__":
+    # test_detection_segmentation_inpainting()
+    test_replacement()

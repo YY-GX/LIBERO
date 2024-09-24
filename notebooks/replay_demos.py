@@ -30,8 +30,9 @@ img_saved_folder = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/sam/try_imgs/wrist_
 
 # agent example
 bddl_path = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/modified_libero/KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl"
+bddl_path = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/libero_90/KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet.bddl"
 demos_path = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_demo.hdf5"
-img_saved_folder = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/sam/try_imgs/agent_imgs"
+img_saved_folder = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/sam/try_imgs/agent_imgs_ori"
 
 Path(img_saved_folder).mkdir(parents=True, exist_ok=True)
 
