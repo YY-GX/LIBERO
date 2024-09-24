@@ -136,7 +136,8 @@ def inpainting(
        img,
        mask_img,
        prompt,
-       negative_prompt
+       negative_prompt,
+       output_dir
 ):
     """
     Input:
@@ -156,7 +157,6 @@ def inpainting(
     print(type(img), img.shape)
     print(type(mask_img), mask_img.shape)
     image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=img, mask_image=mask_img).images[0]
-    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/inpaint_img.png"
     image.save(output_dir)
     image = np.array(image)
     print(type(image), image.shape)
@@ -180,20 +180,20 @@ def add_ori_obj(
 
 if __name__ == "__main__":
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
-    # img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCViLTPolicy_seed10000/all/eval_tasks_on_modified_envs_seed10000/evaluation_task1_on_modified_envs/load_ori_1_on_modified_1_videos/agentview/video_agentview_0/high_res_v3.png"
+    img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
     img, _ = groundingdino.util.inference.load_image(img_path)
     mask = obtain_mask(
         img,
-        text_prompt="popcorn box.",
+        text_prompt="cabinet drawer.",
         points_prompt=None
     )
     print(mask.shape)
-    img = img[:2048, :2048]
-    mask = mask[:2048, :2048]
+    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/inpaint_img_agent.png"
     img = inpainting(
         img=img,
         mask_img=mask,
         prompt="complete the image",
-        negative_prompt="bad anatomy, deformed, ugly, disfigured"
+        negative_prompt="bad anatomy, deformed, ugly, disfigured",
+        output_dir=output_dir
     )
     print(img.shape)
