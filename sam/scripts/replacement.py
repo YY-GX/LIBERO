@@ -210,7 +210,7 @@ def obtain_mask(
     if masks.ndim == 4:
         masks = masks.squeeze(1)
 
-    confidences = confidences.numpy().tolist()
+    confidences = confidences.tolist()
     max_confidence_index = np.argmax(confidences)
     best_mask = masks[max_confidence_index]
 
