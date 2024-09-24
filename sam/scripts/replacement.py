@@ -398,7 +398,11 @@ def OSM_correction(
 
         # logging
         print(f"[INFO] Length of replacement_masks: {len(replacement_masks)}")
+        for i in replacement_masks:
+            print(i.shape)
+            print('==========')
         replacement_masks_arr = np.vstack(replacement_masks)
+        print(replacement_masks_arr.shape)
         if replacement_masks_arr.ndim == 2:
             replacement_masks_arr = replacement_masks_arr[np.newaxis, :, :]  # Reshape to [1, 512, 512]
         if is_debug:
