@@ -15,8 +15,8 @@ from groundingdino.util.inference import load_model, predict, annotate
 from PIL import Image
 
 import torch
-from diffusers import AutoPipelineForInpainting
-from diffusers.utils import load_image, make_image_grid
+# from diffusers import AutoPipelineForInpainting
+# from diffusers.utils import load_image, make_image_grid
 
 # dds cloudapi for Grounding DINO 1.5
 from dds_cloudapi_sdk import Config
@@ -250,35 +250,35 @@ def obtain_mask(
 
 
 
-def inpainting(
-       img,
-       mask_img,
-       prompt,
-       negative_prompt,
-       output_dir
-):
-    """
-    Input:
-        img [512, 512, 3]
-        mask_img [512, 512]
-        prompt: str
-        text_prompt: str
-    Return:
-        img [512, 512, 3]
-    """
-    pipeline = AutoPipelineForInpainting.from_pretrained(
-        "kandinsky-community/kandinsky-2-2-decoder-inpaint", torch_dtype=torch.float16
-    )
-    pipeline.enable_model_cpu_offload()
-    # remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
-    # pipeline.enable_xformers_memory_efficient_attention()
-    print(type(img), img.shape)
-    print(type(mask_img), mask_img.shape)
-    image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=img, mask_image=mask_img).images[0]
-    image.save(output_dir)
-    image = np.array(image)
-    print(type(image), image.shape)
-    return image
+# def inpainting(
+#        img,
+#        mask_img,
+#        prompt,
+#        negative_prompt,
+#        output_dir
+# ):
+#     """
+#     Input:
+#         img [512, 512, 3]
+#         mask_img [512, 512]
+#         prompt: str
+#         text_prompt: str
+#     Return:
+#         img [512, 512, 3]
+#     """
+#     pipeline = AutoPipelineForInpainting.from_pretrained(
+#         "kandinsky-community/kandinsky-2-2-decoder-inpaint", torch_dtype=torch.float16
+#     )
+#     pipeline.enable_model_cpu_offload()
+#     # remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
+#     # pipeline.enable_xformers_memory_efficient_attention()
+#     print(type(img), img.shape)
+#     print(type(mask_img), mask_img.shape)
+#     image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=img, mask_image=mask_img).images[0]
+#     image.save(output_dir)
+#     image = np.array(image)
+#     print(type(image), image.shape)
+#     return image
 
 
 def paste_copy(masks, ori_img, modified_img):
@@ -415,44 +415,44 @@ def visualize_mask(
 
 
 
-def test_detection_segmentation_inpainting():
-    img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
-    img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
-    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
-    text_prompt = "black drawer"
-
-    img, _ = groundingdino.util.inference.load_image(img_path)
-    mask, debug_info = obtain_mask(
-        img,
-        text_prompt=text_prompt,
-        points_prompt=None,
-        output_dir=output_dir,
-        is_dino15=True
-    )
-    print(mask.shape)
-
-    # visualize
-    input_boxes, masks, confidences = debug_info
-    print(len(input_boxes))
-    print(confidences)
-    visualize_mask(
-        img,
-        input_boxes,
-        masks,
-        confidences,
-        output_dir
-    )
-
-    inpaint_prompt = "Blend with the surrounding environment."
-    inpaint_file_name = "_".join(text_prompt.split(" ")) + "___" + "_".join(inpaint_prompt.split(" "))
-    img = inpainting(
-        img=img,
-        mask_img=mask,
-        prompt=inpaint_prompt,
-        negative_prompt="bad anatomy, deformed, ugly, disfigured",
-        output_dir=os.path.join(output_dir, f"inpaint_img_{inpaint_file_name}.png")
-    )
-    print(img.shape)
+# def test_detection_segmentation_inpainting():
+#     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
+#     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
+#     output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
+#     text_prompt = "black drawer"
+#
+#     img, _ = groundingdino.util.inference.load_image(img_path)
+#     mask, debug_info = obtain_mask(
+#         img,
+#         text_prompt=text_prompt,
+#         points_prompt=None,
+#         output_dir=output_dir,
+#         is_dino15=True
+#     )
+#     print(mask.shape)
+#
+#     # visualize
+#     input_boxes, masks, confidences = debug_info
+#     print(len(input_boxes))
+#     print(confidences)
+#     visualize_mask(
+#         img,
+#         input_boxes,
+#         masks,
+#         confidences,
+#         output_dir
+#     )
+#
+#     inpaint_prompt = "Blend with the surrounding environment."
+#     inpaint_file_name = "_".join(text_prompt.split(" ")) + "___" + "_".join(inpaint_prompt.split(" "))
+#     img = inpainting(
+#         img=img,
+#         mask_img=mask,
+#         prompt=inpaint_prompt,
+#         negative_prompt="bad anatomy, deformed, ugly, disfigured",
+#         output_dir=os.path.join(output_dir, f"inpaint_img_{inpaint_file_name}.png")
+#     )
+#     print(img.shape)
 
 def test_replacement():
     ori_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs_ori/demo_demo_0_idx0.png"
@@ -468,8 +468,8 @@ def test_replacement():
         output_dir,
         area_fraction=0.05
     )
-    Image.fromarray(restored_img_resized).save('replacement_results/restored_img_resized.png')
-    Image.fromarray(restored_img).save('replacement_results/restored_img.png')
+    Image.fromarray(restored_img_resized).save('./sam/replacement_results/restored_img_resized.png')
+    Image.fromarray(restored_img).save('./sam/replacement_results/restored_img.png')
 
 
 if __name__ == "__main__":
