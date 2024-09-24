@@ -393,6 +393,8 @@ def OSM_correction(
 
     # TODO: anti_aliasing may need to be set as False
     restored_img_resized = resize(restored_img, (128, 128), anti_aliasing=True)
+    print(restored_img_resized.shape)
+    print(restored_img.shape)
     if is_debug:
         Image.fromarray(restored_img_resized).save(f'{results_output_dir}/restored_img_resized.png')
         Image.fromarray(restored_img).save(f'{results_output_dir}/restored_img.png')
