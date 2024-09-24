@@ -394,13 +394,10 @@ def OSM_correction(
             if region.area > component_area_threshold:
                 # Create a binary mask for the current region
                 mask = (labeled_mask == region.label).astype(np.uint8)
-                replacement_masks.append(mask)
+                replacement_masks.append(mask[np.newaxis, :, :])
 
         # logging
         print(f"[INFO] Length of replacement_masks: {len(replacement_masks)}")
-        for i in replacement_masks:
-            print(i.shape)
-            print('==========')
         replacement_masks_arr = np.vstack(replacement_masks)
         print(replacement_masks_arr.shape)
         if replacement_masks_arr.ndim == 2:
