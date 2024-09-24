@@ -302,8 +302,11 @@ def paste_copy(masks, ori_img, modified_img):
     # Expand the dimensions of masks to allow broadcasting
     expanded_masks = masks[:, :, :, np.newaxis]  # Shape: [N, 512, 512, 1]
 
-    # Copy areas from ori_img where any mask is true
-    img[np.any(expanded_masks, axis=0)] = ori_img[np.any(expanded_masks, axis=0)]
+    # Create a combined boolean mask across all masks
+    combined_mask = np.any(expanded_masks, axis=0)  # Shape: [512, 512]
+
+    # Paste areas from ori_img to img where the combined mask is true
+    img[combined_mask] = ori_img[combined_mask]
 
     return img
 
