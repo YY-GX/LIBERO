@@ -376,6 +376,8 @@ def OSM_correction(
         # Combine the color difference mask with the original masks
         combined_mask = color_diff_mask  # & (modified_mask_bool & ori_mask_bool)  # Keep only where both masks are true
 
+        combined_mask = np.abs(modified_mask - ori_mask)
+
         # Label the connected components in the combined mask
         labeled_mask = label(combined_mask)
 
