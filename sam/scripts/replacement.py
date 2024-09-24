@@ -29,6 +29,7 @@ from dds_cloudapi_sdk import DetectionTarget
 import pickle
 from skimage.measure import label, regionprops
 from skimage.transform import resize
+import imageio
 
 def load_image(image):
     transform = T.Compose(
@@ -294,6 +295,10 @@ def paste_copy(masks, ori_img, modified_img):
     # Create a copy of the modified image
     img = modified_img.copy()
 
+    # Ensure masks has the shape [N, 512, 512]
+    if masks.ndim == 2:
+        masks = masks[np.newaxis, :, :]  # Reshape to [1, 512, 512]
+
     # Expand the dimensions of masks to allow broadcasting
     expanded_masks = masks[:, :, :, np.newaxis]  # Shape: [N, 512, 512, 1]
 
@@ -303,12 +308,14 @@ def paste_copy(masks, ori_img, modified_img):
     return img
 
 
+
 def OSM_correction(
         ori_img,
         modified_img,
         text_prompts,
         output_dir,
-        area_fraction=0.05
+        area_fraction=0.05,
+        is_debug=True
 ):
     """
     Input:
@@ -319,6 +326,7 @@ def OSM_correction(
         img [128, 128, 3]
     """
     for text_prompt in text_prompts:
+        results_output_dir = Path(f"{output_dir}/{text_prompt}/results/")
         # yy: obtain seg for the object via text prompt
         ori_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/ori/")
         ori_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
@@ -338,8 +346,8 @@ def OSM_correction(
             output_dir=modified_save_npy_pkl_output_dir,
             is_dino15=True,
         )
-        print(f"[INFO] Shape of ori_mask: ori_mask.shape")
-        print(f"[INFO] Shape of modified_mask: modified_mask.shape")
+        print(f"[INFO] Shape of ori_mask: {ori_mask.shape}")
+        print(f"[INFO] Shape of modified_mask: {modified_mask.shape}")
 
 
         # yy: find diff part between ori_seg and modified_seg. Replace diff part directly.
@@ -372,12 +380,20 @@ def OSM_correction(
         # logging
         print(f"[INFO] Length of replacement_masks: {len(replacement_masks)}")
         replacement_masks_arr = np.vstack(replacement_masks)
+        if replacement_masks_arr.ndim == 2:
+            replacement_masks_arr = replacement_masks_arr[np.newaxis, :, :]  # Reshape to [1, 512, 512]
+        if is_debug:
+            for i in range(replacement_masks_arr.shape[0]):
+                imageio.imwrite(f'{results_output_dir}/mask_{i}.png', replacement_masks_arr[i] * 255)
         restored_img = paste_copy(replacement_masks_arr, ori_img, modified_img)
         # TODO: need to think about whether this is reasonable?
         modified_img = restored_img
 
     # TODO: anti_aliasing may need to be set as False
     restored_img_resized = resize(restored_img, (128, 128), anti_aliasing=True)
+    if is_debug:
+        Image.fromarray(restored_img_resized).save(f'{results_output_dir}/restored_img_resized.png')
+        Image.fromarray(restored_img).save(f'{results_output_dir}/restored_img.png')
 
     return restored_img_resized, restored_img
 
@@ -470,8 +486,7 @@ def test_replacement():
         output_dir,
         area_fraction=0.05
     )
-    Image.fromarray(restored_img_resized).save('./sam/replacement_results/restored_img_resized.png')
-    Image.fromarray(restored_img).save('./sam/replacement_results/restored_img.png')
+
 
 
 if __name__ == "__main__":
