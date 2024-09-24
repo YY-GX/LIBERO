@@ -315,7 +315,7 @@ def OSM_correction(
         modified_img,
         text_prompts,
         output_dir,
-        color_threshold=5,
+        color_threshold=10,
         area_fraction=0.05,
         is_debug=True,
         N_sampled_points=10
@@ -345,6 +345,7 @@ def OSM_correction(
             points_prompt=None,
             output_dir=ori_save_npy_pkl_output_dir,
             is_dino15=True,
+            return_best_mask=True
         )
         modified_mask, modified_debug_ls = obtain_mask(
             modified_img,
@@ -352,6 +353,7 @@ def OSM_correction(
             points_prompt=None,
             output_dir=modified_save_npy_pkl_output_dir,
             is_dino15=True,
+            return_best_mask=True
         )
         print(f"[INFO] Shape of ori_mask: {ori_mask.shape}")
         print(f"[INFO] Shape of modified_mask: {modified_mask.shape}")
@@ -374,14 +376,7 @@ def OSM_correction(
         ori_mask_bool = ori_mask.astype(bool)
 
         # Combine the color difference mask with the original masks
-        combined_mask = color_diff_mask  # & (modified_mask_bool & ori_mask_bool)  # Keep only where both masks are true
-
-
-        # yy: debug
-        if is_debug:
-            imageio.imwrite(f'{results_output_dir}/mask_ori.png', (ori_mask * 255).astype(np.uint8))
-            imageio.imwrite(f'{results_output_dir}/mask_modified.png', (modified_mask * 255).astype(np.uint8))
-            combined_mask = np.abs(modified_mask - ori_mask)
+        combined_mask = color_diff_mask & (modified_mask_bool & ori_mask_bool)  # Keep only where both masks are true
 
         # Label the connected components in the combined mask
         labeled_mask = label(combined_mask)
