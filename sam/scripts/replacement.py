@@ -26,6 +26,7 @@ from dds_cloudapi_sdk import TextPrompt
 from dds_cloudapi_sdk import DetectionModel
 from dds_cloudapi_sdk import DetectionTarget
 
+import pickle
 
 def load_image(image):
     transform = T.Compose(
@@ -57,6 +58,15 @@ def obtain_mask(
     Return:
         mask
     """
+    # Check if both files exist
+    mask_exists = os.path.exists(os.path.join(output_dir, "mask.npy"))
+    debug_info_exists = os.path.exists(os.path.join(output_dir, "debug_info.pkl"))
+    if mask_exists and debug_info_exists:
+        mask = np.load(os.path.join(output_dir, "mask.npy"))
+        with open(os.path.join(output_dir, "debug_info.pkl"), 'rb') as f:
+            debug_info = pickle.load(f)
+        print("Both files exist.")
+        return mask, debug_info
 
     # VERY important: text queries need to be lowercased + end with a dot
     TEXT_PROMPT = text_prompt
@@ -214,6 +224,9 @@ def obtain_mask(
     max_confidence_index = np.argmax(confidences)
     best_mask = masks[max_confidence_index]
 
+    np.save(os.path.join(output_dir, "mask.npy"), best_mask)
+    with open(os.path.join(output_dir, "debug_info.pkl"), 'wb') as f:
+        pickle.dump(debug_info, f)
 
     return best_mask, debug_info
 
@@ -330,7 +343,7 @@ if __name__ == "__main__":
     img = inpainting(
         img=img,
         mask_img=mask,
-        prompt="complete the image",
+        prompt="complete the image with surrounding environment",
         negative_prompt="bad anatomy, deformed, ugly, disfigured",
         output_dir=os.path.join(output_dir, "inpaint_img_agent.png")
     )
