@@ -230,7 +230,7 @@ if __name__ == "__main__":
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
     output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
-    text_prompt = "cabinet drawer."
+    text_prompt = "wooden drawer."
 
     img, _ = groundingdino.util.inference.load_image(img_path)
     mask, debug_info = obtain_mask(
