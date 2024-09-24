@@ -395,14 +395,11 @@ def OSM_correction(
     restored_img_resized = resize(restored_img, (128, 128), anti_aliasing=True)
     # Ensure the image is in the correct format
     restored_img_resized_uint8 = (np.clip(restored_img_resized, 0, 1) * 255).astype(np.uint8)
-    restored_img_uint8 = (np.clip(restored_img, 0, 1) * 255).astype(np.uint8)
 
-    print(restored_img_resized_uint8.shape)
-    print(restored_img_uint8.shape)
     if is_debug:
         # Save the images
         Image.fromarray(restored_img_resized_uint8).save(f'{results_output_dir}/restored_img_resized.png')
-        Image.fromarray(restored_img_uint8).save(f'{results_output_dir}/restored_img.png')
+        Image.fromarray(restored_img).save(f'{results_output_dir}/restored_img.png')
 
     return restored_img_resized, restored_img
 

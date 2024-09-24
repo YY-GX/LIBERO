@@ -19,3 +19,4 @@ libero.egg-info/
 videos/
 ./sam/grounded_outputs
 ./sam/try_imgs
+./sam/results
