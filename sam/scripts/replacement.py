@@ -127,8 +127,9 @@ def obtain_mask(
     confidences = confidences.numpy().tolist()
     max_confidence_index = np.argmax(confidences)
     best_mask = masks[max_confidence_index]
+    input_boxes = input_boxes[max_confidence_index]
 
-    return best_mask
+    return best_mask, input_boxes, np.max(confidences)
 
 
 
@@ -178,22 +179,83 @@ def add_ori_obj(
     """
     pass
 
+
+def visualize_mask(
+        img,
+        input_boxes,
+        masks,
+        labels,
+        confidences,
+        OUTPUT_DIR
+
+):
+    input_boxes = np.expand_dims(input_boxes, 0)
+    masks = np.expand_dims(masks, 0)
+    labels = [labels]
+    confidences = [confidences]
+
+    class_names = labels
+
+    class_ids = np.array(list(range(len(class_names))))
+
+    labels = [
+        f"{class_name} {confidence:.2f}"
+        for class_name, confidence
+        in zip(class_names, confidences)
+    ]
+
+    """
+    Visualize image with supervision useful API
+    """
+    detections = sv.Detections(
+        xyxy=input_boxes,  # (n, 4)
+        mask=masks.astype(bool),  # (n, h, w)
+        class_id=class_ids
+    )
+
+    box_annotator = sv.BoxAnnotator()
+    annotated_frame = box_annotator.annotate(scene=img.copy(), detections=detections)
+
+    label_annotator = sv.LabelAnnotator()
+    annotated_frame = label_annotator.annotate(scene=annotated_frame, detections=detections, labels=labels)
+    cv2.imwrite(os.path.join(OUTPUT_DIR, "groundingdino_annotated_image.jpg"), annotated_frame)
+
+    mask_annotator = sv.MaskAnnotator()
+    annotated_frame = mask_annotator.annotate(scene=annotated_frame, detections=detections)
+    cv2.imwrite(os.path.join(OUTPUT_DIR, "grounded_sam2_annotated_image_with_mask.jpg"), annotated_frame)
+
+
 if __name__ == "__main__":
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/wrist_imgs/demo_demo_0_wrist_idx54.png"
     img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
+    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
+    text_prompt = "cabinet drawer."
+
     img, _ = groundingdino.util.inference.load_image(img_path)
-    mask = obtain_mask(
+    mask, box, confidence = obtain_mask(
         img,
-        text_prompt="cabinet drawer.",
-        points_prompt=None
+        text_prompt=text_prompt,
+        points_prompt=None,
     )
     print(mask.shape)
-    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/inpaint_img_agent.png"
+
+    # visualize
+    visualize_mask(
+        img,
+        box,
+        mask,
+        text_prompt,
+        confidence,
+        output_dir
+    )
+
     img = inpainting(
         img=img,
         mask_img=mask,
         prompt="complete the image",
         negative_prompt="bad anatomy, deformed, ugly, disfigured",
-        output_dir=output_dir
+        output_dir=os.path.join(output_dir, "inpaint_img_agent.png")
     )
     print(img.shape)
+
+
