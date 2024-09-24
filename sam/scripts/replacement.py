@@ -300,9 +300,7 @@ def paste_copy(masks, ori_img, modified_img):
         masks = masks[np.newaxis, :, :]  # Reshape to [1, 512, 512]
 
     # Create a combined boolean mask across all masks
-    print(masks.shape)
     combined_mask = np.any(masks, axis=0)  # Shape: [512, 512]
-    print(combined_mask.shape)
 
     # Paste areas from ori_img to img where the combined mask is true
     img[combined_mask] = ori_img[combined_mask]
@@ -399,9 +397,6 @@ def OSM_correction(
         # logging
         print(f"[INFO] Length of replacement_masks: {len(replacement_masks)}")
         replacement_masks_arr = np.vstack(replacement_masks)
-        print(replacement_masks_arr.shape)
-        if replacement_masks_arr.ndim == 2:
-            replacement_masks_arr = replacement_masks_arr[np.newaxis, :, :]  # Reshape to [1, 512, 512]
         if is_debug:
             for i in range(replacement_masks_arr.shape[0]):
                 imageio.imwrite(f'{results_output_dir}/mask_{i}.png', replacement_masks_arr[i] * 255)
