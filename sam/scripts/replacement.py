@@ -340,7 +340,7 @@ if __name__ == "__main__":
         output_dir
     )
 
-    inpaint_prompt = "Restore the missing part of the image with a natural continuation of the surroundings."
+    inpaint_prompt = "Match the surroundings"
     inpaint_file_name = "_".join(text_prompt.split(" ")) + "___" + "_".join(inpaint_prompt.split(" "))
     img = inpainting(
         img=img,
