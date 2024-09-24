@@ -320,8 +320,10 @@ def OSM_correction(
     """
     for text_prompt in text_prompts:
         # yy: obtain seg for the object via text prompt
-        ori_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/ori/").mkdir(parents=True, exist_ok=True)
-        modified_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/modified/").mkdir(parents=True, exist_ok=True)
+        ori_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/ori/")
+        ori_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
+        modified_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/modified/")
+        modified_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
         ori_mask, ori_debug_ls = obtain_mask(
             ori_img,
             text_prompt,
