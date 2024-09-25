@@ -560,8 +560,8 @@ def visualize_mask(
 #     print(img.shape)
 
 def test_replacement():
-    ori_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs_ori/demo_demo_0_idx0.png"
-    modified_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/agent_imgs/demo_demo_0_idx0.png"
+    ori_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/ori_imgs/ori_img.png"
+    modified_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/modified_imgs/modified_img.png"
     output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
     text_prompts = ["black cabinet"]
     modified_img, _ = groundingdino.util.inference.load_image(modified_img_path)
