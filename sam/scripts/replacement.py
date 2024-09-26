@@ -13,7 +13,7 @@ import groundingdino
 import groundingdino.datasets.transforms as T
 from groundingdino.util.inference import load_model, predict, annotate
 from PIL import Image
-import libero.libero.envs.bddl_utils as BDDLUtils
+# import libero.libero.envs.bddl_utils as BDDLUtils
 import torch
 # from diffusers import AutoPipelineForInpainting
 # from diffusers.utils import load_image, make_image_grid
@@ -506,44 +506,44 @@ def obtain_prompt_from_bddl(crr_bddl, prev_bddls):
     print(f"[INFO] prev_bddls: {prev_bddls}")
     return ['black cabinet']
 
-    # TODO: complete this function in a right way
-    #  parser path: /home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/envs/bddl_utils.py
-    #  how to use the parser: /home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/envs/bddl_base_domain.py
-
-    """
-    Input:
-        crr_bddl: current bddl file
-        prev_bddls: [bddl_1, bddl_2, ...] List of bddl files
-    Output:
-        list of prompts
-    """
-    # Parse the current BDDL file
-    current_data = BDDLUtils.robosuite_parse_problem(crr_bddl)
-    current_init_states = {state[1]: state[0] for state in current_data['initial_state']}
-    current_goal_states = {state[1]: state[0] for state in current_data['goal_state']}
-
-    prompts = []
-
-    # Check for conflicts with previous BDDL files
-    for prev_bddl in prev_bddls:
-        prev_data = BDDLUtils.robosuite_parse_problem(prev_bddl)
-        prev_init_states = {state[1]: state[0] for state in prev_data['initial_state']}
-        prev_goal_states = {state[1]: state[0] for state in prev_data['goal_state']}
-
-        for obj, goal_state in current_goal_states.items():
-            # Check for current state vs goal state conflict
-            if obj in current_init_states:
-                if goal_state == 'Open' and current_init_states[obj] != 'Open':
-                    prompts.append(
-                        f"Conflict: {format_object_name(obj)} should be Open but is {current_init_states[obj]} in the current state.")
-
-            # Check if the object state changed in previous BDDL
-            if obj in prev_goal_states and obj in prev_init_states:
-                if prev_goal_states[obj] == 'Open' and prev_init_states[obj] != 'Open':
-                    prompts.append(
-                        f"Resolved: {format_object_name(obj)} was opened in previous state but is not in current state.")
-
-    return prompts
+    # # TODO: complete this function in a right way
+    # #  parser path: /home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/envs/bddl_utils.py
+    # #  how to use the parser: /home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/envs/bddl_base_domain.py
+    #
+    # """
+    # Input:
+    #     crr_bddl: current bddl file
+    #     prev_bddls: [bddl_1, bddl_2, ...] List of bddl files
+    # Output:
+    #     list of prompts
+    # """
+    # # Parse the current BDDL file
+    # current_data = BDDLUtils.robosuite_parse_problem(crr_bddl)
+    # current_init_states = {state[1]: state[0] for state in current_data['initial_state']}
+    # current_goal_states = {state[1]: state[0] for state in current_data['goal_state']}
+    #
+    # prompts = []
+    #
+    # # Check for conflicts with previous BDDL files
+    # for prev_bddl in prev_bddls:
+    #     prev_data = BDDLUtils.robosuite_parse_problem(prev_bddl)
+    #     prev_init_states = {state[1]: state[0] for state in prev_data['initial_state']}
+    #     prev_goal_states = {state[1]: state[0] for state in prev_data['goal_state']}
+    #
+    #     for obj, goal_state in current_goal_states.items():
+    #         # Check for current state vs goal state conflict
+    #         if obj in current_init_states:
+    #             if goal_state == 'Open' and current_init_states[obj] != 'Open':
+    #                 prompts.append(
+    #                     f"Conflict: {format_object_name(obj)} should be Open but is {current_init_states[obj]} in the current state.")
+    #
+    #         # Check if the object state changed in previous BDDL
+    #         if obj in prev_goal_states and obj in prev_init_states:
+    #             if prev_goal_states[obj] == 'Open' and prev_init_states[obj] != 'Open':
+    #                 prompts.append(
+    #                     f"Resolved: {format_object_name(obj)} was opened in previous state but is not in current state.")
+    #
+    # return prompts
 
 
 def visualize_mask(
