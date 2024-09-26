@@ -4,11 +4,11 @@ from libero.libero.envs import OffScreenRenderEnv
 from PIL import Image
 import matplotlib.pyplot as plt
 
-base_ori_path = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/libero_90"
-base_modified_path = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/modified_libero"
+base_ori_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/libero_90"
+base_modified_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/modified_libero"
 
-dst_base_ori_path = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/ori"
-dst_base_modified_path = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/modified"
+dst_base_ori_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/ori"
+dst_base_modified_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/modified"
 
 modified_mapping = {
     "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet": [
@@ -67,6 +67,8 @@ for k, v in modified_mapping.items():
     }
     env = OffScreenRenderEnv(**env_args)
     obs = env.reset()
+    for _ in range(5):  # simulate the physics without any actions
+        obs, _, _, _ = env.step(np.zeros(7))
     Image.fromarray(obs["agentview_image"][::-1]).save(dst_img_ori_path)
 
     for modified_bddl in v:
@@ -79,4 +81,6 @@ for k, v in modified_mapping.items():
         }
         env = OffScreenRenderEnv(**env_args)
         obs = env.reset()
+        for _ in range(5):  # simulate the physics without any actions
+            obs, _, _, _ = env.step(np.zeros(7))
         Image.fromarray(obs["agentview_image"][::-1]).save(dst_img_modified_path)

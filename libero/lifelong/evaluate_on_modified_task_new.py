@@ -282,8 +282,9 @@ def main():
                 }
     
             env_num = cfg['eval']['n_eval']
+            eng_ls = [lambda: OffScreenRenderEnv(**env_args) for _ in range(env_num)]
             env = SubprocVectorEnv(
-                [lambda: OffScreenRenderEnv(**env_args) for _ in range(env_num)]
+                eng_ls
             )
             env.reset()
             env.seed(cfg.seed)
