@@ -310,27 +310,26 @@ def main():
                     steps += 1
                     # yy: CORE of modify_back
                     if args.modify_back:
-                        ai = obs["agentview_image"]
-                        print(f"ai: {ai}")
-                        print(f"{ai.shape}")
-                        modified_img = obs["agentview_image"][::-1]
-                        text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
-                        output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
-                        ori_img = np.array(Image.open(first_frame))
-                        restored_img_resized, restored_img = OSM_correction(
-                            ori_img,
-                            modified_img,
-                            text_prompts,
-                            output_dir,
-                            area_fraction=0.05
-                        )
-                        obs["agentview_rgb"] = restored_img_resized[::-1]
-                        if args.is_modify_wrist_camera_view:
-                            # TODO: need to tackle wrist_camera_view
-                            pass
-                        else:
-                            obs["robot0_eye_in_hand_image"] = resize(obs["robot0_eye_in_hand_image"],
-                                                                     (128, 128), anti_aliasing=True)
+                        for i, crr_obs in enumerate(obs):
+                            modified_img = crr_obs["agentview_image"][::-1]
+                            text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
+                            output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
+                            ori_img = np.array(Image.open(first_frame))
+                            restored_img_resized, restored_img = OSM_correction(
+                                ori_img,
+                                modified_img,
+                                text_prompts,
+                                output_dir,
+                                area_fraction=0.05
+                            )
+                            crr_obs["agentview_rgb"] = restored_img_resized[::-1]
+                            if args.is_modify_wrist_camera_view:
+                                # TODO: need to tackle wrist_camera_view
+                                pass
+                            else:
+                                crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
+                                                                         (128, 128), anti_aliasing=True)
+                            obs[i] = crr_obs
 
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     actions = algo.policy.get_action(data)
