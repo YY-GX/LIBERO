@@ -330,9 +330,9 @@ def OSM_correction(
     """
     for text_prompt in text_prompts:
         mask_path = os.path.join(output_dir, f"mask_{text_prompt}.npy")
+        results_output_dir = Path(f"{output_dir}/{text_prompt}/results/")
+        results_output_dir.mkdir(parents=True, exist_ok=True)
         if not os.path.exists(mask_path):
-            results_output_dir = Path(f"{output_dir}/{text_prompt}/results/")
-            results_output_dir.mkdir(parents=True, exist_ok=True)
             if is_debug:
                 Image.fromarray(ori_img).save(f'{results_output_dir}/ori_img.png')
                 Image.fromarray(modified_img).save(f'{results_output_dir}/modified_img.png')
