@@ -311,6 +311,9 @@ def main():
                     # yy: CORE of modify_back
                     if args.modify_back:
                         for i, crr_obs in enumerate(obs):
+                            print(crr_obs["agentview_image"].shape)
+                            print(crr_obs["robot0_eye_in_hand_image"].shape)
+                            print("=============================================")
                             modified_img = crr_obs["agentview_image"][::-1]
                             text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
                             output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
@@ -330,6 +333,8 @@ def main():
                                 crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
                                                                          (128, 128), anti_aliasing=True)
                             obs[i] = crr_obs
+                            print(crr_obs["agentview_image"].shape)
+                            print(crr_obs["robot0_eye_in_hand_image"].shape)
 
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     actions = algo.policy.get_action(data)
