@@ -310,6 +310,9 @@ def main():
                     steps += 1
                     # yy: CORE of modify_back
                     if args.modify_back:
+                        ai = obs["agentview_image"]
+                        print(f"ai: {ai}")
+                        print(f"{ai.shape}")
                         modified_img = obs["agentview_image"][::-1]
                         text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
                         output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
