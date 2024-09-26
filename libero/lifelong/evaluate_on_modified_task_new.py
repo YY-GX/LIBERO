@@ -199,7 +199,7 @@ def main():
         model_path = os.path.join(model_path, f"task{model_index}_model.pth")
 
         if args.modify_back:
-            ori_bddl_name = modified_mapping[list(modified_mapping.keys())[model_index]]
+            ori_bddl_name = list(modified_mapping.keys())[model_index]
             first_frame = os.path.join("libero/libero/first_frames/ori/", ori_bddl_name+".png")
         if not os.path.exists(model_path):
             print(f">> {model_path} does NOT exist!")
