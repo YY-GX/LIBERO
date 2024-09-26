@@ -6,7 +6,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import numpy as np
 import torch
 from libero.libero import get_libero_path
-from libero.libero.benchmark import get_benchmark
+from libero.libero.benchmark import get_benchmark, task_orders
 from libero.libero.envs import OffScreenRenderEnv, SubprocVectorEnv
 from libero.libero.utils.time_utils import Timer
 from libero.libero.utils.video_utils import VideoWriter
@@ -23,7 +23,9 @@ import robomimic.utils.obs_utils as ObsUtils
 from libero.lifelong.algos import get_algo_class
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
+from sam.scripts.replacement import OSM_correction, obtain_prompt_from_bddl
+from PIL import Image
+from skimage.transform import resize
 
 # yy: map from modified benchmark to original path:
 # 00-09 (00-10 for modified)
@@ -164,6 +166,8 @@ def parse_args():
                         default=4)
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--device_id", type=int)
+    parser.add_argument("--modify_back", type=int, default=0)
+    parser.add_argument("--is_modify_wrist_camera_view", type=int, default=0)
     args = parser.parse_args()
     args.device_id = "cuda:" + str(args.device_id)
     return args
@@ -174,6 +178,7 @@ def main():
     # Get the benchmarks
     benchmark = get_benchmark(args.benchmark)(args.task_order_index, n_tasks_=args.task_num_to_use)
     n_tasks = benchmark.n_tasks
+    task_idx_ls = task_orders[args.task_order_index]
 
     # Obtain language descriptions
     descriptions = [benchmark.get_task(i).language for i in range(n_tasks)]
@@ -183,13 +188,19 @@ def main():
 
     succ_list = []
     eval_task_id = []
-    for task_idx in range(n_tasks):
+    # yy: for task_idx in range(n_tasks): will make args.task_num_to_use meaningless and lead to wrong task_idx
+    # for task_idx in range(n_tasks):
+    for task_idx in task_idx_ls:
         print(f">> Evaluate on modified Task{task_idx}")
         # Obtain useful info from saved model - checkpoints / cfg
         index_mapping = create_index_mapping(modified_mapping)
         model_index = index_mapping[task_idx]  # model_index is the id for original model index
         model_path = args.model_path_folder
         model_path = os.path.join(model_path, f"task{model_index}_model.pth")
+
+        if args.modify_back:
+            ori_bddl_name = modified_mapping[list(modified_mapping.keys())[model_index]]
+            first_frame = os.path.join("libero/libero/first_frames/ori/", ori_bddl_name+".png")
         if not os.path.exists(model_path):
             print(f">> {model_path} does NOT exist!")
             print(f">> Modified env_{task_idx} evaluation fails.")
@@ -204,6 +215,10 @@ def main():
         cfg.bddl_folder = get_libero_path("bddl_files")
         cfg.init_states_folder = get_libero_path("init_states")
         cfg.device = args.device_id
+
+        if args.modify_back:
+            print(f"[INFO] *** Use modify_back method")
+            args.model_path_folder = os.path.join((args.model_path_folder, f"modify_back"))
         save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_idx}_on_modified_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
@@ -243,13 +258,28 @@ def main():
             video_writer_wristcameraview = VideoWriter(os.path.join(video_folder, "wristcameraview"), save_video=True,
                                                        single_video=False)
 
-            env_args = {
-                "bddl_file_name": os.path.join(
+            if args.modify_back:
+                env_args = {
+                    "bddl_file_name": os.path.join(
+                        cfg.bddl_folder, task.problem_folder, task.bddl_file
+                    ),
+                    "camera_heights": 512,
+                    "camera_widths": 512,
+                }
+                crr_bddl_file_path = os.path.join(
                     cfg.bddl_folder, task.problem_folder, task.bddl_file
-                ),
-                "camera_heights": cfg.data.img_h,
-                "camera_widths": cfg.data.img_w,
-            }
+                )
+                prev_bddl_file_path = os.path.join(
+                    cfg.bddl_folder, task.problem_folder, ori_bddl_name+".bddl"
+                )
+            else:
+                env_args = {
+                    "bddl_file_name": os.path.join(
+                        cfg.bddl_folder, task.problem_folder, task.bddl_file
+                    ),
+                    "camera_heights": cfg.data.img_h,
+                    "camera_widths": cfg.data.img_w,
+                }
     
             env_num = cfg['eval']['n_eval']
             env = SubprocVectorEnv(
@@ -277,6 +307,27 @@ def main():
             with torch.no_grad():
                 while steps < cfg.eval.max_steps:
                     steps += 1
+                    # yy: CORE of modify_back
+                    if args.modify_back:
+                        modified_img = obs["agentview_image"][::-1]
+                        text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
+                        output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
+                        ori_img = np.array(Image.open(first_frame))
+                        restored_img_resized, restored_img = OSM_correction(
+                            ori_img,
+                            modified_img,
+                            text_prompts,
+                            output_dir,
+                            area_fraction=0.05
+                        )
+                        obs["agentview_rgb"] = restored_img_resized[::-1]
+                        if args.is_modify_wrist_camera_view:
+                            # TODO: need to tackle wrist_camera_view
+                            pass
+                        else:
+                            obs["robot0_eye_in_hand_image"] = resize(obs["robot0_eye_in_hand_image"],
+                                                                     (128, 128), anti_aliasing=True)
+
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     actions = algo.policy.get_action(data)
                     obs, reward, done, info = env.step(actions)

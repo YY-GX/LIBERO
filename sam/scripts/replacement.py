@@ -13,7 +13,7 @@ import groundingdino
 import groundingdino.datasets.transforms as T
 from groundingdino.util.inference import load_model, predict, annotate
 from PIL import Image
-
+import libero.libero.envs.bddl_utils as BDDLUtils
 import torch
 # from diffusers import AutoPipelineForInpainting
 # from diffusers.utils import load_image, make_image_grid
@@ -329,79 +329,86 @@ def OSM_correction(
         img [128, 128, 3]
     """
     for text_prompt in text_prompts:
-        results_output_dir = Path(f"{output_dir}/{text_prompt}/results/")
-        results_output_dir.mkdir(parents=True, exist_ok=True)
-        if is_debug:
-            Image.fromarray(ori_img).save(f'{results_output_dir}/ori_img.png')
-            Image.fromarray(modified_img).save(f'{results_output_dir}/modified_img.png')
-        # yy: obtain seg for the object via text prompt
-        ori_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/ori/")
-        ori_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
-        modified_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/modified/")
-        modified_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
-        ori_mask, ori_debug_ls = obtain_mask(
-            ori_img,
-            text_prompt,
-            points_prompt=None,
-            output_dir=ori_save_npy_pkl_output_dir,
-            is_dino15=True,
-            return_best_mask=True
-        )
-        modified_mask, modified_debug_ls = obtain_mask(
-            modified_img,
-            text_prompt,
-            points_prompt=None,
-            output_dir=modified_save_npy_pkl_output_dir,
-            is_dino15=True,
-            return_best_mask=True
-        )
-        print(f"[INFO] Shape of ori_mask: {ori_mask.shape}")
-        print(f"[INFO] Shape of modified_mask: {modified_mask.shape}")
-
-
-        # yy: find diff part between ori_seg and modified_seg. Replace diff part directly.
-        # yy: the reason we still need seg to obtain object instead of do diff replacement is because the initialization of scene might be different.
-        # Create masked images
-        ori_masked_img = ori_img * ori_mask[:, :, np.newaxis]
-        modified_masked_img = modified_img * modified_mask[:, :, np.newaxis]
-
-        # Calculate the absolute difference
-        diff = np.abs(modified_masked_img - ori_masked_img)
-
-        # Create a mask where the difference is greater than the color threshold
-        color_diff_mask = np.any(diff > color_threshold, axis=-1).astype(np.uint8)
-
-        # Combine the color difference mask with the original masks
-        combined_mask = color_diff_mask
-
-        # Label the connected components in the combined mask
-        labeled_mask = label(combined_mask)
-
-        # Create a list to store masks larger than the threshold
-        replacement_masks = []
-
-        # Calculate the area threshold based on the original mask
-        total_area_ori_mask = np.sum(ori_mask)
-        component_area_threshold = area_fraction * total_area_ori_mask
-        print(f"[INFO] component_area_threshold: {component_area_threshold}")
-
-        for region in regionprops(labeled_mask):
+        mask_path = os.path.join(output_dir, f"mask_{text_prompt}.npy")
+        if not os.path.exists(mask_path):
+            results_output_dir = Path(f"{output_dir}/{text_prompt}/results/")
+            results_output_dir.mkdir(parents=True, exist_ok=True)
             if is_debug:
-                print(f"[DEBUG] region.area: {region.area}")
-            if region.area > component_area_threshold:
-                # Create a binary mask for the current region
-                mask = (labeled_mask == region.label).astype(np.uint8)
-                replacement_masks.append(mask[np.newaxis, :, :])
+                Image.fromarray(ori_img).save(f'{results_output_dir}/ori_img.png')
+                Image.fromarray(modified_img).save(f'{results_output_dir}/modified_img.png')
+            # yy: obtain seg for the object via text prompt
+            ori_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/ori/")
+            ori_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
+            modified_save_npy_pkl_output_dir = Path(f"{output_dir}/{text_prompt}/modified/")
+            modified_save_npy_pkl_output_dir.mkdir(parents=True, exist_ok=True)
+            ori_mask, ori_debug_ls = obtain_mask(
+                ori_img,
+                text_prompt,
+                points_prompt=None,
+                output_dir=ori_save_npy_pkl_output_dir,
+                is_dino15=True,
+                return_best_mask=True
+            )
+            modified_mask, modified_debug_ls = obtain_mask(
+                modified_img,
+                text_prompt,
+                points_prompt=None,
+                output_dir=modified_save_npy_pkl_output_dir,
+                is_dino15=True,
+                return_best_mask=True
+            )
+            print(f"[INFO] Shape of ori_mask: {ori_mask.shape}")
+            print(f"[INFO] Shape of modified_mask: {modified_mask.shape}")
 
-        # logging
-        print(f"[INFO] Length of replacement_masks: {len(replacement_masks)}")
-        replacement_masks_arr = np.vstack(replacement_masks)
-        if is_debug:
-            for i in range(replacement_masks_arr.shape[0]):
-                imageio.imwrite(f'{results_output_dir}/mask_{i}.png', replacement_masks_arr[i] * 255)
+
+            # yy: find diff part between ori_seg and modified_seg. Replace diff part directly.
+            # yy: the reason we still need seg to obtain object instead of do diff replacement is because the initialization of scene might be different.
+            # Create masked images
+            ori_masked_img = ori_img * ori_mask[:, :, np.newaxis]
+            modified_masked_img = modified_img * modified_mask[:, :, np.newaxis]
+
+            # Calculate the absolute difference
+            diff = np.abs(modified_masked_img - ori_masked_img)
+
+            # Create a mask where the difference is greater than the color threshold
+            color_diff_mask = np.any(diff > color_threshold, axis=-1).astype(np.uint8)
+
+            # Combine the color difference mask with the original masks
+            combined_mask = color_diff_mask
+
+            # Label the connected components in the combined mask
+            labeled_mask = label(combined_mask)
+
+            # Create a list to store masks larger than the threshold
+            replacement_masks = []
+
+            # Calculate the area threshold based on the original mask
+            total_area_ori_mask = np.sum(ori_mask)
+            component_area_threshold = area_fraction * total_area_ori_mask
+            print(f"[INFO] component_area_threshold: {component_area_threshold}")
+
+            for region in regionprops(labeled_mask):
+                if is_debug:
+                    print(f"[DEBUG] region.area: {region.area}")
+                if region.area > component_area_threshold:
+                    # Create a binary mask for the current region
+                    mask = (labeled_mask == region.label).astype(np.uint8)
+                    replacement_masks.append(mask[np.newaxis, :, :])
+
+            # logging
+            print(f"[INFO] Length of replacement_masks: {len(replacement_masks)}")
+            replacement_masks_arr = np.vstack(replacement_masks)
+            if is_debug:
+                for i in range(replacement_masks_arr.shape[0]):
+                    imageio.imwrite(f'{results_output_dir}/mask_{i}.png', replacement_masks_arr[i] * 255)
+            np.save(mask_path, replacement_masks_arr)
+        else:
+            replacement_masks_arr = np.load(mask_path)
+
         restored_img = paste_copy(replacement_masks_arr, ori_img, modified_img)
         # TODO: need to think about whether this is reasonable?
         modified_img = restored_img
+
 
 
 
@@ -483,6 +490,60 @@ def OSM_correction(
         Image.fromarray(restored_img).save(f'{results_output_dir}/restored_img.png')
 
     return restored_img_resized, restored_img
+
+
+
+def format_object_name(obj_name):
+    """
+    Converts the object name from a formatted string to a more readable format.
+    E.g., 'wooden_cabinet_1_bottom_region' -> 'wooden cabinet'
+    """
+    return obj_name.replace('_', ' ').rsplit(' ', 1)[0]  # Removing the last part (e.g., "_bottom_region")
+
+
+def obtain_prompt_from_bddl(crr_bddl, prev_bddls):
+    print(f"[INFO] crr_bddl: {crr_bddl}")
+    print(f"[INFO] prev_bddls: {prev_bddls}")
+    return ['black cabinet']
+
+    # TODO: complete this function in a right way
+    #  parser path: /home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/envs/bddl_utils.py
+    #  how to use the parser: /home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/envs/bddl_base_domain.py
+
+    """
+    Input:
+        crr_bddl: current bddl file
+        prev_bddls: [bddl_1, bddl_2, ...] List of bddl files
+    Output:
+        list of prompts
+    """
+    # Parse the current BDDL file
+    current_data = BDDLUtils.robosuite_parse_problem(crr_bddl)
+    current_init_states = {state[1]: state[0] for state in current_data['initial_state']}
+    current_goal_states = {state[1]: state[0] for state in current_data['goal_state']}
+
+    prompts = []
+
+    # Check for conflicts with previous BDDL files
+    for prev_bddl in prev_bddls:
+        prev_data = BDDLUtils.robosuite_parse_problem(prev_bddl)
+        prev_init_states = {state[1]: state[0] for state in prev_data['initial_state']}
+        prev_goal_states = {state[1]: state[0] for state in prev_data['goal_state']}
+
+        for obj, goal_state in current_goal_states.items():
+            # Check for current state vs goal state conflict
+            if obj in current_init_states:
+                if goal_state == 'Open' and current_init_states[obj] != 'Open':
+                    prompts.append(
+                        f"Conflict: {format_object_name(obj)} should be Open but is {current_init_states[obj]} in the current state.")
+
+            # Check if the object state changed in previous BDDL
+            if obj in prev_goal_states and obj in prev_init_states:
+                if prev_goal_states[obj] == 'Open' and prev_init_states[obj] != 'Open':
+                    prompts.append(
+                        f"Resolved: {format_object_name(obj)} was opened in previous state but is not in current state.")
+
+    return prompts
 
 
 def visualize_mask(

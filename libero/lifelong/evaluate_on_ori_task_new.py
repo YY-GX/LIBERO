@@ -6,7 +6,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import numpy as np
 import torch
 from libero.libero import get_libero_path
-from libero.libero.benchmark import get_benchmark
+from libero.libero.benchmark import get_benchmark, task_orders
 from libero.libero.envs import OffScreenRenderEnv, SubprocVectorEnv
 from libero.libero.utils.time_utils import Timer
 from libero.libero.utils.video_utils import VideoWriter
@@ -59,6 +59,7 @@ def main():
     # Get the benchmarks
     benchmark = get_benchmark(args.benchmark)(args.task_order_index, n_tasks_=args.task_num_to_use)
     n_tasks = benchmark.n_tasks
+    task_idx_ls = task_orders[args.task_order_index]
 
     # Obtain language descriptions
     descriptions = [benchmark.get_task(i).language for i in range(n_tasks)]
@@ -68,7 +69,9 @@ def main():
 
     succ_list = []
     eval_task_id = []
-    for task_idx in range(n_tasks):
+    # yy: for task_idx in range(n_tasks): will make args.task_num_to_use meaningless and lead to wrong task_idx
+    # for task_idx in range(n_tasks):
+    for task_idx in task_idx_ls:
         print(f">> Evaluate on original Task{task_idx}")
         # Obtain useful info from saved model - checkpoints / cfg
         model_index = task_idx
