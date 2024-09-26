@@ -218,7 +218,7 @@ def main():
 
         if args.modify_back:
             print(f"[INFO] *** Use modify_back method")
-            args.model_path_folder = os.path.join((args.model_path_folder, f"modify_back"))
+            args.model_path_folder = os.path.join(args.model_path_folder, f"modify_back")
         save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_idx}_on_modified_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
