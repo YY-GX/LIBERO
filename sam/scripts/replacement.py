@@ -628,7 +628,7 @@ def test_replacement():
 
     ori_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/libero/first_frames/ori/KITCHEN_SCENE3_turn_on_the_stove.png"
     modified_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/libero/first_frames/modified/KITCHEN_SCENE3_turn_on_the_stove_with_moka_pot_on_the_stove.png"
-    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test2/moka_pot"
+    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/moka_pot"
     text_prompts = ["moka pot"]
 
     modified_img, _ = groundingdino.util.inference.load_image(modified_img_path)
