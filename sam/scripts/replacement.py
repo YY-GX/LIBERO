@@ -625,6 +625,12 @@ def test_replacement():
     modified_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/try_imgs/modified_imgs/modified_img.png"
     output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test/"
     text_prompts = ["black cabinet"]
+
+    ori_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/libero/first_frames/ori/KITCHEN_SCENE3_turn_on_the_stove.png"
+    modified_img_path = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/libero/first_frames/modified/KITCHEN_SCENE3_turn_on_the_stove_with_moka_pot_on_the_stove.png"
+    output_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/sam/outputs_test2/moka_pot"
+    text_prompts = ["moka pot"]
+
     modified_img, _ = groundingdino.util.inference.load_image(modified_img_path)
     ori_img, _ = groundingdino.util.inference.load_image(ori_img_path)
     restored_img_resized, restored_img = OSM_correction(
