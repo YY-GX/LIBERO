@@ -325,7 +325,9 @@ def main():
                                 output_dir,
                                 area_fraction=0.05
                             )
+                            print(restored_img_resized.shape)
                             crr_obs["agentview_rgb"] = restored_img_resized[::-1]
+                            print(crr_obs["agentview_rgb"].shape)
                             if args.is_modify_wrist_camera_view:
                                 # TODO: need to tackle wrist_camera_view
                                 pass
@@ -335,6 +337,7 @@ def main():
                             obs[i] = crr_obs
                             print(crr_obs["agentview_image"].shape)
                             print(crr_obs["robot0_eye_in_hand_image"].shape)
+                            print("=============================================")
 
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     actions = algo.policy.get_action(data)
