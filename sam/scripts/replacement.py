@@ -346,7 +346,7 @@ def OSM_correction(
                 text_prompt,
                 points_prompt=None,
                 output_dir=ori_save_npy_pkl_output_dir,
-                is_dino15=False,
+                is_dino15=True,
                 return_best_mask=True
             )
             modified_mask, modified_debug_ls = obtain_mask(
@@ -354,7 +354,7 @@ def OSM_correction(
                 text_prompt,
                 points_prompt=None,
                 output_dir=modified_save_npy_pkl_output_dir,
-                is_dino15=False,
+                is_dino15=True,
                 return_best_mask=True
             )
             print(f"[INFO] Shape of ori_mask: {ori_mask.shape}")
