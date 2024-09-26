@@ -653,6 +653,7 @@ def test_replacement():
 
 
 
+
 if __name__ == "__main__":
     # test_detection_segmentation_inpainting()
     test_replacement()
