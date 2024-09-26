@@ -311,16 +311,19 @@ def main():
                     # yy: CORE of modify_back
                     if args.modify_back:
                         for i, crr_obs in enumerate(obs):
+                            # Print original image info
                             print(
                                 f"Original Image Strides: {crr_obs['agentview_image'].strides}, Shape: {crr_obs['agentview_image'].shape}")
 
-
-                            # modified_img = crr_obs["agentview_image"].copy()[::-1]
-                            modified_img = np.flip(crr_obs["agentview_image"].copy(), axis=0)
+                            # Create a modified copy of the image, ensuring contiguity
+                            modified_img = np.ascontiguousarray(np.flip(crr_obs["agentview_image"].copy(), axis=0))
                             print(f"Modified Image Strides: {modified_img.strides}, Shape: {modified_img.shape}")
+
                             text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
                             output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
                             ori_img = np.array(Image.open(first_frame))
+
+                            # Ensure restored image is also contiguous
                             restored_img_resized, restored_img = OSM_correction(
                                 ori_img,
                                 modified_img,
@@ -328,16 +331,20 @@ def main():
                                 output_dir,
                                 area_fraction=0.05
                             )
-                            # crr_obs["agentview_image"] = restored_img_resized.copy()[::-1]
-                            crr_obs["agentview_image"] = np.flip(restored_img_resized.copy(), axis=0)
+
+                            # Update the observation with the restored image, ensuring it is contiguous
+                            crr_obs["agentview_image"] = np.ascontiguousarray(
+                                np.flip(restored_img_resized.copy(), axis=0))
                             print(
                                 f"Restored Image Strides: {crr_obs['agentview_image'].strides}, Shape: {crr_obs['agentview_image'].shape}")
+
                             if args.is_modify_wrist_camera_view:
                                 # TODO: need to tackle wrist_camera_view
                                 pass
                             else:
                                 crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
-                                                                         (128, 128), anti_aliasing=True)
+                                                                             (128, 128), anti_aliasing=True)
+
                             obs[i] = crr_obs
 
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
