@@ -312,12 +312,11 @@ def main():
                     if args.modify_back:
                         for i, crr_obs in enumerate(obs):
                             # Print original image info
-                            print(
-                                f"Original Image Strides: {crr_obs['agentview_image'].strides}, Shape: {crr_obs['agentview_image'].shape}")
+                            # print(f"Original Image Strides: {crr_obs['agentview_image'].strides}, Shape: {crr_obs['agentview_image'].shape}")
 
                             # Create a modified copy of the image, ensuring contiguity
                             modified_img = np.ascontiguousarray(np.flip(crr_obs["agentview_image"].copy(), axis=0))
-                            print(f"Modified Image Strides: {modified_img.strides}, Shape: {modified_img.shape}")
+                            # print(f"Modified Image Strides: {modified_img.strides}, Shape: {modified_img.shape}")
 
                             text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
                             output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
@@ -335,8 +334,7 @@ def main():
                             # Update the observation with the restored image, ensuring it is contiguous
                             crr_obs["agentview_image"] = np.ascontiguousarray(
                                 np.flip(restored_img_resized.copy(), axis=0))
-                            print(
-                                f"Restored Image Strides: {crr_obs['agentview_image'].strides}, Shape: {crr_obs['agentview_image'].shape}")
+                            # print(f"Restored Image Strides: {crr_obs['agentview_image'].strides}, Shape: {crr_obs['agentview_image'].shape}")
 
                             if args.is_modify_wrist_camera_view:
                                 # TODO: need to tackle wrist_camera_view
