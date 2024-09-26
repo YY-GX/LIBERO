@@ -311,7 +311,8 @@ def main():
                     # yy: CORE of modify_back
                     if args.modify_back:
                         for i, crr_obs in enumerate(obs):
-                            modified_img = crr_obs["agentview_image"].copy()[::-1]
+                            # modified_img = crr_obs["agentview_image"].copy()[::-1]
+                            modified_img = np.flip(crr_obs["agentview_image"].copy(), axis=0)
                             text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
                             output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
                             ori_img = np.array(Image.open(first_frame))
@@ -322,7 +323,8 @@ def main():
                                 output_dir,
                                 area_fraction=0.05
                             )
-                            crr_obs["agentview_image"] = restored_img_resized.copy()[::-1]
+                            # crr_obs["agentview_image"] = restored_img_resized.copy()[::-1]
+                            crr_obs["agentview_image"] = np.flip(restored_img_resized.copy(), axis=0)
                             if args.is_modify_wrist_camera_view:
                                 # TODO: need to tackle wrist_camera_view
                                 pass
