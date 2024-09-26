@@ -190,11 +190,11 @@ def main():
     eval_task_id = []
     # yy: for task_idx in range(n_tasks): will make args.task_num_to_use meaningless and lead to wrong task_idx
     # for task_idx in range(n_tasks):
-    for task_idx in task_idx_ls:
-        print(f">> Evaluate on modified Task{task_idx}")
+    for task_idx, task_id in enumerate(task_idx_ls):  # task_id is the actual id of the task. task_idx is just the index.
+        print(f">> Evaluate on modified Task {task_id}")
         # Obtain useful info from saved model - checkpoints / cfg
         index_mapping = create_index_mapping(modified_mapping)
-        model_index = index_mapping[task_idx]  # model_index is the id for original model index
+        model_index = index_mapping[task_id]  # model_index is the id for original model index
         model_path = args.model_path_folder
         model_path = os.path.join(model_path, f"task{model_index}_model.pth")
 
@@ -203,7 +203,7 @@ def main():
             first_frame = os.path.join("libero/libero/first_frames/ori/", ori_bddl_name+".png")
         if not os.path.exists(model_path):
             print(f">> {model_path} does NOT exist!")
-            print(f">> Modified env_{task_idx} evaluation fails.")
+            print(f">> Modified env_{task_id} evaluation fails.")
             continue
         sd, cfg, previous_mask = torch_load_model(
             model_path, map_location=args.device_id
@@ -219,7 +219,7 @@ def main():
         if args.modify_back:
             print(f"[INFO] *** Use modify_back method")
             args.model_path_folder = os.path.join(args.model_path_folder, f"modify_back")
-        save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_idx}_on_modified_envs")
+        save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_on_modified_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
 
@@ -242,12 +242,12 @@ def main():
 
         save_stats_pth = os.path.join(
             save_dir,
-            f"load_ori_{model_index}_on_modified_{task_idx}.stats",
+            f"load_ori_{model_index}_on_modified_{task_id}.stats",
         )
     
         video_folder = os.path.join(
             save_dir,
-            f"load_ori_{model_index}_on_modified_{task_idx}_videos",
+            f"load_ori_{model_index}_on_modified_{task_id}_videos",
         )
 
         os.system(f"mkdir -p {video_folder}")
@@ -367,7 +367,7 @@ def main():
         )
         print(f"Results are saved at {save_stats_pth}")
         print(test_loss, success_rate)
-        eval_task_id.append(task_idx)
+        eval_task_id.append(task_id)
 
     print(f"[INFO] Finish evaluating modified env list: {eval_task_id}")
 

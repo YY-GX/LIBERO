@@ -71,15 +71,15 @@ def main():
     eval_task_id = []
     # yy: for task_idx in range(n_tasks): will make args.task_num_to_use meaningless and lead to wrong task_idx
     # for task_idx in range(n_tasks):
-    for task_idx in task_idx_ls:
-        print(f">> Evaluate on original Task{task_idx}")
+    for task_idx, task_id in enumerate(task_idx_ls):  # task_id is the actual id of the task. task_idx is just the index.
+        print(f">> Evaluate on original Task {task_id}")
         # Obtain useful info from saved model - checkpoints / cfg
-        model_index = task_idx
+        model_index = task_id
         model_path = args.model_path_folder
         model_path = os.path.join(model_path, f"task{model_index}_model.pth")
         if not os.path.exists(model_path):
             print(f">> {model_path} does NOT exist!")
-            print(f">> Env_{task_idx} evaluation fails.")
+            print(f">> Env_{task_id} evaluation fails.")
             continue
         sd, cfg, previous_mask = torch_load_model(
             model_path, map_location=args.device_id
@@ -91,7 +91,7 @@ def main():
         cfg.bddl_folder = get_libero_path("bddl_files")
         cfg.init_states_folder = get_libero_path("init_states")
         cfg.device = args.device_id
-        save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_ori_envs_seed{args.seed}", f"evaluation_task{task_idx}_on_ori_envs")
+        save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_ori_envs_seed{args.seed}", f"evaluation_task{task_id}_on_ori_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
 
@@ -113,12 +113,12 @@ def main():
 
         save_stats_pth = os.path.join(
             save_dir,
-            f"load_ori_{model_index}_on_ori_{task_idx}.stats",
+            f"load_ori_{model_index}_on_ori_{task_id}.stats",
         )
     
         video_folder = os.path.join(
             save_dir,
-            f"load_ori_{model_index}_on_ori_{task_idx}_videos",
+            f"load_ori_{model_index}_on_ori_{task_id}_videos",
         )
 
         os.system(f"mkdir -p {video_folder}")
@@ -202,7 +202,7 @@ def main():
         )
         print(f"Results are saved at {save_stats_pth}")
         print(test_loss, success_rate)
-        eval_task_id.append(task_idx)
+        eval_task_id.append(task_id)
 
     print(f"[INFO] Finish evaluating original env list: {eval_task_id}")
 
