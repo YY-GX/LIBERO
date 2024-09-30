@@ -286,7 +286,8 @@ def main():
         # yy: cfg.bddl_folder -> "bddl_files"; task.problem_folder -> "libero_90"; task.bddl_file -> sth like: "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet"
         env_args = {
             "bddl_file_name": [os.path.join(
-                cfg_.bddl_folder, benchmark.get_task(args.task_id_ls[i]).problem_folder, benchmark.get_task(args.task_id_ls[i]).bddl_file
+                cfg_.bddl_folder, benchmark.get_task(args.task_id_ls[i]).problem_folder,
+                benchmark.get_task(args.task_id_ls[i]).bddl_file
             ) for i, cfg_ in enumerate(cfg_ls)],
             "camera_heights": [cfg_.data.img_h for i, cfg_ in enumerate(cfg_ls)],
             "camera_widths": [cfg_.data.img_w for i, cfg_ in enumerate(cfg_ls)],
@@ -317,7 +318,8 @@ def main():
         init_states_ = init_states_ls[0]
 
         env = SubprocVectorEnv(
-            [lambda: SequentialEnv(n_tasks=len(cfg_ls), init_states_ls=init_states_ls, **env_args) for _ in range(env_num)]
+            [lambda: SequentialEnv(n_tasks=len(cfg_ls), init_states_ls=init_states_ls, **env_args)
+             for _ in range(env_num)]
         )
         env.reset()
         env.seed(cfg.seed)

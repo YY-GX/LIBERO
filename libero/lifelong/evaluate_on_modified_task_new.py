@@ -345,15 +345,17 @@ def main():
 
                             obs[i] = crr_obs
 
-                    data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    actions = algo.policy.get_action(data)
-                    obs, reward, done, info = env.step(actions)
+                    # FIXME: obs that is recorded here is not correct
                     video_writer_agentview.append_vector_obs(
                         obs, dones, camera_name="agentview_image"
                     )
                     video_writer_wristcameraview.append_vector_obs(
                         obs, dones, camera_name="robot0_eye_in_hand_image"
                     )
+                    data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                    actions = algo.policy.get_action(data)
+                    obs, reward, done, info = env.step(actions)
+
                     # check whether succeed
                     for k in range(env_num):
                         dones[k] = dones[k] or done[k]
