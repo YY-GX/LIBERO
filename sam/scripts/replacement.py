@@ -504,7 +504,7 @@ def format_object_name(obj_name):
 def obtain_prompt_from_bddl(crr_bddl, prev_bddls):
     print(f"[INFO] crr_bddl: {crr_bddl}")
     print(f"[INFO] prev_bddls: {prev_bddls}")
-    return ['black cabinet']
+    return ["black cabinet", "black cabinet", "moka pot"]
 
     # # TODO: complete this function in a right way
     # #  parser path: /home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/envs/bddl_utils.py

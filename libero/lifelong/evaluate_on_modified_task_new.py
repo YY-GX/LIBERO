@@ -316,10 +316,8 @@ def main():
 
                             # Create a modified copy of the image, ensuring contiguity
                             modified_img = np.ascontiguousarray(np.flip(crr_obs["agentview_image"].copy(), axis=0))
-                            # print(f"Modified Image Strides: {modified_img.strides}, Shape: {modified_img.shape}")
-
                             text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
-                            output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_seed{args.seed}")
+                            output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_taskid{task_id}_seed{args.seed}")
                             ori_img = np.array(Image.open(first_frame))
 
                             # Ensure restored image is also contiguous
@@ -345,7 +343,6 @@ def main():
 
                             obs[i] = crr_obs
 
-                    # FIXME: obs that is recorded here is not correct
                     video_writer_agentview.append_vector_obs(
                         obs, dones, camera_name="agentview_image"
                     )
