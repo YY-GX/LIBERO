@@ -218,13 +218,12 @@ def main():
 
         if args.modify_back:
             print(f"[INFO] *** Use modify_back method")
-            args.model_path_folder = os.path.join(args.model_path_folder, f"modify_back")
-        save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_on_modified_envs")
+            model_path_folder_modified = os.path.join(args.model_path_folder, f"modify_back")
+        save_dir = os.path.join(model_path_folder_modified, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_on_modified_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
 
         # Create algo
-        # algo = safe_device(eval(algo_map["base"])(n_tasks, cfg), cfg.device)
         algo = safe_device(get_algo_class(algo_map["base"])(n_tasks, cfg), cfg.device)
         algo.policy.load_state_dict(sd)
 
@@ -317,7 +316,7 @@ def main():
                             # Create a modified copy of the image, ensuring contiguity
                             modified_img = np.ascontiguousarray(np.flip(crr_obs["agentview_image"].copy(), axis=0))
                             text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
-                            output_dir = os.path.join(args.model_path_folder, f"modified_back_saving_taskid{task_id}_seed{args.seed}")
+                            output_dir = os.path.join(model_path_folder_modified, f"modified_back_saving_taskid{task_id}_seed{args.seed}")
                             ori_img = np.array(Image.open(first_frame))
 
                             # Ensure restored image is also contiguous
@@ -373,10 +372,10 @@ def main():
 
             succ_list.append(success_rate)
             torch.save(eval_stats, save_stats_pth)
-            with open(os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"succ_list_evaluation_on_modified_envs.npy"), 'wb') as f:
+            with open(os.path.join(model_path_folder_modified, f"eval_tasks_on_modified_envs_seed{args.seed}", f"succ_list_evaluation_on_modified_envs.npy"), 'wb') as f:
                 np.save(f, np.array(succ_list))
 
-        with open(os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"succ_list_evaluation_on_modified_envs.npy"), 'wb') as f:
+        with open(os.path.join(model_path_folder_modified, f"eval_tasks_on_modified_envs_seed{args.seed}", f"succ_list_evaluation_on_modified_envs.npy"), 'wb') as f:
             np.save(f, np.array(succ_list))
         print(
             f"[info] finish for ckpt at {model_path} in {t.get_elapsed_time()} sec for rollouts"
