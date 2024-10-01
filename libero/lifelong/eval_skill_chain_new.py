@@ -30,6 +30,7 @@ from libero.lifelong.main import get_task_embs
 import robomimic.utils.obs_utils as ObsUtils
 from libero.lifelong.algos import get_algo_class
 import warnings
+import pickle
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -55,7 +56,6 @@ def parse_args():
         default="libero_90"
     )
     parser.add_argument("--task_order_index", type=int, default=5)
-    parser.add_argument("--task_num_to_use", type=int, default=20)
     parser.add_argument("--seed", type=int, required=True, default=10000)
     parser.add_argument("--device_id", type=int, default=0)
     args = parser.parse_args()
@@ -95,7 +95,7 @@ def main():
     Preparation for Evaluation
     """
     # Get the benchmarks
-    benchmark = get_benchmark(args.benchmark)(args.task_order_index, n_tasks_=args.task_num_to_use)
+    benchmark = get_benchmark(args.benchmark)(args.task_order_index)
     n_tasks = benchmark.n_tasks
     task_id_ls = task_orders[args.task_order_index]
     task_idx_ls = [i for i in range(len(task_id_ls))]
@@ -165,10 +165,8 @@ def main():
     Start Evaluation
     """
     cfg = cfg_ls[0]
-    succ_list = []
     eval_task_id = []
     ObsUtils.initialize_obs_utils_with_obs_specs({"obs": cfg.data.obs.modality})
-    test_loss = 0.0
 
     save_stats_pth = os.path.join(
         save_dir,
@@ -223,13 +221,14 @@ def main():
         task_indexes = [0 for _ in range(env_num)]
         steps = 0
         num_success = 0
+        level_success_rate = {int(task_idx): 0 for task_idx in n_tasks}
         for _ in range(5):  # simulate the physics without any actions
             env.step(np.zeros((env_num, 7)))
 
         # TODO: Start coding from this line!!!
         # yy: formal start of the evaluation
         with torch.no_grad():
-            while steps < cfg.eval.max_steps:
+            while steps < (cfg.eval.max_steps * n_tasks):
                 steps += 1
 
                 actions = np.zeros((1, 7))
@@ -267,28 +266,32 @@ def main():
             for k in range(env_num):
                 num_success += int(dones[k])
 
+            level_info = [kv['complete_id'] for kv in info]
+            for level, succ_ls in level_success_rate.items():
+                level_success_rate[level] = np.sum(level_info == level) / env_num
+
         video_writer_agentview.save(save_video_name="video_agentview")
         video_writer_wristcameraview.save(save_video_name="video_wristcameraview")
         success_rate = num_success / env_num
         env.close()
 
         eval_stats = {
-            "loss": test_loss,
             "success_rate": success_rate,
+            "level_success_rate": level_success_rate
         }
 
-        succ_list.append(success_rate)
         torch.save(eval_stats, save_stats_pth)
-        with open(os.path.join(save_dir, f"succ_list_evaluation_on_ori_envs.npy"), 'wb') as f:
-            np.save(f, np.array(succ_list))
 
-    with open(os.path.join(save_dir, f"succ_list_evaluation_on_ori_envs.npy"), 'wb') as f:
-        np.save(f, np.array(succ_list))
+    with open(os.path.join(save_dir, f"succ_rate_evaluation_on_ori_envs.npy"), 'wb') as f:
+        np.save(f, success_rate)
+    with open(os.path.join(save_dir, f"level_succ.pkl"), 'wb') as f:
+        pickle.dump(level_success_rate, f)
+
     print(
         f"[info] finish for ckpt at {model_path} in {t.get_elapsed_time()} sec for rollouts"
     )
     print(f"Results are saved at {save_stats_pth}")
-    print(test_loss, success_rate)
+    print(success_rate)
     eval_task_id.append(task_id)
 
     print(f"[INFO] Finish evaluating original env list: {eval_task_id}")
