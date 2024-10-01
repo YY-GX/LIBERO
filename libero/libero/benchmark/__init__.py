@@ -173,6 +173,7 @@ class Benchmark(abc.ABC):
         else:
             print(f"[info] using task orders {task_orders[self.task_order_index]}")
             self.tasks = [tasks[i] for i in task_orders[self.task_order_index]]
+            print(f"len(self.tasks): {len(self.tasks)}")
         # yy: set 1 for just traininig 1 task
         if self.n_tasks_:
             self.n_tasks = self.n_tasks_
