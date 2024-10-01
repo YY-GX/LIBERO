@@ -173,7 +173,6 @@ class Benchmark(abc.ABC):
         else:
             print(f"[info] using task orders {task_orders[self.task_order_index]}")
             self.tasks = [tasks[i] for i in task_orders[self.task_order_index]]
-            print(f"len(self.tasks): {len(self.tasks)}")
         # yy: set 1 for just traininig 1 task
         if self.n_tasks_:
             self.n_tasks = self.n_tasks_
@@ -253,7 +252,7 @@ class LIBERO_GOAL(Benchmark):
 
 @register_benchmark
 class LIBERO_90(Benchmark):
-    def __init__(self, task_order_index=0, n_tasks_=10):
+    def __init__(self, task_order_index=0, n_tasks_=None):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         # yy: I comment this
         # assert (
