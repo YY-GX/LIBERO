@@ -221,7 +221,7 @@ def main():
         task_indexes = [0 for _ in range(env_num)]
         steps = 0
         num_success = 0
-        level_success_rate = {int(task_idx): 0 for task_idx in n_tasks}
+        level_success_rate = {int(task_idx): 0 for task_idx in range(n_tasks)}
         for _ in range(5):  # simulate the physics without any actions
             env.step(np.zeros((env_num, 7)))
 
