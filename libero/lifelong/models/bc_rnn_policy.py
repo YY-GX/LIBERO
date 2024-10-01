@@ -204,7 +204,8 @@ class BCRNNPolicy(BasePolicy):
         with torch.no_grad():
             dist = self.forward(data)
         action = dist.sample().detach().cpu()
-        return action.view(action.shape[0], -1).numpy()
+        return action.to(torch.float32).view(action.shape[0], -1).numpy()
+        # return action.view(action.shape[0], -1).numpy()
 
     def reset(self):
         self.eval_h0 = None
