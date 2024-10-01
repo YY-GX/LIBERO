@@ -178,7 +178,7 @@ def main():
     # Get the benchmarks
     benchmark = get_benchmark(args.benchmark)(args.task_order_index, n_tasks_=args.task_num_to_use)
     n_tasks = benchmark.n_tasks
-    task_idx_ls = task_orders[args.task_order_index]
+    task_id_ls = task_orders[args.task_order_index]
 
     # Obtain language descriptions
     descriptions = [benchmark.get_task(i).language for i in range(n_tasks)]
@@ -190,7 +190,7 @@ def main():
     eval_task_id = []
     # yy: for task_idx in range(n_tasks): will make args.task_num_to_use meaningless and lead to wrong task_idx
     # for task_idx in range(n_tasks):
-    for task_idx, task_id in enumerate(task_idx_ls):  # task_id is the actual id of the task. task_idx is just the index.
+    for task_idx, task_id in enumerate(task_id_ls):  # task_id is the actual id of the task. task_idx is just the index.
         print(f">> Evaluate on modified Task {task_id}")
         # Obtain useful info from saved model - checkpoints / cfg
         index_mapping = create_index_mapping(modified_mapping)

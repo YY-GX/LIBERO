@@ -116,7 +116,7 @@ task_orders = [
     # eval ori env (5)
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
     # my method - 1: eval modified env (with midify_back) (6)
-    [1, 3], # TODO
+    [1, 3, 18], # TODO
     # eval long horizon tasks (7 ~ 16)
     [2, 3, 5],
     [3, 2, 5],
