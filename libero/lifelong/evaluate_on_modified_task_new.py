@@ -411,6 +411,7 @@ def main():
                                 print(data['obs'][k])
                         exit(0)
 
+
                     actions = algo.policy.get_action(data)
                     obs, reward, done, info = env.step(actions)
 
