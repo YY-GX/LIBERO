@@ -191,6 +191,8 @@ def main():
     # yy: for task_idx in range(n_tasks): will make args.task_num_to_use meaningless and lead to wrong task_idx
     # for task_idx in range(n_tasks):
     for task_idx, task_id in enumerate(task_id_ls):  # task_id is the actual id of the task. task_idx is just the index.
+        if task_idx == 0:
+            continue
         print(f">> Evaluate on modified Task {task_id}")
         # Obtain useful info from saved model - checkpoints / cfg
         index_mapping = create_index_mapping(modified_mapping)
@@ -315,7 +317,15 @@ def main():
 
                             # Create a modified copy of the image, ensuring contiguity
                             modified_img = np.ascontiguousarray(np.flip(crr_obs["agentview_image"].copy(), axis=0))
+                            # TODO: Finish obtain_prompt_from_bddl()
                             text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
+                            if task_idx == 0:
+                                text_prompts = ["black cabinet"]
+                            elif task_idx == 1:
+                                text_prompts = ["black cabinet"]
+                            elif task_idx == 2:
+                                text_prompts = ["moka pot"]
+
                             output_dir = os.path.join(model_path_folder_modified, f"modified_back_saving_taskid{task_id}_seed{args.seed}")
                             ori_img = np.array(Image.open(first_frame))
 
