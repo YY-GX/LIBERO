@@ -152,6 +152,9 @@ def obtain_mask(
 
             sam2_predictor.set_image(np.array(image.convert("RGB")))
 
+            print(f"[INFO] Prompt Text: {text_prompt}")
+            print(f"[INFO] Bounding Box Shape: {input_boxes.shape}")
+
             masks, scores, logits = sam2_predictor.predict(
                 point_coords=None,
                 point_labels=None,

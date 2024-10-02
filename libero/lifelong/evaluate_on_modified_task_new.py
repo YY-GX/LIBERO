@@ -197,6 +197,7 @@ def main():
         # Obtain useful info from saved model - checkpoints / cfg
         index_mapping = create_index_mapping(modified_mapping)
         model_index = index_mapping[task_id]  # model_index is the id for original model index
+        print(f">> Load model checkpoint id: {model_index}")
         model_path = args.model_path_folder
         model_path = os.path.join(model_path, f"task{model_index}_model.pth")
 
