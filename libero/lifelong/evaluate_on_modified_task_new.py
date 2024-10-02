@@ -26,6 +26,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 from sam.scripts.replacement import OSM_correction, obtain_prompt_from_bddl
 from PIL import Image
 from skimage.transform import resize
+from torchvision.utils import save_image
 
 # yy: map from modified benchmark to original path:
 # 00-09 (00-10 for modified)
@@ -373,6 +374,12 @@ def main():
                     for k in list(data['obs'].keys()):
                         print(k)
                         print(data['obs'][k].size())
+                        if "rgb" in k:
+                            save_image(data['obs'][k], os.path.join(output_dir, "debug", k+".png"))
+                        else:
+                            print(data['obs'][k])
+
+
                     exit(0)
                     actions = algo.policy.get_action(data)
                     obs, reward, done, info = env.step(actions)
