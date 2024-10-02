@@ -29,6 +29,11 @@ from skimage.transform import resize
 from torchvision.utils import save_image
 from pathlib import Path
 from PIL import Image
+import imageio
+
+
+IS_DEBUG = False
+
 
 
 # yy: map from modified benchmark to original path:
@@ -220,9 +225,9 @@ def main():
     # yy: for task_idx in range(n_tasks): will make args.task_num_to_use meaningless and lead to wrong task_idx
     # for task_idx in range(n_tasks):
     for task_idx, task_id in enumerate(task_id_ls):  # task_id is the actual id of the task. task_idx is just the index.
-        # TODO: remember to delete later
-        if task_idx == 0:
-            continue
+        # # TODO: remember to delete later
+        # if task_idx == 0:
+        #     continue
         print(f">> Evaluate on modified Task {task_id}")
         # Obtain useful info from saved model - checkpoints / cfg
         index_mapping = create_index_mapping(modified_mapping)
@@ -369,12 +374,6 @@ def main():
                             crr_obs["agentview_image"] = np.ascontiguousarray(
                                 np.flip(restored_img_resized.copy(), axis=0)) * 255
 
-                            # print(crr_obs["agentview_image"])
-                            # im = Image.fromarray(np.flip(restored_img_resized.copy(), axis=0).astype(np.uint8))
-                            # im.save("/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/all/eval_tasks_on_modified_envs_seed10000/evaluation_task11_on_modified_envs/debug/debug.png")
-                            # print(np.flip(restored_img_resized.copy(), axis=0).shape)
-                            # exit(0)
-
                             if args.is_modify_wrist_camera_view:
                                 # TODO: need to tackle wrist_camera_view
                                 pass
@@ -393,40 +392,25 @@ def main():
                         obs, dones, camera_name="robot0_eye_in_hand_image"
                     )
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    """
-                    >>>>>>>>>> data size: dict_keys(['obs', 'task_emb'])
-                    >>>>>>>>>> data size: dict_keys(['agentview_rgb', 'eye_in_hand_rgb', 'gripper_states', 'joint_states'])
-                    agentview_rgb
-                    torch.Size([20, 3, 128, 128])
-                    eye_in_hand_rgb
-                    torch.Size([20, 3, 128, 128])
-                    gripper_states
-                    torch.Size([20, 2])
-                    joint_states
-                    torch.Size([20, 7])
-                    
 
-                    """
-                    print(f"[DEBUG] Is modified back: {args.modify_back}")
-                    print(f">>>>>>>>>> data size: {data.keys()}")
-                    print(f">>>>>>>>>> data size: {data['obs'].keys()}")
-                    for k in list(data['obs'].keys()):
-                        print(k)
-                        print(data['obs'][k].size())
-                        if "rgb" in k:
-                            print(data['obs'][k][0])
-                            if not os.path.exists(os.path.join(save_dir, "debug")):
-                                os.mkdir(os.path.join(save_dir, "debug"))
-                            img_pth = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}.png")
-                            save_image(data['obs'][k][0], img_pth)
-                            print(f"{img_pth} is saved")
-                        else:
-                            print(data['obs'][k])
-                    img_pth_obs = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}_obs.png")
-                    imageio.imwrite(img_pth_obs, obs[0]["agentview_image"].astype(np.uint8))
+                    if IS_DEBUG:
+                        print(f"[DEBUG] Is modified back: {args.modify_back}")
+                        print(f">>>>>>>>>> data size: {data.keys()}")
+                        print(f">>>>>>>>>> data size: {data['obs'].keys()}")
+                        for k in list(data['obs'].keys()):
+                            print(k)
+                            print(data['obs'][k].size())
+                            if "rgb" in k:
+                                print(data['obs'][k][0])
+                                if not os.path.exists(os.path.join(save_dir, "debug")):
+                                    os.mkdir(os.path.join(save_dir, "debug"))
+                                img_pth = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}.png")
+                                save_image(data['obs'][k][0], img_pth)
+                                print(f"{img_pth} is saved")
+                            else:
+                                print(data['obs'][k])
+                        exit(0)
 
-
-                    exit(0)
                     actions = algo.policy.get_action(data)
                     obs, reward, done, info = env.step(actions)
 
