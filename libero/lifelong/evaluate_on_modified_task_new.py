@@ -417,7 +417,7 @@ def main():
                         else:
                             print(data['obs'][k])
                     img_pth_obs = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}_obs.png")
-                    imageio.imwrite(img_pth_obs, obs["agentview_image"][0].astype(np.uint8))
+                    imageio.imwrite(img_pth_obs, obs[0]["agentview_image"].astype(np.uint8))
 
 
                     exit(0)
