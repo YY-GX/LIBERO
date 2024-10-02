@@ -376,7 +376,7 @@ def main():
                         print(k)
                         print(data['obs'][k].size())
                         if "rgb" in k:
-                            save_image(data['obs'][k], os.path.join(output_dir, "debug", k+f"modify_back_{args.modify_back}.png"))
+                            save_image(data['obs'][k], Path(os.path.join(save_dir, "debug", k+f"modify_back_{args.modify_back}.png")).mkdir(parents=True, exist_ok=True))
                         else:
                             print(data['obs'][k])
 
