@@ -28,6 +28,7 @@ from PIL import Image
 from skimage.transform import resize
 from torchvision.utils import save_image
 from pathlib import Path
+import imageio
 
 # yy: map from modified benchmark to original path:
 # 00-09 (00-10 for modified)
