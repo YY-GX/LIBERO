@@ -377,6 +377,7 @@ def main():
                         print(k)
                         print(data['obs'][k].size())
                         if "rgb" in k:
+                            print(data['obs'][k][0])
                             if not os.path.exists(os.path.join(save_dir, "debug")):
                                 os.mkdir(os.path.join(save_dir, "debug"))
                             img_pth = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}.png")
