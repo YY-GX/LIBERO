@@ -143,6 +143,8 @@ def correct_img_scale(crr_obs):
             corrected_image = np.zeros_like(incorrect_image)
         else:
             # Scale the image to [0, 1]
+            print("hhhhhhhhhhhhhh")
+            print((max_val - min_val))
             corrected_image = (incorrect_image - min_val) / (max_val - min_val)
 
         # Ensure the image is clamped to [0, 1]
