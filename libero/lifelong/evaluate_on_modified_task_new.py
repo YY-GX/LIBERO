@@ -223,7 +223,9 @@ def main():
         if args.modify_back:
             print(f"[INFO] *** Use modify_back method")
             model_path_folder_modified = os.path.join(args.model_path_folder, f"modify_back")
-        save_dir = os.path.join(model_path_folder_modified, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_on_modified_envs")
+            save_dir = os.path.join(model_path_folder_modified, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_on_modified_envs")
+        else:
+            save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_on_modified_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
 
@@ -354,6 +356,18 @@ def main():
                         obs, dones, camera_name="robot0_eye_in_hand_image"
                     )
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                    """
+                    >>>>>>>>>> data size: dict_keys(['obs', 'task_emb'])
+                    >>>>>>>>>> data size: dict_keys(['agentview_rgb', 'eye_in_hand_rgb', 'gripper_states', 'joint_states'])
+                    agentview_rgb
+                    torch.Size([20, 3, 128, 128])
+                    eye_in_hand_rgb
+                    torch.Size([20, 3, 128, 128])
+                    gripper_states
+                    torch.Size([20, 2])
+                    joint_states
+                    torch.Size([20, 7])
+                    """
                     print(f">>>>>>>>>> data size: {data.keys()}")
                     print(f">>>>>>>>>> data size: {data['obs'].keys()}")
                     for k in list(data['obs'].keys()):
