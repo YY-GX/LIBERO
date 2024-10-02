@@ -283,7 +283,7 @@ def main():
                 steps += 1
 
                 data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                print(f">>>>>>>>>> data size: {data.size()}")
+                print(f">>>>>>>>>> data size: {data.keys()}")
                 exit(0)
                 actions = algo.policy.get_action(data)
                 obs, reward, done, info = env.step(actions)
