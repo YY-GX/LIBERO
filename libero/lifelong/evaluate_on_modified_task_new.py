@@ -369,7 +369,7 @@ def main():
                     joint_states
                     torch.Size([20, 7])
                     """
-                    print(f"[DEBUG] Is modified back: {modify_back}")
+                    print(f"[DEBUG] Is modified back: {args.modify_back}")
                     print(f">>>>>>>>>> data size: {data.keys()}")
                     print(f">>>>>>>>>> data size: {data['obs'].keys()}")
                     for k in list(data['obs'].keys()):
