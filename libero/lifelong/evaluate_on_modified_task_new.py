@@ -191,6 +191,7 @@ def main():
     # yy: for task_idx in range(n_tasks): will make args.task_num_to_use meaningless and lead to wrong task_idx
     # for task_idx in range(n_tasks):
     for task_idx, task_id in enumerate(task_id_ls):  # task_id is the actual id of the task. task_idx is just the index.
+        # TODO: remember to delete later
         if task_idx == 0:
             continue
         print(f">> Evaluate on modified Task {task_id}")
@@ -313,10 +314,6 @@ def main():
                     # yy: CORE of modify_back
                     if args.modify_back:
                         for i, crr_obs in enumerate(obs):
-                            # Print original image info
-                            # print(f"Original Image Strides: {crr_obs['agentview_image'].strides}, Shape: {crr_obs['agentview_image'].shape}")
-
-                            # Create a modified copy of the image, ensuring contiguity
                             modified_img = np.ascontiguousarray(np.flip(crr_obs["agentview_image"].copy(), axis=0))
                             # TODO: Finish obtain_prompt_from_bddl()
                             text_prompts = obtain_prompt_from_bddl(crr_bddl_file_path, [prev_bddl_file_path])
@@ -330,7 +327,6 @@ def main():
                             output_dir = os.path.join(model_path_folder_modified, f"modified_back_saving_taskid{task_id}_seed{args.seed}")
                             ori_img = np.array(Image.open(first_frame))
 
-                            # Ensure restored image is also contiguous
                             restored_img_resized, restored_img = OSM_correction(
                                 ori_img,
                                 modified_img,
@@ -339,10 +335,8 @@ def main():
                                 area_fraction=0.05
                             )
 
-                            # Update the observation with the restored image, ensuring it is contiguous
                             crr_obs["agentview_image"] = np.ascontiguousarray(
                                 np.flip(restored_img_resized.copy(), axis=0))
-                            # print(f"Restored Image Strides: {crr_obs['agentview_image'].strides}, Shape: {crr_obs['agentview_image'].shape}")
 
                             if args.is_modify_wrist_camera_view:
                                 # TODO: need to tackle wrist_camera_view
@@ -360,6 +354,12 @@ def main():
                         obs, dones, camera_name="robot0_eye_in_hand_image"
                     )
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                    print(f">>>>>>>>>> data size: {data.keys()}")
+                    print(f">>>>>>>>>> data size: {data['obs'].keys()}")
+                    for k in list(data['obs'].keys()):
+                        print(k)
+                        print(data['obs'][k].size())
+                    exit(0)
                     actions = algo.policy.get_action(data)
                     obs, reward, done, info = env.step(actions)
 

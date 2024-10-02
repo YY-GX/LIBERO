@@ -406,6 +406,7 @@ def OSM_correction(
                     imageio.imwrite(f'{results_output_dir}/mask_{i}.png', replacement_masks_arr[i] * 255)
             np.save(mask_path, replacement_masks_arr)
         else:
+            print(f"[DEBUG] {mask_path} already exists, directly call it :)")
             replacement_masks_arr = np.load(mask_path)
 
         restored_img = paste_copy(replacement_masks_arr, ori_img, modified_img)
