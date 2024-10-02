@@ -27,6 +27,7 @@ from sam.scripts.replacement import OSM_correction, obtain_prompt_from_bddl
 from PIL import Image
 from skimage.transform import resize
 from torchvision.utils import save_image
+from pathlib import Path
 
 # yy: map from modified benchmark to original path:
 # 00-09 (00-10 for modified)
