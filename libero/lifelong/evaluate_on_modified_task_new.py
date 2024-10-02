@@ -369,7 +369,7 @@ def main():
                             crr_obs["agentview_image"] = np.ascontiguousarray(
                                 np.flip(restored_img_resized.copy(), axis=0))
 
-                            print(crr_obs["agentview_image"])
+                            # print(crr_obs["agentview_image"])
                             # im = Image.fromarray(np.flip(restored_img_resized.copy(), axis=0).astype(np.uint8))
                             # im.save("/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/all/eval_tasks_on_modified_envs_seed10000/evaluation_task11_on_modified_envs/debug/debug.png")
                             # print(np.flip(restored_img_resized.copy(), axis=0).shape)
@@ -393,7 +393,7 @@ def main():
                         obs, dones, camera_name="robot0_eye_in_hand_image"
                     )
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    print(data['obs']['agentview_rgb'][0])
+                    # print(data['obs']['agentview_rgb'][0])
                     exit(0)
                     """
                     >>>>>>>>>> data size: dict_keys(['obs', 'task_emb'])
