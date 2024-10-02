@@ -346,7 +346,7 @@ def main():
                                 # TODO: need to tackle wrist_camera_view
                                 pass
                             else:
-                                crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
+                                crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"] / 255.0,
                                                                              (128, 128), anti_aliasing=True)
 
                             obs[i] = crr_obs
@@ -369,6 +369,8 @@ def main():
                     torch.Size([20, 2])
                     joint_states
                     torch.Size([20, 7])
+                    
+
                     """
                     print(f"[DEBUG] Is modified back: {args.modify_back}")
                     print(f">>>>>>>>>> data size: {data.keys()}")

@@ -484,7 +484,7 @@ def OSM_correction(
 
 
     # TODO: anti_aliasing may need to be set as False
-    restored_img_resized = resize(restored_img, (128, 128), anti_aliasing=True)
+    restored_img_resized = resize(restored_img / 255.0, (128, 128), anti_aliasing=True)
     # Ensure the image is in the correct format
     restored_img_resized_uint8 = (np.clip(restored_img_resized, 0, 1) * 255).astype(np.uint8)
 
