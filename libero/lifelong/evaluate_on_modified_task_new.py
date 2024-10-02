@@ -226,8 +226,8 @@ def main():
     # for task_idx in range(n_tasks):
     for task_idx, task_id in enumerate(task_id_ls):  # task_id is the actual id of the task. task_idx is just the index.
         # # TODO: remember to delete later
-        # if task_idx == 0:
-        #     continue
+        if (task_idx == 0) or (task_idx == 1):
+            continue
         print(f">> Evaluate on modified Task {task_id}")
         # Obtain useful info from saved model - checkpoints / cfg
         index_mapping = create_index_mapping(modified_mapping)
