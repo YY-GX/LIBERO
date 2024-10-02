@@ -369,13 +369,14 @@ def main():
                     joint_states
                     torch.Size([20, 7])
                     """
+                    print(f"[DEBUG] Is modified back: {modify_back}")
                     print(f">>>>>>>>>> data size: {data.keys()}")
                     print(f">>>>>>>>>> data size: {data['obs'].keys()}")
                     for k in list(data['obs'].keys()):
                         print(k)
                         print(data['obs'][k].size())
                         if "rgb" in k:
-                            save_image(data['obs'][k], os.path.join(output_dir, "debug", k+".png"))
+                            save_image(data['obs'][k], os.path.join(output_dir, "debug", k+f"modify_back_{args.modify_back}.png"))
                         else:
                             print(data['obs'][k])
 
