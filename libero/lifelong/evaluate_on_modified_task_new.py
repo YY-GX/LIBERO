@@ -32,7 +32,7 @@ from PIL import Image
 import imageio
 
 
-IS_DEBUG = False
+IS_DEBUG = True
 
 
 
