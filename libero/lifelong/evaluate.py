@@ -291,7 +291,7 @@ def main():
 
                 actions = algo.policy.get_action(data)
                 print(type(actions))
-                print(actions.size())
+                print(actions.shape)
                 exit(0)
                 obs, reward, done, info = env.step(actions)
                 video_writer.append_vector_obs(
