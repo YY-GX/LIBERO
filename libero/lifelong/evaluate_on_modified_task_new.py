@@ -413,11 +413,11 @@ def main():
                                 os.mkdir(os.path.join(save_dir, "debug"))
                             img_pth = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}.png")
                             save_image(data['obs'][k][0], img_pth)
-                            img_pth_obs = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}_obs.png")
-                            imageio.imwrite(img_pth_obs, obs[k][0].astype(np.uint8))
                             print(f"{img_pth} is saved")
                         else:
                             print(data['obs'][k])
+                    img_pth_obs = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}_obs.png")
+                    imageio.imwrite(img_pth_obs, obs["agentview_image"][0].astype(np.uint8))
 
 
                     exit(0)
