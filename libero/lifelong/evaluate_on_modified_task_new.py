@@ -346,9 +346,10 @@ def main():
                                 # TODO: need to tackle wrist_camera_view
                                 pass
                             else:
-                                crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"] / 255.0,
+                                crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
                                                                              (128, 128), anti_aliasing=True)
 
+                            crr_obs = correct_img_scale(crr_obs)
                             obs[i] = crr_obs
 
                     video_writer_agentview.append_vector_obs(
