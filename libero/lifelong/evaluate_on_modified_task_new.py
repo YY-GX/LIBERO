@@ -370,10 +370,10 @@ def main():
                                 np.flip(restored_img_resized.copy(), axis=0))
 
                             print(crr_obs["agentview_image"])
-                            im = Image.fromarray(np.flip(restored_img_resized.copy(), axis=0).astype(np.uint8))
-                            im.save("/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/all/eval_tasks_on_modified_envs_seed10000/evaluation_task11_on_modified_envs/debug/debug.png")
-                            print(np.flip(restored_img_resized.copy(), axis=0).shape)
-                            exit(0)
+                            # im = Image.fromarray(np.flip(restored_img_resized.copy(), axis=0).astype(np.uint8))
+                            # im.save("/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/all/eval_tasks_on_modified_envs_seed10000/evaluation_task11_on_modified_envs/debug/debug.png")
+                            # print(np.flip(restored_img_resized.copy(), axis=0).shape)
+                            # exit(0)
 
                             if args.is_modify_wrist_camera_view:
                                 # TODO: need to tackle wrist_camera_view
@@ -382,7 +382,6 @@ def main():
                                 crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
                                                                              (128, 128), anti_aliasing=True)
 
-                            # crr_obs = correct_img_scale(crr_obs)
                             obs[i] = crr_obs
 
 
@@ -394,6 +393,8 @@ def main():
                         obs, dones, camera_name="robot0_eye_in_hand_image"
                     )
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                    print(data['obs']['agentview_rgb'][0])
+                    exit(0)
                     """
                     >>>>>>>>>> data size: dict_keys(['obs', 'task_emb'])
                     >>>>>>>>>> data size: dict_keys(['agentview_rgb', 'eye_in_hand_rgb', 'gripper_states', 'joint_states'])
