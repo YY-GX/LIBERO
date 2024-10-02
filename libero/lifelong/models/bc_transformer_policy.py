@@ -298,7 +298,8 @@ class BCTransformerPolicy(BasePolicy):
             x = self.temporal_encode(x)
             dist = self.policy_head(x[:, -1])
         action = dist.sample().detach().cpu()
-        return action.view(action.shape[0], -1).numpy()
+        return action.to(torch.float32).view(action.shape[0], -1).numpy()
+        # return action.view(action.shape[0], -1).numpy()
 
     def reset(self):
         self.latent_queue = []
