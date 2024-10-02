@@ -299,6 +299,7 @@ class SequentialEnv(OffScreenRenderEnv):
                 "bddl_file_name": kwargs["bddl_file_name"][i],
                 "camera_heights": kwargs["camera_heights"][i],
                 "camera_widths": kwargs["camera_widths"][i],
+                "ignore_done": True
             }
             env_instance = OffScreenRenderEnv(**env_args)  # Initialize the superclass with env_args
             self.env_ls.append(env_instance)
