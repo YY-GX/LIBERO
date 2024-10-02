@@ -130,7 +130,7 @@ modified_mapping = {
 }
 
 def correct_img_scale(crr_obs):
-    for key in ["agentview_image", "eye_in_hand_rgb"]:
+    for key in ["agentview_image", "robot0_eye_in_hand_image"]:
         incorrect_image = crr_obs[key]
 
         # Find min and max values
