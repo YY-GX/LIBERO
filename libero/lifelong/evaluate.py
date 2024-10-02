@@ -285,6 +285,9 @@ def main():
                 data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                 print(f">>>>>>>>>> data size: {data.keys()}")
                 print(f">>>>>>>>>> data size: {data['obs'].keys()}")
+                for k in list(data['obs'].keys()):
+                    print(k)
+                    print(data['obs'][k].size())
                 exit(0)
                 actions = algo.policy.get_action(data)
                 obs, reward, done, info = env.step(actions)
