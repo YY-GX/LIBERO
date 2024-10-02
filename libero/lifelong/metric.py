@@ -20,7 +20,7 @@ def raw_obs_to_tensor_obs(obs, task_emb, cfg):
     """
     Prepare the tensor observations as input for the algorithm.
     """
-    print(obs[0]["agentview_image"])
+    # print(obs[0]["agentview_image"])
     env_num = len(obs)
 
     data = {
@@ -34,8 +34,6 @@ def raw_obs_to_tensor_obs(obs, task_emb, cfg):
             data["obs"][obs_name] = []
         all_obs_keys += modality_list
 
-    # print(f"yy1: {all_obs_keys}")
-    # print(f"yy2: {cfg.data.obs_key_mapping}")
     for k in range(env_num):
         for obs_name in all_obs_keys:
             data["obs"][obs_name].append(
@@ -44,7 +42,7 @@ def raw_obs_to_tensor_obs(obs, task_emb, cfg):
                     obs_key=obs_name,
                 ).float()
             )
-    print(data['obs']['agentview_rgb'][0])
+    # print(data['obs']['agentview_rgb'][0])
 
     for key in data["obs"]:
         data["obs"][key] = torch.stack(data["obs"][key])

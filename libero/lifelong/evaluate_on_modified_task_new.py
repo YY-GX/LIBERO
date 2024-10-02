@@ -367,7 +367,7 @@ def main():
                             )
 
                             crr_obs["agentview_image"] = np.ascontiguousarray(
-                                np.flip(restored_img_resized.copy(), axis=0))
+                                np.flip(restored_img_resized.copy(), axis=0)) * 255
 
                             # print(crr_obs["agentview_image"])
                             # im = Image.fromarray(np.flip(restored_img_resized.copy(), axis=0).astype(np.uint8))
@@ -380,7 +380,7 @@ def main():
                                 pass
                             else:
                                 crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
-                                                                             (128, 128), anti_aliasing=True)
+                                                                             (128, 128), anti_aliasing=True) * 255
 
                             obs[i] = crr_obs
 
@@ -393,8 +393,6 @@ def main():
                         obs, dones, camera_name="robot0_eye_in_hand_image"
                     )
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    # print(data['obs']['agentview_rgb'][0])
-                    exit(0)
                     """
                     >>>>>>>>>> data size: dict_keys(['obs', 'task_emb'])
                     >>>>>>>>>> data size: dict_keys(['agentview_rgb', 'eye_in_hand_rgb', 'gripper_states', 'joint_states'])
