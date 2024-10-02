@@ -379,7 +379,9 @@ def main():
                         if "rgb" in k:
                             if not os.path.exists(os.path.join(save_dir, "debug")):
                                 os.mkdir(os.path.join(save_dir, "debug"))
-                            save_image(data['obs'][k], os.path.join(save_dir, "debug", k + f"modify_back_{args.modify_back}.png"))
+                            img_pth = os.path.join(save_dir, "debug", k + f"_modify_back_{args.modify_back}.png")
+                            save_image(data['obs'][k][0], img_pth)
+                            print(f"{img_pth} is saved")
                         else:
                             print(data['obs'][k])
 
