@@ -129,6 +129,27 @@ modified_mapping = {
         "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet_with_popcorn_in_the_drawer.bddl"],
 }
 
+def correct_img_scale(crr_obs):
+    for key in ["agentview_image", "eye_in_hand_rgb"]:
+        incorrect_tensor = crr_obs[key]
+
+        # Convert to float if not already
+        if not incorrect_tensor.dtype.is_floating_point:
+            incorrect_tensor = incorrect_tensor.float()
+
+        # Find min and max values
+        min_val = incorrect_tensor.min()
+        max_val = incorrect_tensor.max()
+
+        # Scale the tensor to [0, 1]
+        corrected_tensor = (incorrect_tensor - min_val) / (max_val - min_val)
+
+        # Ensure the tensor is clamped to [0, 1] in case of numerical instability
+        corrected_tensor = torch.clamp(corrected_tensor, 0.0, 1.0)
+
+        # Assign the corrected tensor back to the observation
+        crr_obs[key] = corrected_tensor
+    return crr_obs
 
 def create_index_mapping(dict_map):
     output_map = {}

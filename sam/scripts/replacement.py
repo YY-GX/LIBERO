@@ -42,27 +42,7 @@ def load_image(image):
     image_transformed, _ = transform(Image.fromarray(image), None)
     return image, image_transformed
 
-def correct_img_scale(crr_obs):
-    for key in ["agentview_image", "eye_in_hand_rgb"]:
-        incorrect_tensor = crr_obs[key]
 
-        # Convert to float if not already
-        if not incorrect_tensor.dtype.is_floating_point:
-            incorrect_tensor = incorrect_tensor.float()
-
-        # Find min and max values
-        min_val = incorrect_tensor.min()
-        max_val = incorrect_tensor.max()
-
-        # Scale the tensor to [0, 1]
-        corrected_tensor = (incorrect_tensor - min_val) / (max_val - min_val)
-
-        # Ensure the tensor is clamped to [0, 1] in case of numerical instability
-        corrected_tensor = torch.clamp(corrected_tensor, 0.0, 1.0)
-
-        # Assign the corrected tensor back to the observation
-        crr_obs[key] = corrected_tensor
-    return crr_obs
 
 # --------------------------------------------------------------------------------------------------------------------
 
