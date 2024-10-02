@@ -16,7 +16,7 @@ from easydict import EasyDict
 from hydra.utils import get_original_cwd, to_absolute_path
 from omegaconf import DictConfig, OmegaConf
 from torch.utils.data import DataLoader
-from transformers import AutoModel, pipeline, AutoTokenizer, logging
+# from transformers import AutoModel, pipeline, AutoTokenizer, logging
 from pathlib import Path
 
 from libero.libero import get_libero_path
