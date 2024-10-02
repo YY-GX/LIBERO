@@ -230,6 +230,8 @@ def main():
         with torch.no_grad():
             while steps < (cfg.eval.max_steps * n_tasks):
                 steps += 1
+                if steps % (cfg.eval.max_steps // 10) == 0:
+                    print(f"[INFO] Steps: {steps}; Task Indexes: {task_indexes}.")
 
                 actions = np.zeros((1, 7))
                 for k in range(env_num):

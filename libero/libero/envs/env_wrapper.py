@@ -293,6 +293,7 @@ class SequentialEnv(OffScreenRenderEnv):
         self.env_ls = []
         self.task_id = None
         self.complete_task = []
+        self.task_dones = [False for _ in range(n_tasks)]
         for i in range(n_tasks):
             env_args = {
                 "bddl_file_name": kwargs["bddl_file_name"][i],
@@ -318,11 +319,14 @@ class SequentialEnv(OffScreenRenderEnv):
         return self.env_ls[self.task_id].sim.get_state().flatten()
 
     def step(self, action):
+        if self.task_dones[self.task_id]:
+            return self.obs, self.reward, self.done, self.info
         obs, reward, done, info = self.env_ls[self.task_id].step(action)
         info['is_init'] = False
         if done:
             self.complete_task.append(self.task_id)
             info['complete_id'] = self.task_id
+            self.task_dones[self.task_id] = True
             # yy: if current task_id is already the last one, do nothing (i.e., done = True)
             # yy: otherwise, auto initialize state for each new subtask - Note: still need to do this init for the 1st task manually
             if self.task_id != (self.n_tasks - 1):
@@ -335,6 +339,7 @@ class SequentialEnv(OffScreenRenderEnv):
                 self.env_ls[self.task_id].set_init_state(crr_env_state)
 
         info['task_index'] = self.task_id
+        self.obs, self.reward, self.done, self.info = obs, reward, done, info
         return obs, reward, done, info
 
     def close(self):
