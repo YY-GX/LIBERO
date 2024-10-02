@@ -283,6 +283,8 @@ def main():
                 steps += 1
 
                 data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                print(f">>>>>>>>>> data size: {data.size()}")
+                exit(0)
                 actions = algo.policy.get_action(data)
                 obs, reward, done, info = env.step(actions)
                 video_writer.append_vector_obs(
