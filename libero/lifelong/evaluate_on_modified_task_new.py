@@ -368,6 +368,9 @@ def main():
                             crr_obs["agentview_image"] = np.ascontiguousarray(
                                 np.flip(restored_img_resized.copy(), axis=0))
 
+                            imageio.imwrite("/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/all/eval_tasks_on_modified_envs_seed10000/evaluation_task11_on_modified_envs/debug/debug.png", np.flip(restored_img_resized.copy(), axis=0).astype(np.uint8))
+                            exit(0)
+
                             if args.is_modify_wrist_camera_view:
                                 # TODO: need to tackle wrist_camera_view
                                 pass
