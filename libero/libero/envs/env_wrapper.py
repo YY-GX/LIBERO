@@ -321,6 +321,7 @@ class SequentialEnv(OffScreenRenderEnv):
 
     def step(self, action):
         if self.task_dones[self.task_id]:
+            print(f"[INFO] task id {self.task_id} is done! Jump step() functions!")
             return self.obs, self.reward, self.done, self.info
         obs, reward, done, info = self.env_ls[self.task_id].step(action)
         info['is_init'] = False
