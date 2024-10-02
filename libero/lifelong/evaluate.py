@@ -288,8 +288,11 @@ def main():
                 for k in list(data['obs'].keys()):
                     print(k)
                     print(data['obs'][k].size())
-                exit(0)
+
                 actions = algo.policy.get_action(data)
+                print(type(actions))
+                print(actions.size())
+                exit(0)
                 obs, reward, done, info = env.step(actions)
                 video_writer.append_vector_obs(
                     obs, dones, camera_name="agentview_image"
