@@ -268,9 +268,12 @@ def main():
             for k in range(env_num):
                 num_success += int(dones[k])
 
-            level_info = [kv['complete_id'] for kv in info]
+            """
+            level_info
+            """
+            level_info = np.array([kv['complete_id'] for kv in info])
             for level, succ_ls in level_success_rate.items():
-                level_success_rate[level] = np.sum(level_info == level) / env_num
+                level_success_rate[level] = np.sum(level_info >= level) / env_num
 
         video_writer_agentview.save(save_video_name="video_agentview")
         video_writer_wristcameraview.save(save_video_name="video_wristcameraview")

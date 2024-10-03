@@ -293,6 +293,7 @@ class SequentialEnv(OffScreenRenderEnv):
         self.env_ls = []
         self.task_id = None
         self.complete_task = []
+        self.complete_id = -1
         self.task_dones = [False for _ in range(n_tasks)]
         for i in range(n_tasks):
             env_args = {
@@ -327,7 +328,7 @@ class SequentialEnv(OffScreenRenderEnv):
         info['is_init'] = False
         if done:
             self.complete_task.append(self.task_id)
-            info['complete_id'] = self.task_id
+            self.complete_id = self.task_id
             self.task_dones[self.task_id] = True
             # yy: if current task_id is already the last one, do nothing (i.e., done = True)
             # yy: otherwise, auto initialize state for each new subtask - Note: still need to do this init for the 1st task manually
@@ -340,6 +341,7 @@ class SequentialEnv(OffScreenRenderEnv):
                 self.env_ls[self.task_id].reset()
                 self.env_ls[self.task_id].set_init_state(crr_env_state)
 
+        info['complete_id'] = self.complete_id
         info['task_index'] = self.task_id
         self.obs, self.reward, self.done, self.info = obs, reward, done, info
         return obs, reward, done, info
