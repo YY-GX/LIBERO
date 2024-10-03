@@ -26,7 +26,8 @@ pretrain_model_path: ""
 benchmark_name: "libero_90"
 #benchmark_name: "yy_try"
 #version: "kitchen_v0"
-version: "training_eval_skills_original_env"
+#version: "training_eval_skills_original_env"
+version: "skill_policies_without_wrist_camera_view"
 # yy: Do you wanna to split the 50 demos into 40 & 10?
 is_split: false
 # yy: Do you wanna disable skill rollout eval (only do once after all training)?
