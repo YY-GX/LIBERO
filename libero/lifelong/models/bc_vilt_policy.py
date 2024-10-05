@@ -216,6 +216,17 @@ class BCViLTPolicy(BasePolicy):
         return dist
 
     def get_action(self, data):
+        """
+        data:
+        agentview_rgb
+        torch.Size([20, 3, 128, 128])
+        eye_in_hand_rgb
+        torch.Size([20, 3, 128, 128])
+        gripper_states
+        torch.Size([20, 2])
+        joint_states
+        torch.Size([20, 7])
+        """
         self.eval()
         with torch.no_grad():
             data = self.preprocess_input(data, train_mode=False)

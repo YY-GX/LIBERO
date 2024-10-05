@@ -31,6 +31,7 @@ import robomimic.utils.obs_utils as ObsUtils
 from libero.lifelong.algos import get_algo_class
 import warnings
 import pickle
+import wandb
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 

@@ -22,8 +22,8 @@ shuffle_task: false
 
 obs:
     modality:
-        rgb: ["agentview_rgb", "eye_in_hand_rgb"]
-#        rgb: ["agentview_rgb"]
+#        rgb: ["agentview_rgb", "eye_in_hand_rgb"]
+        rgb: ["agentview_rgb"]
         depth: []
         low_dim: ["gripper_states", "joint_states"]
 
