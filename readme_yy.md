@@ -1,6 +1,6 @@
 # Installation
 ```shell
-conda create -n libero python=3.8.13
+conda create -n libero python=3.10.0
 # To ensure pip installation location is same as conda
 conda install --force-reinstall pip
 
@@ -12,8 +12,13 @@ cd ./YourLocation/Libero && pip install -e .
 
 # CV related packages
 # sam2 only support python >= 3.10.0
-conda install python=3.10.0
 pip install sam2
 pip install groundingdino-py
-pip install wandb
+pip install wandb h5py timm dds_cloudapi_sdk scikit-image
+```
+
+
+```shell
+
+pip install --force-reinstall 
 ```
