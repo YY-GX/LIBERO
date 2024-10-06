@@ -15,10 +15,9 @@ cd ./YourLocation/Libero && pip install -e .
 pip install sam2
 pip install groundingdino-py
 pip install wandb h5py timm dds_cloudapi_sdk scikit-image
+pip install numpy==1.23.1
 ```
 
-
 ```shell
-
 pip install --force-reinstall 
 ```
