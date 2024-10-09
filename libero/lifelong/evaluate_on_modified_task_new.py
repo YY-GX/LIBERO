@@ -136,31 +136,6 @@ modified_mapping = {
         "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet_with_popcorn_in_the_drawer.bddl"],
 }
 
-def correct_img_scale(crr_obs):
-    for key in ["agentview_image", "robot0_eye_in_hand_image"]:
-        incorrect_image = crr_obs[key]
-
-        # Find min and max values
-        min_val = incorrect_image.min()
-        max_val = incorrect_image.max()
-
-        # Avoid division by zero
-        if max_val - min_val == 0:
-            # If all values are the same, return an array of the same value
-            corrected_image = np.zeros_like(incorrect_image)
-        else:
-            # Scale the image to [0, 1]
-            print("hhhhhhhhhhhhhh")
-            print((max_val - min_val))
-            corrected_image = (incorrect_image - min_val) / (max_val - min_val)
-
-        # Ensure the image is clamped to [0, 1]
-        corrected_image = np.clip(corrected_image, 0.0, 1.0)
-
-        # Assign the corrected image back to the observation
-        crr_obs[key] = corrected_image
-
-    return crr_obs
 
 def create_index_mapping(dict_map):
     output_map = {}
@@ -201,6 +176,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--device_id", type=int)
     parser.add_argument("--modify_back", type=int, default=0)
+    parser.add_argument("--is_wrist_camera_view", type=int, default=0)
     parser.add_argument("--is_modify_wrist_camera_view", type=int, default=0)
     args = parser.parse_args()
     args.device_id = "cuda:" + str(args.device_id)
@@ -294,8 +270,9 @@ def main():
         with Timer() as t:
             video_writer_agentview = VideoWriter(os.path.join(video_folder, "agentview"), save_video=True,
                                                  single_video=False)
-            video_writer_wristcameraview = VideoWriter(os.path.join(video_folder, "wristcameraview"), save_video=True,
-                                                       single_video=False)
+            if args.is_wrist_camera_view:
+                video_writer_wristcameraview = VideoWriter(os.path.join(video_folder, "wristcameraview"), save_video=True,
+                                                           single_video=False)
 
             if args.modify_back:
                 env_args = {
@@ -374,12 +351,13 @@ def main():
                             crr_obs["agentview_image"] = np.ascontiguousarray(
                                 np.flip(restored_img_resized.copy(), axis=0)) * 255
 
-                            if args.is_modify_wrist_camera_view:
-                                # TODO: need to tackle wrist_camera_view
-                                pass
-                            else:
-                                crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
-                                                                             (128, 128), anti_aliasing=True) * 255
+                            if args.is_wrist_camera_view:
+                                if args.is_modify_wrist_camera_view:
+                                    # TODO: need to tackle wrist_camera_view
+                                    pass
+                                else:
+                                    crr_obs["robot0_eye_in_hand_image"] = resize(crr_obs["robot0_eye_in_hand_image"],
+                                                                                 (128, 128), anti_aliasing=True) * 255
 
                             obs[i] = crr_obs
 
@@ -388,9 +366,10 @@ def main():
                     video_writer_agentview.append_vector_obs(
                         obs, dones, camera_name="agentview_image"
                     )
-                    video_writer_wristcameraview.append_vector_obs(
-                        obs, dones, camera_name="robot0_eye_in_hand_image"
-                    )
+                    if args.is_wrist_camera_view:
+                        video_writer_wristcameraview.append_vector_obs(
+                            obs, dones, camera_name="robot0_eye_in_hand_image"
+                        )
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
 
                     if IS_DEBUG:
@@ -424,7 +403,8 @@ def main():
                     num_success += int(dones[k])
 
             video_writer_agentview.save(save_video_name="video_agentview")
-            video_writer_wristcameraview.save(save_video_name="video_wristcameraview")
+            if args.is_wrist_camera_view:
+                video_writer_wristcameraview.save(save_video_name="video_wristcameraview")
             success_rate = num_success / env_num
             env.close()
     
