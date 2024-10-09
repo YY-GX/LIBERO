@@ -12,3 +12,6 @@ class Timer:
 
     def get_elapsed_time(self):
         return self.value
+
+    def get_middle_past_time(self):
+        return (time.time_ns() - self.start_time) / (10**9)

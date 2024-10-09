@@ -233,7 +233,7 @@ def main():
                 steps += 1
                 if steps % (cfg.eval.max_steps // 10) == 0:
                     print(f"[INFO] Steps: {steps}; Task Indexes: {task_indexes}.", flush=True)
-                    print(f"Evaluation takes {t.get_elapsed_time()} seconds", flush=True)
+                    print(f"Evaluation takes {t.get_middle_past_time()} seconds", flush=True)
 
                 actions = np.zeros((1, 7))
                 for k in range(env_num):
