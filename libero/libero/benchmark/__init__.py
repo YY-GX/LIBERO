@@ -109,7 +109,7 @@ for yy_suite in yy_suites:
 
     for task in yy_task_map[yy_suite]:
         if keep_language_unchanged:
-            mapping_pth = f"/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/mappings/{yy_suite}.json"
+            mapping_pth = f"libero/mappings/{yy_suite}.json"
             with open(mapping_pth, 'r') as json_file:
                 mapping = json.load(json_file)
             task_ori = find_keys_by_value(mapping, task)
