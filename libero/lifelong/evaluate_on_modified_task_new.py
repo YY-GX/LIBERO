@@ -62,7 +62,8 @@ def parse_args():
         "--benchmark",
         type=str,
         required=True,
-        choices=["libero_10", "libero_90", "libero_spatial", "libero_object", "libero_goal", "yy_try", "modified_libero"],
+        choices=["libero_10", "libero_90", "libero_spatial", "libero_object", "libero_goal", "yy_try",
+                 "modified_libero", "single_step"],
         default="modified_libero"
     )
     parser.add_argument("--task_num_to_use", type=int,
@@ -82,7 +83,7 @@ def main():
     args = parse_args()
 
     # Get mapping
-    mapping_pth = f"/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/mappings/{args.benchmark}.json"
+    mapping_pth = f"libero/mappings/{args.benchmark}.json"
     with open(mapping_pth, 'r') as json_file:
         mapping = json.load(json_file)
     

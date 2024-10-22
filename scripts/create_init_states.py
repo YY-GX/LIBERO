@@ -39,7 +39,8 @@ def create_init(bddl_file_name, suite_name):
     torch.save(init_states, out_file)
 
 # suite_name = "modified_libero"
-suite_name = "single_step"
+# suite_name = "single_step"
+suite_name = "libero_90"
 # folder = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}"
 folder = f"/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}"
 for bddl_file_name in os.listdir(folder):
