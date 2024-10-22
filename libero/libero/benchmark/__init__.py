@@ -98,7 +98,7 @@ for libero_suite in libero_suites:
 
 # yy: add my task
 yy_suites = [
-    "yy_try",
+    # "yy_try",
     "modified_libero",
     "single_step"
 ]
