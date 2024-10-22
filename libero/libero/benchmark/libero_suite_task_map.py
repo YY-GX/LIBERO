@@ -139,6 +139,7 @@ libero_task_map = {
     #     "STUDY_SCENE4_pick_up_the_book_on_the_right_and_place_it_on_the_cabinet_shelf",
     #     "STUDY_SCENE4_pick_up_the_book_on_the_right_and_place_it_under_the_cabinet_shelf",
     # ],
+
     "libero_90": [
         # 00_09 == run_002
         "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet",
