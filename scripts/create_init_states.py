@@ -19,7 +19,8 @@ import os
 
 
 def create_init(bddl_file_name, suite_name):
-    out_file = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/init_files/{suite_name}"
+    out_file = f"/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/init_files/{suite_name}"
+    # out_file = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/init_files/{suite_name}"
     out_file = os.path.join(out_file, bddl_file_name.split(suite_name)[-1].replace(".bddl", ".pruned_init").lstrip('/'))
 
     env_args = {
@@ -35,12 +36,12 @@ def create_init(bddl_file_name, suite_name):
     for _ in range(N - 1):
         env.reset()
         init_states = torch.vstack([init_states, torch.from_numpy(env.get_sim_state().reshape((1, dim)))])
-    # print(init_states.size())
-    # print(init_states)
     torch.save(init_states, out_file)
 
-suite_name = "modified_libero"
-folder = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/modified_libero"
+# suite_name = "modified_libero"
+suite_name = "single_step"
+# folder = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}"
+folder = f"/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}"
 for bddl_file_name in os.listdir(folder):
     if not (".bddl" in bddl_file_name):
         continue

@@ -29,113 +29,9 @@ from skimage.transform import resize
 from torchvision.utils import save_image
 from pathlib import Path
 from PIL import Image
-import imageio
-
+import json
 
 IS_DEBUG = False
-
-
-
-# yy: map from modified benchmark to original path:
-# 00-09 (00-10 for modified)
-modified_mapping = {
-    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl"],
-    "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl",
-        "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_with_popcorn_in_the_top_drawer.bddl"],
-    "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet_with_top_drawer_open.bddl"],
-    "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl"],
-    "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate": [
-        "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet": [
-        "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet_with_the_bottom_drawer_open.bddl"],
-    "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate": [
-        "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate": [
-        "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate": [
-        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate_with_popcorn_in_the_bowl.bddl"],
-}
-
-# 10-19 (00-11 for modified)
-modified_mapping = {
-    "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet": [
-        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet_with_top_drawer_open.bddl",
-        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet_with_popcorn_on_top_of_the_cabinet.bddl",
-        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle": [
-        "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl": [
-        "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE3_put_the_frying_pan_on_the_stove": [
-        "KITCHEN_SCENE3_put_the_frying_pan_on_the_stove_with_popcorn_in_the_frying_pan.bddl"],
-    "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove": [
-        "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove_with_stove_turned_on.bddl"],
-    "KITCHEN_SCENE3_turn_on_the_stove": [
-        "KITCHEN_SCENE3_turn_on_the_stove_with_moka_pot_on_the_stove.bddl"],
-    "KITCHEN_SCENE4_close_the_bottom_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE4_close_the_bottom_drawer_of_the_cabinet_with_top_drawer_open.bddl"],
-    "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_with_popcorn_in_the_bottom_drawer.bddl"],
-    "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet": [
-        "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet_with_popcorn_in_the_balck_bowl.bddl"],
-    "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet_with_popcorn_in_the_drawer.bddl"],
-}
-
-# total mapping
-modified_mapping = {
-    "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl"],
-    "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl",
-        "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_with_popcorn_in_the_top_drawer.bddl"],
-    "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet_with_top_drawer_open.bddl"],
-    "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl"],
-    "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate": [
-        "KITCHEN_SCENE1_put_the_black_bowl_on_the_plate_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet": [
-        "KITCHEN_SCENE1_put_the_black_bowl_on_top_of_the_cabinet_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE2_open_the_top_drawer_of_the_cabinet_with_the_bottom_drawer_open.bddl"],
-    "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate": [
-        "KITCHEN_SCENE2_put_the_black_bowl_at_the_back_on_the_plate_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate": [
-        "KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate": [
-        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_the_plate_with_popcorn_in_the_bowl.bddl"],
-
-    "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet": [
-        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet_with_top_drawer_open.bddl",
-        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet_with_popcorn_on_top_of_the_cabinet.bddl",
-        "KITCHEN_SCENE2_put_the_middle_black_bowl_on_top_of_the_cabinet_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle": [
-        "KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl": [
-        "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_with_popcorn_in_the_bowl.bddl"],
-    "KITCHEN_SCENE3_put_the_frying_pan_on_the_stove": [
-        "KITCHEN_SCENE3_put_the_frying_pan_on_the_stove_with_popcorn_in_the_frying_pan.bddl"],
-    "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove": [
-        "KITCHEN_SCENE3_put_the_moka_pot_on_the_stove_with_stove_turned_on.bddl"],
-    "KITCHEN_SCENE3_turn_on_the_stove": [
-        "KITCHEN_SCENE3_turn_on_the_stove_with_moka_pot_on_the_stove.bddl"],
-    "KITCHEN_SCENE4_close_the_bottom_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE4_close_the_bottom_drawer_of_the_cabinet_with_top_drawer_open.bddl"],
-    "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_with_popcorn_in_the_bottom_drawer.bddl"],
-    "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet": [
-        "KITCHEN_SCENE4_put_the_black_bowl_on_top_of_the_cabinet_with_popcorn_in_the_balck_bowl.bddl"],
-    "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet": [
-        "KITCHEN_SCENE4_put_the_wine_bottle_in_the_bottom_drawer_of_the_cabinet_with_popcorn_in_the_drawer.bddl"],
-}
-
 
 def create_index_mapping(dict_map):
     output_map = {}
@@ -184,6 +80,11 @@ def parse_args():
 
 def main():
     args = parse_args()
+
+    # Get mapping
+    mapping_pth = f"/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/mappings/{args.benchmark}.json"
+    with open(mapping_pth, 'r') as json_file:
+        mapping = json.load(json_file)
     
     # Get the benchmarks
     benchmark = get_benchmark(args.benchmark)(args.task_order_index, n_tasks_=args.task_num_to_use)
@@ -206,14 +107,14 @@ def main():
         #     continue
         print(f">> Evaluate on modified Task {task_id}")
         # Obtain useful info from saved model - checkpoints / cfg
-        index_mapping = create_index_mapping(modified_mapping)
+        index_mapping = create_index_mapping(mapping)
         model_index = index_mapping[task_id]  # model_index is the id for original model index
         print(f">> Load model checkpoint id: {model_index}")
         model_path = args.model_path_folder
         model_path = os.path.join(model_path, f"task{model_index}_model.pth")
 
         if args.modify_back:
-            ori_bddl_name = list(modified_mapping.keys())[model_index]
+            ori_bddl_name = list(mapping.keys())[model_index]
             first_frame = os.path.join("libero/libero/first_frames/ori/", ori_bddl_name+".png")
         if not os.path.exists(model_path):
             print(f">> {model_path} does NOT exist!")

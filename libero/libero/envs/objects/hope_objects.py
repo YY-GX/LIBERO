@@ -226,6 +226,27 @@ class TomatoSauce(HopeBaseObject):
         super().__init__(name, obj_name)
         self.rotation_axis = "z"
 
+@register_object
+class Egg(HopeBaseObject):
+    def __init__(self, name="egg", obj_name="egg"):
+        super().__init__(name, obj_name)
+
+@register_object
+class Lemon(HopeBaseObject):
+    def __init__(self, name="lemon", obj_name="lemon"):
+        super().__init__(name, obj_name)
+
+@register_object
+class Onion(HopeBaseObject):
+    def __init__(self, name="onion", obj_name="onion"):
+        super().__init__(name, obj_name)
+
+
+@register_object
+class Potato(HopeBaseObject):
+    def __init__(self, name="potato", obj_name="potato"):
+        super().__init__(name, obj_name)
+
 
 # class Tuna(HopeBaseObject):
 #     def __init__(self,

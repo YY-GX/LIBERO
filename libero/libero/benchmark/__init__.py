@@ -8,7 +8,7 @@ from typing import List, NamedTuple, Type
 from libero.libero import get_libero_path
 from libero.libero.benchmark.libero_suite_task_map import libero_task_map
 from libero.libero.benchmark.yy_suite_task_map import yy_task_map
-
+import json
 
 BENCHMARK_MAPPING = {}
 
@@ -33,6 +33,19 @@ def get_benchmark(benchmark_name):
 def print_benchmark():
     print(BENCHMARK_MAPPING)
 
+
+def create_reverse_mapping(mapping):
+    """Create a reverse mapping from values to keys."""
+    reverse_mapping = {}
+    for key, values in mapping.items():
+        for value in values:
+            reverse_mapping.setdefault(value, []).append(key)
+    return reverse_mapping
+
+def find_keys_by_value(mapping, target_value):
+    """Find all keys associated with a given value in the mapping."""
+    reverse_mapping = create_reverse_mapping(mapping)
+    return reverse_mapping.get(target_value, [])
 
 class Task(NamedTuple):
     name: str
@@ -86,13 +99,23 @@ for libero_suite in libero_suites:
 # yy: add my task
 yy_suites = [
     "yy_try",
-    "modified_libero"
+    "modified_libero",
+    "single_step"
 ]
+# yy: if you wanna the task description the same as the original one, set True here.
+keep_language_unchanged = True
 for yy_suite in yy_suites:
     task_maps[yy_suite] = {}
 
     for task in yy_task_map[yy_suite]:
-        language = grab_language_from_filename(task + ".bddl", is_yy=True)
+        if keep_language_unchanged:
+            mapping_pth = f"/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/mappings/{yy_suite}.json"
+            with open(mapping_pth, 'r') as json_file:
+                mapping = json.load(json_file)
+            task_ori = find_keys_by_value(mapping, task)
+            language = grab_language_from_filename(task_ori + ".bddl", is_yy=True)
+        else:
+            language = grab_language_from_filename(task + ".bddl", is_yy=True)
         task_maps[yy_suite][task] = Task(
             name=task,
             language=language,
@@ -297,4 +320,12 @@ class modified_libero(Benchmark):
     def __init__(self, task_order_index=0, n_tasks_=1):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         self.name = "modified_libero"
+        self._make_benchmark()
+
+
+@register_benchmark
+class single_step(Benchmark):
+    def __init__(self, task_order_index=0, n_tasks_=1):
+        super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
+        self.name = "single_step"
         self._make_benchmark()
