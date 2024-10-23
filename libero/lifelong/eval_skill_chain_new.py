@@ -245,17 +245,12 @@ def main():
                     # Prepare data for the k'th value
                     for key, v in data['obs'].items():
                         data['obs'][key] = v[k, ...][None, ...]
-                    # Store task embedding
-                    if k == 0:
-                        stacked_task_emb = data['task_emb'][k, ...][None, ...]
-                    else:
-                        stacked_task_emb = np.vstack([stacked_task_emb, data['task_emb'][k, ...][None, ...]])
                     # Collect data for policy action retrieval
                     actions_list.append(data)
-                # Stack all data and retrieve actions in a single call
-                all_obs = {key: np.vstack([d['obs'][key] for d in actions_list]) for key in
+                # Stack all observations and task embeddings using PyTorch
+                all_obs = {key: torch.cat([d['obs'][key] for d in actions_list], dim=0) for key in
                            actions_list[0]['obs'].keys()}
-                all_task_emb = stacked_task_emb  # or np.vstack([d['task_emb'] for d in actions_list])
+                all_task_emb = torch.cat([d['task_emb'] for d in actions_list], dim=0)
                 # Call policy once with all data
                 actions = algo.policy.get_action({'obs': all_obs, 'task_emb': all_task_emb})
                 # Step the environment with the actions
