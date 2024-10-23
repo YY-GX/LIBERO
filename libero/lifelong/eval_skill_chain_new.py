@@ -245,6 +245,7 @@ def main():
                     # Prepare data for the k'th value
                     for key, v in data['obs'].items():
                         data['obs'][key] = v[k, ...][None, ...]
+                    data['task_emb'] = data['task_emb'][k, ...][None, ...]
                     # Collect data for policy action retrieval
                     actions_list.append(data)
                 # Stack all observations and task embeddings using PyTorch

@@ -162,6 +162,7 @@ class OffScreenRenderEnv(ControlEnv):
         super().__init__(**kwargs)
 
 
+# yy: remember to check this later
 class SegmentationRenderEnv(OffScreenRenderEnv):
     """
     This wrapper will additionally generate the segmentation mask of objects,
