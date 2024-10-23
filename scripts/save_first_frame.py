@@ -3,14 +3,19 @@ import numpy as np
 from libero.libero.envs import OffScreenRenderEnv
 from PIL import Image
 import matplotlib.pyplot as plt
+import json
 
 base_ori_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/libero_90"
-base_modified_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/modified_libero"
+# base_modified_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/modified_libero"
+base_modified_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/single_step"
 
-dst_base_ori_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/ori"
-dst_base_modified_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/modified"
+# dst_base_ori_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/ori"
+# dst_base_modified_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/modified"
+dst_base_ori_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/single_step/ori"
+dst_base_modified_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/first_frames/single_step/modified"
 
-modified_mapping = {
+
+mapping = {
     "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet": [
         "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_with_bottom_drawer_open.bddl"],
     "KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet": [
@@ -85,7 +90,12 @@ modified_mapping = {
 
 }
 
-for k, v in modified_mapping.items():
+benchmark = "single_step"
+mapping_pth = f"libero/mappings/{benchmark}.json"
+with open(mapping_pth, 'r') as json_file:
+    mapping = json.load(json_file)
+
+for k, v in mapping.items():
     ori_bddl_pth = os.path.join(base_ori_path, k+".bddl")
     dst_img_ori_path = os.path.join(dst_base_ori_path, k+".png")
     env_args = {

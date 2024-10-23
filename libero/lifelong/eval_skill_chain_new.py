@@ -8,8 +8,6 @@ import os
 #  3. change to for loop to iterate tasks
 
 
-
-
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import numpy as np
 import torch

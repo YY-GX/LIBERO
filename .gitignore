@@ -21,3 +21,4 @@ videos/
 ./sam/try_imgs
 ./sam/results
 ./libero/libero/first_frames
+server_results/*
