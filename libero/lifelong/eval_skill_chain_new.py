@@ -233,22 +233,52 @@ def main():
                     print(f"[INFO] Steps: {steps}; Task Indexes: {task_indexes}.", flush=True)
                     print(f"Evaluation takes {t.get_middle_past_time()} seconds", flush=True)
 
-                actions = np.zeros((1, 7))
+                # Initialize an empty list to store actions
+                actions_list = []
+                # Prepare data for all tasks in a single loop
                 for k in range(env_num):
-                    # TODO here
                     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
                     cfg = cfg_ls[task_indexes[k]]
                     algo = algo_ls[task_indexes[k]]
+                    # Convert observations to tensor format
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    # only take the k'th value for data
+                    # Prepare data for the k'th value
                     for key, v in data['obs'].items():
                         data['obs'][key] = v[k, ...][None, ...]
-                    data['task_emb'] = data['task_emb'][k, ...][None, ...]
-                    # TODO: This could actually be optimized - stack all data outside and only use algo.policy.get_action() once
-                    actions = np.vstack([actions, algo.policy.get_action(data)])
-                actions = actions[1:, ...]
+                    # Store task embedding
+                    if k == 0:
+                        stacked_task_emb = data['task_emb'][k, ...][None, ...]
+                    else:
+                        stacked_task_emb = np.vstack([stacked_task_emb, data['task_emb'][k, ...][None, ...]])
+                    # Collect data for policy action retrieval
+                    actions_list.append(data)
+                # Stack all data and retrieve actions in a single call
+                all_obs = {key: np.vstack([d['obs'][key] for d in actions_list]) for key in
+                           actions_list[0]['obs'].keys()}
+                all_task_emb = stacked_task_emb  # or np.vstack([d['task_emb'] for d in actions_list])
+                # Call policy once with all data
+                actions = algo.policy.get_action({'obs': all_obs, 'task_emb': all_task_emb})
+                # Step the environment with the actions
                 obs, reward, done, info = env.step(actions)
                 task_indexes = [kv['task_index'] for kv in info]
+
+
+                # actions = np.zeros((1, 7))
+                # for k in range(env_num):
+                #     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
+                #     cfg = cfg_ls[task_indexes[k]]
+                #     algo = algo_ls[task_indexes[k]]
+                #     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                #     # only take the k'th value for data
+                #     for key, v in data['obs'].items():
+                #         data['obs'][key] = v[k, ...][None, ...]
+                #     data['task_emb'] = data['task_emb'][k, ...][None, ...]
+                #     # TODO: This could actually be optimized - stack all data outside and only use algo.policy.get_action() once
+                #     actions = np.vstack([actions, algo.policy.get_action(data)])
+                # actions = actions[1:, ...]
+                # obs, reward, done, info = env.step(actions)
+                # task_indexes = [kv['task_index'] for kv in info]
+
 
                 # yy: reset robot arm if move to a new skill. Modify the obs as well.
                 obs = reset_env_init_states(env, obs, info, init_states_ls, env_num, task_indexes)
