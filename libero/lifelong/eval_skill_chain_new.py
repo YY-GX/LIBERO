@@ -30,6 +30,7 @@ from libero.lifelong.algos import get_algo_class
 import warnings
 import pickle
 import wandb
+import time
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -228,14 +229,20 @@ def main():
         # yy: formal start of the evaluation
         with torch.no_grad():
             while steps < (cfg.eval.max_steps * n_tasks):
+
+                t_0 = time.time()
+
                 steps += 1
-                if steps % (cfg.eval.max_steps // 10) == 0:
+                if steps % (cfg.eval.max_steps // 30) == 0:
                     print(f"[INFO] Steps: {steps}; Task Indexes: {task_indexes}.", flush=True)
                     print(f"Evaluation takes {t.get_middle_past_time()} seconds", flush=True)
 
                 # Initialize an empty list to store actions
                 actions_list = []
                 # Prepare data for all tasks in a single loop
+
+                t_1 = time.time()
+
                 for k in range(env_num):
                     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
                     cfg = cfg_ls[task_indexes[k]]
@@ -248,15 +255,26 @@ def main():
                     data['task_emb'] = data['task_emb'][k, ...][None, ...]
                     # Collect data for policy action retrieval
                     actions_list.append(data)
+
+                t_2 = time.time()
+
                 # Stack all observations and task embeddings using PyTorch
                 all_obs = {key: torch.cat([d['obs'][key] for d in actions_list], dim=0) for key in
                            actions_list[0]['obs'].keys()}
                 all_task_emb = torch.cat([d['task_emb'] for d in actions_list], dim=0)
+
+                t_3 = time.time()
+
                 # Call policy once with all data
                 actions = algo.policy.get_action({'obs': all_obs, 'task_emb': all_task_emb})
+
+                t_4 = time.time()
+
                 # Step the environment with the actions
                 obs, reward, done, info = env.step(actions)
                 task_indexes = [kv['task_index'] for kv in info]
+
+                t_5 = time.time()
 
 
                 # actions = np.zeros((1, 7))
@@ -278,6 +296,9 @@ def main():
 
                 # yy: reset robot arm if move to a new skill. Modify the obs as well.
                 obs = reset_env_init_states(env, obs, info, init_states_ls, env_num, task_indexes)
+
+                t_6 = time.time()
+
                 video_writer_agentview.append_vector_obs(
                     obs, dones, camera_name="agentview_image"
                 )
@@ -290,6 +311,18 @@ def main():
                     dones[k] = dones[k] or done[k]
                 if all(dones):
                     break
+
+                t_7 = time.time()
+                print(f"t_1 - t_0: {t_1 - t_0}")
+                print(f"t_2 - t_1: {t_2 - t_1}")
+                print(f"t_3 - t_2: {t_3 - t_2}")
+                print(f"t_4 - t_3: {t_4 - t_3}")
+                print(f"t_5 - t_4: {t_5 - t_4}")
+                print(f"t_6 - t_5: {t_6 - t_5}")
+                print(f"t_7 - t_6: {t_7 - t_6}")
+                print(f"One loop time, t_7 - t_0: {t_7 - t_0}")
+
+                exit(0)
 
             for k in range(env_num):
                 num_success += int(dones[k])

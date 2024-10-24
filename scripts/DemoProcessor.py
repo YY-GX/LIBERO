@@ -18,12 +18,25 @@ from libero.libero.envs import *
 from libero.libero import get_libero_path
 
 def main():
+    """
+    Generate demo
+    Returns:
+
+    """
+
+    """
+    Parser things
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--demo_file", default="demo.hdf5")
     parser.add_argument(
-        "--dataset_name",
+        "--dataset_path",
         type=str,
         default="training_set",
+    )
+    parser.add_argument(
+        "--bddl_path",
+        type=str
     )
     parser.add_argument(
         "--use-actions",
@@ -42,38 +55,26 @@ def main():
     )
     args = parser.parse_args()
 
+
+    """
+    Preparation
+    """
     hdf5_path = args.demo_file
     f = h5py.File(hdf5_path, "r")
-    env_name = f["data"].attrs["env"]
-    env_kwargs = json.loads(f["data"].attrs["env_info"])
+    # env_name = f["data"].attrs["env"]
+    env_name = f["data"].attrs["env_name"]
+    # env_kwargs = json.loads(f["data"].attrs["env_info"])
+    env_kwargs = json.loads(f["data"].attrs['env_args'])['env_kwargs']
     problem_info = json.loads(f["data"].attrs["problem_info"])
     problem_info["domain_name"]
     problem_name = problem_info["problem_name"]
-
-    # list of all demonstrations episodes
     demos = list(f["data"].keys())
-
-    bddl_file_name = f["data"].attrs["bddl_file_name"]
-
-    hdf5_path = os.path.join(args.dataset_path, os.path.basename(bddl_file_name).replace(".bddl", "_demo.hdf5"))
-
-    """
-    print(hdf5_path)
-    print(get_libero_path("datasets"))
-    print(bddl_file_dir.split("bddl_files/")[-1])
-    
-    /home/yygx/UNC_Research/pkgs_simu/LIBERO/notebooks/debug_pddl/creation
-    /home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/../datasets
-    /home/yygx/UNC_Research/pkgs_simu/LIBERO/notebooks/debug_pddl/creation
-    """
-
+    bddl_file_name = args.bddl_path
+    hdf5_path = args.dataset_path
     output_parent_dir = Path(hdf5_path).parent
     output_parent_dir.mkdir(parents=True, exist_ok=True)
-    print(hdf5_path)
     h5py_f = h5py.File(hdf5_path, "w")
-
     grp = h5py_f.create_group("data")
-
     grp.attrs["env_name"] = env_name
     grp.attrs["problem_info"] = f["data"].attrs["problem_info"]
     grp.attrs["macros_image_convention"] = macros.IMAGE_CONVENTION
@@ -99,7 +100,6 @@ def main():
 
     grp.attrs["bddl_file_name"] = bddl_file_name
     grp.attrs["bddl_file_content"] = open(bddl_file_name, "r").read()
-    print(grp.attrs["bddl_file_content"])
 
     env = TASK_MAPPING[problem_name](
         **env_kwargs,
@@ -114,12 +114,12 @@ def main():
     }
 
     grp.attrs["env_args"] = json.dumps(env_args)
-    print(grp.attrs["env_args"])
     total_len = 0
     demos = demos
 
     cap_index = 5
-
+    succ_idx = 0
+    is_succ = False
     for (i, ep) in enumerate(demos):
         # yy: the sequence of new generated h5 is different from the original one
         print("Playing back random episode... (press ESC to quit)")
@@ -157,24 +157,15 @@ def main():
         gripper_states = []
         joint_states = []
         robot_states = []
-
         agentview_images = []
         eye_in_hand_images = []
-
         agentview_depths = []
         eye_in_hand_depths = []
-
-        agentview_seg = {0: [], 1: [], 2: [], 3: [], 4: []}
-
-        rewards = []
-        dones = []
-
         valid_index = []
 
+        # yy: This is where to do demo replay
         for j, action in enumerate(actions):
-
             obs, reward, done, info = env.step(action)
-
             if j < num_actions - 1:
                 # ensure that the actions deterministically lead to the same recorded states
                 state_playback = env.sim.get_state().flatten()
@@ -185,20 +176,16 @@ def main():
                     print(
                         f"[warning] playback diverged by {err:.2f} for ep {ep} at step {j}"
                     )
-
             # Skip recording because the force sensor is not stable in
             # the beginning
             if j < cap_index:
                 continue
-
             valid_index.append(j)
-
             if not args.no_proprio:
                 if "robot0_gripper_qpos" in obs:
                     gripper_states.append(obs["robot0_gripper_qpos"])
 
                 joint_states.append(obs["robot0_joint_pos"])
-
                 ee_states.append(
                     np.hstack(
                         (
@@ -207,9 +194,7 @@ def main():
                         )
                     )
                 )
-
             robot_states.append(env.get_robot_state_vector(obs))
-
             if args.use_camera_obs:
 
                 if args.use_depth:
@@ -220,51 +205,62 @@ def main():
                 eye_in_hand_images.append(obs["robot0_eye_in_hand_image"])
             else:
                 env.render()
+            # yy: only save once succeed
+            if done:
+                succ_idx += 1
+                is_succ = True
 
-        # end of one trajectory
-        states = states[valid_index]
-        actions = actions[valid_index]
-        dones = np.zeros(len(actions)).astype(np.uint8)
-        dones[-1] = 1
-        rewards = np.zeros(len(actions)).astype(np.uint8)
-        rewards[-1] = 1
-        print(len(actions), len(agentview_images))
-        assert len(actions) == len(agentview_images)
-        print(len(actions))
+        """
+        Save in the new hdf5 file
+        """
+        if is_succ:
+            # end of one trajectory
+            states = states[valid_index]
+            actions = actions[valid_index]
+            dones = np.zeros(len(actions)).astype(np.uint8)
+            dones[-1] = 1
+            rewards = np.zeros(len(actions)).astype(np.uint8)
+            rewards[-1] = 1
+            print(len(actions), len(agentview_images))
+            assert len(actions) == len(agentview_images)
+            print(len(actions))
 
-        ep_data_grp = grp.create_group(f"demo_{i}")
+            # yy: This is where a new demo is created into the hdf5 file
+            ep_data_grp = grp.create_group(f"demo_{succ_idx}")
 
-        obs_grp = ep_data_grp.create_group("obs")
-        if not args.no_proprio:
+            obs_grp = ep_data_grp.create_group("obs")
+            if not args.no_proprio:
+                obs_grp.create_dataset(
+                    "gripper_states", data=np.stack(gripper_states, axis=0)
+                )
+                obs_grp.create_dataset("joint_states", data=np.stack(joint_states, axis=0))
+                obs_grp.create_dataset("ee_states", data=np.stack(ee_states, axis=0))
+                obs_grp.create_dataset("ee_pos", data=np.stack(ee_states, axis=0)[:, :3])
+                obs_grp.create_dataset("ee_ori", data=np.stack(ee_states, axis=0)[:, 3:])
+
+            obs_grp.create_dataset("agentview_rgb", data=np.stack(agentview_images, axis=0))
             obs_grp.create_dataset(
-                "gripper_states", data=np.stack(gripper_states, axis=0)
+                "eye_in_hand_rgb", data=np.stack(eye_in_hand_images, axis=0)
             )
-            obs_grp.create_dataset("joint_states", data=np.stack(joint_states, axis=0))
-            obs_grp.create_dataset("ee_states", data=np.stack(ee_states, axis=0))
-            obs_grp.create_dataset("ee_pos", data=np.stack(ee_states, axis=0)[:, :3])
-            obs_grp.create_dataset("ee_ori", data=np.stack(ee_states, axis=0)[:, 3:])
+            if args.use_depth:
+                obs_grp.create_dataset(
+                    "agentview_depth", data=np.stack(agentview_depths, axis=0)
+                )
+                obs_grp.create_dataset(
+                    "eye_in_hand_depth", data=np.stack(eye_in_hand_depths, axis=0)
+                )
 
-        obs_grp.create_dataset("agentview_rgb", data=np.stack(agentview_images, axis=0))
-        obs_grp.create_dataset(
-            "eye_in_hand_rgb", data=np.stack(eye_in_hand_images, axis=0)
-        )
-        if args.use_depth:
-            obs_grp.create_dataset(
-                "agentview_depth", data=np.stack(agentview_depths, axis=0)
-            )
-            obs_grp.create_dataset(
-                "eye_in_hand_depth", data=np.stack(eye_in_hand_depths, axis=0)
-            )
+            ep_data_grp.create_dataset("actions", data=actions)
+            ep_data_grp.create_dataset("states", data=states)
+            ep_data_grp.create_dataset("robot_states", data=np.stack(robot_states, axis=0))
+            ep_data_grp.create_dataset("rewards", data=rewards)
+            ep_data_grp.create_dataset("dones", data=dones)
+            ep_data_grp.attrs["num_samples"] = len(agentview_images)
+            ep_data_grp.attrs["model_file"] = model_xml
+            ep_data_grp.attrs["init_state"] = states[init_idx]
+            total_len += len(agentview_images)
 
-        ep_data_grp.create_dataset("actions", data=actions)
-        ep_data_grp.create_dataset("states", data=states)
-        ep_data_grp.create_dataset("robot_states", data=np.stack(robot_states, axis=0))
-        ep_data_grp.create_dataset("rewards", data=rewards)
-        ep_data_grp.create_dataset("dones", data=dones)
-        ep_data_grp.attrs["num_samples"] = len(agentview_images)
-        ep_data_grp.attrs["model_file"] = model_xml
-        ep_data_grp.attrs["init_state"] = states[init_idx]
-        total_len += len(agentview_images)
+        is_succ = False
 
     grp.attrs["num_demos"] = len(demos)
     grp.attrs["total"] = total_len
@@ -273,8 +269,10 @@ def main():
     h5py_f.close()
     f.close()
 
-    print("The created dataset is saved in the following path: ")
-    print(hdf5_path)
+    print(f"#succ: {succ_idx}, out of total #demo: {len(demos)}")
+
+    print(f"The created dataset is saved in the following path: {hdf5_path}")
+    print("------------------------------------------------------------")
 
 
 if __name__ == "__main__":
