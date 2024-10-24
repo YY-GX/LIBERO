@@ -356,12 +356,16 @@ def main():
                 # task_indexes = [kv['task_index'] for kv in info]
 
                 actions = np.zeros((1, 7))
+                # For the 20 envs, each may have different language descriptions, i.e., task_emb
                 task_embs = []
                 for k in range(env_num):
                     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
                     task_embs.append(task_emb)
                 task_embs = torch.stack(task_embs)
+                t_1 = time.time()
+                # Obtain torch data - main inputs: obs + task_embs
                 data = raw_obs_to_tensor_obs(obs, task_embs, cfg, is_sequential_env=True)
+                t_2 = time.time()
                 for k in range(env_num):
                     data_cp = copy.deepcopy(data)
                     algo = algo_ls[task_indexes[k]]
@@ -378,7 +382,7 @@ def main():
                 # yy: reset robot arm if move to a new skill. Modify the obs as well.
                 obs = reset_env_init_states(env, obs, info, init_states_ls, env_num, task_indexes)
 
-                t_1 = time.time()
+                t_3 = time.time()
 
                 video_writer_agentview.append_vector_obs(
                     obs, dones, camera_name="agentview_image"
@@ -394,6 +398,9 @@ def main():
                     break
 
                 print(f"t_1 - t_0: {t_1 - t_0}")
+                print(f"t_2 - t_1: {t_2 - t_1}")
+                print(f"t_3 - t_2: {t_3 - t_2}")
+
                 exit(0)
 
             for k in range(env_num):
