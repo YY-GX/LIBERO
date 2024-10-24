@@ -237,30 +237,60 @@ def main():
                     print(f"[INFO] Steps: {steps}; Task Indexes: {task_indexes}.", flush=True)
                     print(f"Evaluation takes {t.get_middle_past_time()} seconds", flush=True)
 
+                # # Initialize an empty list to store actions
+                # actions_list = []
+                # # Prepare data for all tasks in a single loop
+                #
+                # t_1 = time.time()
+                # for k in range(env_num):
+                #     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
+                #     cfg = cfg_ls[task_indexes[k]]
+                #     algo = algo_ls[task_indexes[k]]
+                #     if k == 0:
+                #         t_1_1 = time.time()
+                #     # Convert observations to tensor format
+                #     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                #     if k == 0:
+                #         t_1_2 = time.time()
+                #     # Prepare data for the k'th value
+                #     for key, v in data['obs'].items():
+                #         data['obs'][key] = v[k, ...][None, ...]
+                #     data['task_emb'] = data['task_emb'][k, ...][None, ...]
+                #     # Collect data for policy action retrieval
+                #     actions_list.append(data)
+                #     if k == 0:
+                #         t_1_3 = time.time()
+
                 # Initialize an empty list to store actions
                 actions_list = []
-                # Prepare data for all tasks in a single loop
 
-                t_1 = time.time()
+                # Gather all task embeddings and configurations for the current observations
+                task_embs = []
+                cfgs = []
 
                 for k in range(env_num):
                     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
-                    cfg = cfg_ls[task_indexes[k]]
-                    algo = algo_ls[task_indexes[k]]
-                    if k == 0:
-                        t_1_1 = time.time()
-                    # Convert observations to tensor format
-                    data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                    if k == 0:
-                        t_1_2 = time.time()
+                    task_embs.append(task_emb)
+                    cfgs.append(cfg_ls[task_indexes[k]])
+
+                # Convert task_embs to a NumPy array if required
+                task_embs_np = np.stack(task_embs)  # Stack if task_embs needs to be in a specific shape
+
+                # Convert observations to tensor format using all gathered task embeddings and configurations
+                t_1_1 = time.time()
+                data = raw_obs_to_tensor_obs(obs, task_embs_np, cfgs[0])  # Call once with stacked task embeddings
+                t_1_2 = time.time()
+
+                # Prepare data for each k'th value and collect data for policy action retrieval
+                for k in range(env_num):
                     # Prepare data for the k'th value
                     for key, v in data['obs'].items():
-                        data['obs'][key] = v[k, ...][None, ...]
-                    data['task_emb'] = data['task_emb'][k, ...][None, ...]
-                    # Collect data for policy action retrieval
-                    actions_list.append(data)
-                    if k == 0:
-                        t_1_3 = time.time()
+                        actions_list.append({
+                            'obs': {key: v[k, ...][None, ...]},
+                            'task_emb': data['task_emb'][k, ...][None, ...]
+                        })
+
+                t_1_3 = time.time()
 
                 t_2 = time.time()
 
