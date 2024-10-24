@@ -359,18 +359,14 @@ def main():
                 task_embs = []
                 for k in range(env_num):
                     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
-                    print(f"task_emb: {task_emb.size()}")
                     task_embs.append(task_emb)
                 task_embs = torch.stack(task_embs)
-                print(f"task_embs: {task_embs.size()}")
                 data = raw_obs_to_tensor_obs(obs, task_embs, cfg, is_sequential_env=True)
-                print(f"data['task_emb']: {data['task_emb'].size()}")
                 for k in range(env_num):
                     data_cp = copy.deepcopy(data)
                     algo = algo_ls[task_indexes[k]]
                     # only take the k'th value for data
                     for key, v in data_cp['obs'].items():
-                        print(key, v.size())
                         data_cp['obs'][key] = v[k, ...][None, ...]
                     data_cp['task_emb'] = data_cp['task_emb'][k, ...][None, ...]
                     actions = np.vstack([actions, algo.policy.get_action(data_cp)])
@@ -382,7 +378,7 @@ def main():
                 # yy: reset robot arm if move to a new skill. Modify the obs as well.
                 obs = reset_env_init_states(env, obs, info, init_states_ls, env_num, task_indexes)
 
-                t_6 = time.time()
+                t_1 = time.time()
 
                 video_writer_agentview.append_vector_obs(
                     obs, dones, camera_name="agentview_image"
@@ -397,20 +393,7 @@ def main():
                 if all(dones):
                     break
 
-                t_7 = time.time()
                 print(f"t_1 - t_0: {t_1 - t_0}")
-                print(f"t_2 - t_1: {t_2 - t_1}")
-                print(f"t_3 - t_2: {t_3 - t_2}")
-                print(f"t_4 - t_3: {t_4 - t_3}")
-                print(f"t_5 - t_4: {t_5 - t_4}")
-                print(f"t_6 - t_5: {t_6 - t_5}")
-                print(f"t_7 - t_6: {t_7 - t_6}")
-                print(f"One loop time, t_7 - t_0: {t_7 - t_0}")
-
-                print(f"t_1_1 - t_1: {t_1_1 - t_1}")
-                print(f"t_1_2 - t_1_1: {t_1_2 - t_1_1}")
-                print(f"t_1_3 - t_1_2: {t_1_3 - t_1_2}")
-
                 exit(0)
 
             for k in range(env_num):
