@@ -31,6 +31,7 @@ import warnings
 import pickle
 import wandb
 import time
+import copy
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -365,7 +366,7 @@ def main():
                 data = raw_obs_to_tensor_obs(obs, task_embs, cfg, is_sequential_env=True)
                 print(f"data['task_emb']: {data['task_emb'].size()}")
                 for k in range(env_num):
-                    data_cp = data.copy()
+                    data_cp = copy.deepcopy(data)
                     algo = algo_ls[task_indexes[k]]
                     # only take the k'th value for data
                     for key, v in data_cp['obs'].items():
