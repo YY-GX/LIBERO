@@ -237,29 +237,33 @@ def main():
                     print(f"[INFO] Steps: {steps}; Task Indexes: {task_indexes}.", flush=True)
                     print(f"Evaluation takes {t.get_middle_past_time()} seconds", flush=True)
 
-                # # Initialize an empty list to store actions
-                # actions_list = []
-                # # Prepare data for all tasks in a single loop
-                #
-                # t_1 = time.time()
-                # for k in range(env_num):
-                #     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
-                #     cfg = cfg_ls[task_indexes[k]]
-                #     algo = algo_ls[task_indexes[k]]
-                #     if k == 0:
-                #         t_1_1 = time.time()
-                #     # Convert observations to tensor format
-                #     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
-                #     if k == 0:
-                #         t_1_2 = time.time()
-                #     # Prepare data for the k'th value
-                #     for key, v in data['obs'].items():
-                #         data['obs'][key] = v[k, ...][None, ...]
-                #     data['task_emb'] = data['task_emb'][k, ...][None, ...]
-                #     # Collect data for policy action retrieval
-                #     actions_list.append(data)
-                #     if k == 0:
-                #         t_1_3 = time.time()
+
+
+
+
+                # Initialize an empty list to store actions
+                actions_list = []
+                # Prepare data for all tasks in a single loop
+
+                t_1 = time.time()
+                for k in range(env_num):
+                    task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
+                    cfg = cfg_ls[task_indexes[k]]
+                    algo = algo_ls[task_indexes[k]]
+                    if k == 0:
+                        t_1_1 = time.time()
+                    # Convert observations to tensor format
+                    data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                    if k == 0:
+                        t_1_2 = time.time()
+                    # Prepare data for the k'th value
+                    for key, v in data['obs'].items():
+                        data['obs'][key] = v[k, ...][None, ...]
+                    data['task_emb'] = data['task_emb'][k, ...][None, ...]
+                    # Collect data for policy action retrieval
+                    actions_list.append(data)
+                    if k == 0:
+                        t_1_3 = time.time()
 
                 # Initialize an empty list to store actions
                 actions_list = []
@@ -275,25 +279,24 @@ def main():
 
                 # Convert observations to tensor format using all gathered task embeddings and configurations
                 t_1_1 = time.time()
-                data = raw_obs_to_tensor_obs(obs, torch.stack(task_embs), cfgs[0])  # Call once with stacked task embeddings
+                data = raw_obs_to_tensor_obs(obs, torch.stack(task_embs),
+                                             cfgs[0])  # Call once with stacked task embeddings
                 t_1_2 = time.time()
 
                 # Prepare data for each k'th value and collect data for policy action retrieval
                 for k in range(env_num):
                     # Prepare data for the k'th value
-                    for key, v in data['obs'].items():
-                        actions_list.append({
-                            'obs': {key: v[k, ...][None, ...]},
-                            'task_emb': data['task_emb'][k, ...][None, ...]
-                        })
+                    action_data = {}
+                    for key in data['obs']:
+                        # Ensure we extract the observation corresponding to k
+                        action_data['obs'] = {key: data['obs'][key][k, ...][None, ...]}  # Get k-th observation
+                    action_data['task_emb'] = data['task_emb'][k, ...][None, ...]  # Get corresponding task embedding
+                    actions_list.append(action_data)  # Append the prepared action data
 
                 t_1_3 = time.time()
 
-                t_2 = time.time()
-
                 # Stack all observations and task embeddings using PyTorch
-                all_obs = {key: torch.cat([d['obs'][key] for d in actions_list], dim=0) for key in
-                           actions_list[0]['obs'].keys()}
+                all_obs = {key: torch.cat([d['obs'][key] for d in actions_list], dim=0) for key in data['obs'].keys()}
                 all_task_emb = torch.cat([d['task_emb'] for d in actions_list], dim=0)
 
                 t_3 = time.time()
