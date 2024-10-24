@@ -365,13 +365,14 @@ def main():
                 data = raw_obs_to_tensor_obs(obs, task_embs, cfg, is_sequential_env=True)
                 print(f"data['task_emb']: {data['task_emb'].size()}")
                 for k in range(env_num):
+                    data_cp = data.copy()
                     algo = algo_ls[task_indexes[k]]
                     # only take the k'th value for data
-                    for key, v in data['obs'].items():
+                    for key, v in data_cp['obs'].items():
                         print(key, v.size())
-                        data['obs'][key] = v[k, ...][None, ...]
-                    data['task_emb'] = data['task_emb'][k, ...][None, ...]
-                    actions = np.vstack([actions, algo.policy.get_action(data)])
+                        data_cp['obs'][key] = v[k, ...][None, ...]
+                    data_cp['task_emb'] = data_cp['task_emb'][k, ...][None, ...]
+                    actions = np.vstack([actions, algo.policy.get_action(data_cp)])
                 actions = actions[1:, ...]
                 obs, reward, done, info = env.step(actions)
                 task_indexes = [kv['task_index'] for kv in info]
