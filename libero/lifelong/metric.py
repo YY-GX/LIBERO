@@ -16,17 +16,23 @@ from libero.libero.utils.video_utils import VideoWriter
 from libero.lifelong.utils import *
 import multiprocessing
 
-def raw_obs_to_tensor_obs(obs, task_emb, cfg):
+def raw_obs_to_tensor_obs(obs, task_emb, cfg, is_sequential_env=False):
     """
     Prepare the tensor observations as input for the algorithm.
     """
 
     env_num = len(obs)
 
-    data = {
-        "obs": {},
-        "task_emb": task_emb.repeat(env_num, 1),
-    }
+    if is_sequential_env:
+        data = {
+            "obs": {},
+            "task_emb": task_emb,
+        }
+    else:
+        data = {
+            "obs": {},
+            "task_emb": task_emb.repeat(env_num, 1),
+        }
 
     all_obs_keys = []
     for modality_name, modality_list in cfg.data.obs.modality.items():

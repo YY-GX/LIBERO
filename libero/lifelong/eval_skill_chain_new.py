@@ -362,12 +362,13 @@ def main():
                     task_embs.append(task_emb)
                 task_embs = torch.stack(task_embs)
                 print(f"task_embs: {task_embs.size()}")
-                data = raw_obs_to_tensor_obs(obs, task_embs, cfg)
+                data = raw_obs_to_tensor_obs(obs, task_embs, cfg, is_sequential_env=True)
                 print(f"data['task_emb']: {data['task_emb'].size()}")
                 for k in range(env_num):
                     algo = algo_ls[task_indexes[k]]
                     # only take the k'th value for data
                     for key, v in data['obs'].items():
+                        print(key, v.size())
                         data['obs'][key] = v[k, ...][None, ...]
                     data['task_emb'] = data['task_emb'][k, ...][None, ...]
                     actions = np.vstack([actions, algo.policy.get_action(data)])
