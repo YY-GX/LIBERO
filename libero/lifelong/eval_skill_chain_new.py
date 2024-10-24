@@ -273,13 +273,9 @@ def main():
                     task_embs.append(task_emb)
                     cfgs.append(cfg_ls[task_indexes[k]])
 
-                # Convert task_embs to a PyTorch tensor
-                task_embs_tensor = torch.stack(
-                    [torch.from_numpy(emb) for emb in task_embs])  # Assuming each task_emb is a numpy array
-
                 # Convert observations to tensor format using all gathered task embeddings and configurations
                 t_1_1 = time.time()
-                data = raw_obs_to_tensor_obs(obs, task_embs_tensor, cfgs[0])  # Call once with stacked task embeddings
+                data = raw_obs_to_tensor_obs(obs, torch.stack(task_embs), cfgs[0])  # Call once with stacked task embeddings
                 t_1_2 = time.time()
 
                 # Prepare data for each k'th value and collect data for policy action retrieval
