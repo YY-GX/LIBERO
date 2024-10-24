@@ -247,14 +247,20 @@ def main():
                     task_emb = benchmark.get_task_emb(task_idx_ls[task_indexes[k]])
                     cfg = cfg_ls[task_indexes[k]]
                     algo = algo_ls[task_indexes[k]]
+                    if k == 0:
+                        t_1_1 = time.time()
                     # Convert observations to tensor format
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
+                    if k == 0:
+                        t_1_2 = time.time()
                     # Prepare data for the k'th value
                     for key, v in data['obs'].items():
                         data['obs'][key] = v[k, ...][None, ...]
                     data['task_emb'] = data['task_emb'][k, ...][None, ...]
                     # Collect data for policy action retrieval
                     actions_list.append(data)
+                    if k == 0:
+                        t_1_3 = time.time()
 
                 t_2 = time.time()
 
@@ -321,6 +327,10 @@ def main():
                 print(f"t_6 - t_5: {t_6 - t_5}")
                 print(f"t_7 - t_6: {t_7 - t_6}")
                 print(f"One loop time, t_7 - t_0: {t_7 - t_0}")
+
+                print(f"t_1_1 - t_1: {t_1_1 - t_1}")
+                print(f"t_1_2 - t_1_1: {t_1_2 - t_1_1}")
+                print(f"t_1_3 - t_1_2: {t_1_3 - t_1_2}")
 
                 exit(0)
 
