@@ -142,7 +142,7 @@ def main():
         algo = safe_device(get_algo_class(algo_map["base"])(n_tasks, cfg), cfg.device)
         algo.policy.load_state_dict(sd)
         algo.eval()
-        print(f">> task_id: {task_id}, policy class: {algo.policy}")
+        # print(f">> task_id: {task_id}, policy class: {algo.policy}")
         # yy: algo_ls here
         algo_ls.append([copy.deepcopy(algo) for _ in range(cfg['eval']['n_eval'])])
 
