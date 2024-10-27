@@ -226,14 +226,14 @@ def main():
         # yy: formal start of the evaluation
         with torch.no_grad():
             while steps < (cfg.eval.max_steps * n_tasks):
-                print("--------------------------------------------------------------------")
-                print(steps)
+                # print("--------------------------------------------------------------------")
+                # print(steps)
                 steps += 1
                 if steps % (cfg.eval.max_steps // 30) == 0:
                     print(f"[INFO] Steps: {steps}; Task Indexes: {task_indexes}.", flush=True)
                     print(f"Evaluation takes {t.get_middle_past_time()} seconds", flush=True)
-                    if steps == 90:
-                        exit(0)
+                    # if steps == 90:
+                    #     exit(0)
 
                 actions = np.zeros((1, 7))
                 # For the 20 envs, each may have different language descriptions, i.e., task_emb
@@ -247,7 +247,7 @@ def main():
                 data = raw_obs_to_tensor_obs(obs, task_embs, cfg, is_sequential_env=True)
 
                 for k in range(env_num):
-                    print(f"env_idx: {k}; task_idx: {task_indexes[k]}")
+                    # print(f"env_idx: {k}; task_idx: {task_indexes[k]}")
                     data_cp = copy.deepcopy(data)
                     algo = algo_ls[task_indexes[k]][k]
                     # only take the k'th value for data
