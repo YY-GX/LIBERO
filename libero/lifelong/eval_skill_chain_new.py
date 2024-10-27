@@ -144,7 +144,7 @@ def main():
         algo.eval()
         print(f">> task_id: {task_id}, policy class: {algo.policy}")
         # yy: algo_ls here
-        algo_ls.append(algo)
+        algo_ls.append([copy.deepcopy(algo) for _ in range(cfg['eval']['n_eval'])])
 
         # Obtain language embs & task
         task_embs += get_task_embs(cfg, descriptions)
@@ -211,7 +211,7 @@ def main():
         )
         env.reset()
         env.seed(cfg.seed)
-        [algorithm.reset() for algorithm in algo_ls]
+        [[algorithm.reset() for algorithm in algorithms] for algorithms in algo_ls]
         init_states_ = init_states_ls[0]
         obs = env.set_init_state(init_states_)
         dones = [False] * env_num
@@ -249,7 +249,7 @@ def main():
                 for k in range(env_num):
                     print(f"env_idx: {k}; task_idx: {task_indexes[k]}")
                     data_cp = copy.deepcopy(data)
-                    algo = algo_ls[task_indexes[k]]
+                    algo = algo_ls[task_indexes[k]][k]
                     # only take the k'th value for data
                     for key, v in data_cp['obs'].items():
                         data_cp['obs'][key] = v[k, ...][None, ...]
