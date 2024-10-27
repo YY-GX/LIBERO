@@ -227,7 +227,7 @@ class BCViLTPolicy(BasePolicy):
         joint_states
         torch.Size([20, 7])
         """
-        print(f">> self.latent_queue length: {len(self.latent_queue)}")
+        # print(f">> self.latent_queue length: {len(self.latent_queue)}")
         self.eval()
         with torch.no_grad():
             data = self.preprocess_input(data, train_mode=False)
