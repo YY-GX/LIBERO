@@ -271,12 +271,22 @@ class Combined_Dataset(Dataset):
                 dataset_idx = i
                 break
 
-        # Adjust the index to the selected dataset
-        dataset_idx = dataset_idx if dataset_idx == 0 else dataset_idx - 1
+        # Calculate adjusted_idx
+        if dataset_idx == 0:
+            start_idx = 0
+        else:
+            start_idx = sum(int(len(self.datasets[j]) * (self.ratios[j] / total_sum)) for j in range(dataset_idx))
+
         adjusted_idx = int(
-            (idx - sum(int(len(self.datasets[j]) * (self.ratios[j] / total_sum)) for j in range(dataset_idx))) * (
-                        len(self.datasets[dataset_idx]) * (self.ratios[dataset_idx] / sum(self.ratios))))
+            (idx - start_idx) * (len(self.datasets[dataset_idx]) * (self.ratios[dataset_idx] / sum(self.ratios))) / (
+                        total_sum / self.ratios[dataset_idx]))
+
+        # Ensure adjusted_idx is within bounds
+        if adjusted_idx < 0 or adjusted_idx >= len(self.datasets[dataset_idx]):
+            raise IndexError(
+                f"Adjusted index {adjusted_idx} is out of bounds for dataset {dataset_idx} with length {len(self.datasets[dataset_idx])}")
 
         return self.datasets[dataset_idx][adjusted_idx]
+
 
 
