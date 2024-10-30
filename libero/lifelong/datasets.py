@@ -248,6 +248,9 @@ class Combined_Dataset(Dataset):
         self.ratios = ratios
         self.total_length = self._calculate_total_length()
 
+        self.n_demos = sum([ds.n_demos for ds in self.datasets])
+        self.total_num_sequences = sum([ds.total_num_sequences for ds in self.datasets])
+
     def _calculate_total_length(self):
         """Calculate the total length of the combined dataset."""
         return sum(int(len(dataset) * (ratio / sum(self.ratios))) for dataset, ratio in zip(self.datasets, self.ratios))
