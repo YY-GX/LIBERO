@@ -253,7 +253,10 @@ class Combined_Dataset(Dataset):
 
     def _calculate_total_length(self):
         """Calculate the total length of the combined dataset."""
-        return sum(int(len(dataset) * (ratio / sum(self.ratios))) for dataset, ratio in zip(self.datasets, self.ratios))
+        total_length = 0
+        for dataset, ratio in zip(self.datasets, self.ratios):
+            total_length += int(len(dataset) * ratio)  # Only use the specified ratio of each dataset
+        return total_length
 
     def __len__(self):
         """Return the total length of the combined dataset."""
@@ -261,25 +264,27 @@ class Combined_Dataset(Dataset):
 
     def __getitem__(self, idx):
         """Retrieve an item from the combined dataset based on the index."""
-        # Determine which dataset to sample from
-        cumulative_ratios = [sum(self.ratios[:i + 1]) for i in range(len(self.ratios))]
-        total_sum = sum(self.ratios)
-        normalized_idx = idx * total_sum / self.total_length
+        cumulative_lengths = []
+        total_samples = 0
 
-        for i, cumulative in enumerate(cumulative_ratios):
-            if normalized_idx <= cumulative:
-                dataset_idx = i
-                break
+        # Calculate cumulative lengths based on ratios
+        for dataset, ratio in zip(self.datasets, self.ratios):
+            num_samples = int(len(dataset) * ratio)  # Number of samples to take from this dataset
+            cumulative_lengths.append(total_samples + num_samples)
+            total_samples += num_samples
 
-        # Calculate adjusted_idx
+        # Determine which dataset this index corresponds to
+        dataset_idx = next(i for i, cumulative in enumerate(cumulative_lengths) if idx < cumulative)
+
+        # Calculate the adjusted index for the selected dataset
         if dataset_idx == 0:
-            start_idx = 0
+            adjusted_idx = idx  # Directly the requested index for the first dataset
         else:
-            start_idx = sum(int(len(self.datasets[j]) * (self.ratios[j] / total_sum)) for j in range(dataset_idx))
+            adjusted_idx = idx - cumulative_lengths[dataset_idx - 1]
 
-        adjusted_idx = int(
-            (idx - start_idx) * (len(self.datasets[dataset_idx]) * (self.ratios[dataset_idx] / sum(self.ratios))) / (
-                        total_sum / self.ratios[dataset_idx]))
+        # Calculate the ratio-adjusted index
+        ratio = self.ratios[dataset_idx]
+        adjusted_idx = int(adjusted_idx / ratio)  # Scale the index back to the original dataset
 
         # Ensure adjusted_idx is within bounds
         if adjusted_idx < 0 or adjusted_idx >= len(self.datasets[dataset_idx]):
@@ -287,6 +292,7 @@ class Combined_Dataset(Dataset):
                 f"Adjusted index {adjusted_idx} is out of bounds for dataset {dataset_idx} with length {len(self.datasets[dataset_idx])}")
 
         return self.datasets[dataset_idx][adjusted_idx]
+
 
 
 
