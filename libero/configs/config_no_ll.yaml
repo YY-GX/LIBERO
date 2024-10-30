@@ -33,3 +33,9 @@ is_split: false
 # yy: Do you wanna disable skill rollout eval (only do once after all training)?
 is_customize_task: true
 task_num_to_use: null
+
+# BL3 related parameters
+bl3_folder: "bl3"
+bl3_mapping: "bl3.json"
+only_success: false
+ratio: 1.0

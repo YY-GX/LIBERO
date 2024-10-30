@@ -15,7 +15,9 @@ from PIL import Image
 from robosuite.utils import camera_utils
 
 from libero.libero.envs import *
+from PIL import Image
 from libero.libero import get_libero_path
+import pickle
 
 def main():
     """
@@ -120,9 +122,10 @@ def main():
     cap_index = 5
     succ_idx = 0
     is_succ = False
+    succ_dict = {"success_idx": [], "failure_idx": []}
     for (i, ep) in enumerate(demos):
         # yy: the sequence of new generated h5 is different from the original one
-        print("Playing back random episode... (press ESC to quit)")
+        print(f"Playing back random episode {i}... (press ESC to quit)")
 
         # # select an episode randomly
         # read the model xml, using the metadata stored in the attribute for this episode
@@ -147,10 +150,12 @@ def main():
         num_actions = actions.shape[0]
 
         init_idx = 0
-        env.reset_from_xml_string(model_xml)
+        # yy: I commented this
+        # env.reset_from_xml_string(model_xml)
         env.sim.reset()
         env.sim.set_state_from_flattened(states[init_idx])
         env.sim.forward()
+        env.reset()
         model_xml = env.sim.model.get_xml()
 
         ee_states = []
@@ -170,12 +175,12 @@ def main():
                 # ensure that the actions deterministically lead to the same recorded states
                 state_playback = env.sim.get_state().flatten()
                 # assert(np.all(np.equal(states[j + 1], state_playback)))
-                err = np.linalg.norm(states[j + 1] - state_playback)
+                # err = np.linalg.norm(states[j + 1] - state_playback)
 
-                if err > 0.01:
-                    print(
-                        f"[warning] playback diverged by {err:.2f} for ep {ep} at step {j}"
-                    )
+                # if err > 0.01:
+                #     print(
+                #         f"[warning] playback diverged by {err:.2f} for ep {ep} at step {j}"
+                #     )
             # Skip recording because the force sensor is not stable in
             # the beginning
             if j < cap_index:
@@ -207,58 +212,62 @@ def main():
                 env.render()
             # yy: only save once succeed
             if done:
-                succ_idx += 1
+                if not is_succ:
+                    succ_idx += 1
                 is_succ = True
 
         """
         Save in the new hdf5 file
         """
-        if is_succ:
-            # end of one trajectory
-            states = states[valid_index]
-            actions = actions[valid_index]
-            dones = np.zeros(len(actions)).astype(np.uint8)
-            dones[-1] = 1
-            rewards = np.zeros(len(actions)).astype(np.uint8)
-            rewards[-1] = 1
-            print(len(actions), len(agentview_images))
-            assert len(actions) == len(agentview_images)
-            print(len(actions))
 
-            # yy: This is where a new demo is created into the hdf5 file
-            ep_data_grp = grp.create_group(f"demo_{succ_idx}")
+        # end of one trajectory
+        states = states[valid_index]
+        actions = actions[valid_index]
+        dones = np.zeros(len(actions)).astype(np.uint8)
+        dones[-1] = 1
+        rewards = np.zeros(len(actions)).astype(np.uint8)
+        rewards[-1] = 1
+        assert len(actions) == len(agentview_images)
 
-            obs_grp = ep_data_grp.create_group("obs")
-            if not args.no_proprio:
-                obs_grp.create_dataset(
-                    "gripper_states", data=np.stack(gripper_states, axis=0)
-                )
-                obs_grp.create_dataset("joint_states", data=np.stack(joint_states, axis=0))
-                obs_grp.create_dataset("ee_states", data=np.stack(ee_states, axis=0))
-                obs_grp.create_dataset("ee_pos", data=np.stack(ee_states, axis=0)[:, :3])
-                obs_grp.create_dataset("ee_ori", data=np.stack(ee_states, axis=0)[:, 3:])
+        # yy: This is where a new demo is created into the hdf5 file
+        ep_data_grp = grp.create_group(f"demo_{i}")
 
-            obs_grp.create_dataset("agentview_rgb", data=np.stack(agentview_images, axis=0))
+        obs_grp = ep_data_grp.create_group("obs")
+        if not args.no_proprio:
             obs_grp.create_dataset(
-                "eye_in_hand_rgb", data=np.stack(eye_in_hand_images, axis=0)
+                "gripper_states", data=np.stack(gripper_states, axis=0)
             )
-            if args.use_depth:
-                obs_grp.create_dataset(
-                    "agentview_depth", data=np.stack(agentview_depths, axis=0)
-                )
-                obs_grp.create_dataset(
-                    "eye_in_hand_depth", data=np.stack(eye_in_hand_depths, axis=0)
-                )
+            obs_grp.create_dataset("joint_states", data=np.stack(joint_states, axis=0))
+            obs_grp.create_dataset("ee_states", data=np.stack(ee_states, axis=0))
+            obs_grp.create_dataset("ee_pos", data=np.stack(ee_states, axis=0)[:, :3])
+            obs_grp.create_dataset("ee_ori", data=np.stack(ee_states, axis=0)[:, 3:])
 
-            ep_data_grp.create_dataset("actions", data=actions)
-            ep_data_grp.create_dataset("states", data=states)
-            ep_data_grp.create_dataset("robot_states", data=np.stack(robot_states, axis=0))
-            ep_data_grp.create_dataset("rewards", data=rewards)
-            ep_data_grp.create_dataset("dones", data=dones)
-            ep_data_grp.attrs["num_samples"] = len(agentview_images)
-            ep_data_grp.attrs["model_file"] = model_xml
-            ep_data_grp.attrs["init_state"] = states[init_idx]
-            total_len += len(agentview_images)
+        obs_grp.create_dataset("agentview_rgb", data=np.stack(agentview_images, axis=0))
+        obs_grp.create_dataset(
+            "eye_in_hand_rgb", data=np.stack(eye_in_hand_images, axis=0)
+        )
+        if args.use_depth:
+            obs_grp.create_dataset(
+                "agentview_depth", data=np.stack(agentview_depths, axis=0)
+            )
+            obs_grp.create_dataset(
+                "eye_in_hand_depth", data=np.stack(eye_in_hand_depths, axis=0)
+            )
+
+        ep_data_grp.create_dataset("actions", data=actions)
+        ep_data_grp.create_dataset("states", data=states)
+        ep_data_grp.create_dataset("robot_states", data=np.stack(robot_states, axis=0))
+        ep_data_grp.create_dataset("rewards", data=rewards)
+        ep_data_grp.create_dataset("dones", data=dones)
+        ep_data_grp.attrs["num_samples"] = len(agentview_images)
+        ep_data_grp.attrs["model_file"] = model_xml
+        ep_data_grp.attrs["init_state"] = states[init_idx]
+        total_len += len(agentview_images)
+
+        if is_succ:
+            succ_dict['success_idx'].append(i)
+        else:
+            succ_dict['failure_idx'].append(i)
 
         is_succ = False
 
@@ -269,7 +278,12 @@ def main():
     h5py_f.close()
     f.close()
 
-    print(f"#succ: {succ_idx}, out of total #demo: {len(demos)}")
+    # Save data
+    succ_info_pth = args.dataset_path.split('.')[0] + ".pkl"
+    with open(succ_info_pth, 'wb') as f:
+        pickle.dump(succ_dict, f)
+
+    print(f">> Success Num: {succ_idx}, Out of Total Demo Num: {len(demos)}")
 
     print(f"The created dataset is saved in the following path: {hdf5_path}")
     print("------------------------------------------------------------")

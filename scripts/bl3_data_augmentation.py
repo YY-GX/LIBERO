@@ -13,6 +13,10 @@ import libero.libero.envs.bddl_utils as BDDLUtils
 import shutil
 import json
 import subprocess
+import robosuite.macros as macros
+import robosuite.utils.transform_utils as T
+import libero.libero.utils.utils as libero_utils
+from libero.libero.benchmark import get_benchmark, task_orders
 
 class CreateDemos:
     def __init__(
@@ -28,37 +32,42 @@ class CreateDemos:
         self.ori_bddl_folder = f"libero/libero/bddl_files/libero_90/"
         self.modified_bddl_folder = f"libero/libero/bddl_files/{self.benchmark}/"
 
-        self.ori_task_names = [bddl_name.split('.')[0] for bddl_name in os.listdir(self.ori_bddl_folder)]
-        self.demos_pths = [os.path.join(self.ori_demos_folder, task_name + "_demo.hdf5") for task_name in
-                           self.ori_task_names]
+        benchmark = get_benchmark("libero_90")(0)
+        self.ori_task_names = benchmark.get_task_names()
+        # self.ori_task_names = [bddl_name.split('.')[0] for bddl_name in os.listdir(self.ori_bddl_folder)]
+        self.demos_pths = sorted([os.path.join(self.ori_demos_folder, task_name + "_demo.hdf5") for task_name in
+                           self.ori_task_names])
 
         self.dataset_path = "libero/datasets/bl3"
-        self.dataset_path_tmp = "libero/datasets/bl3/tmp"
 
         self.initialize()
 
-        # self.bddl_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/single_step/KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet_with_bowl_on_top_of_cabinet.bddl"
-        # self.demos_path = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet_demo.hdf5"
-
-    def initialize(self, num_task_to_process=1):
-        # Copy ori demos to ori folder
-        self.copy_files(self.ori_demos_folder, os.path.join(self.dataset_path_tmp, "ori"))
+    def initialize(self, num_task_to_process=1000000):  # 1000000 means no limitation
+        # # Copy ori demos to ori folder
+        # self.copy_files(self.ori_demos_folder, os.path.join(self.dataset_path_tmp, "ori"))
         # Create new demos based on: 1. ori demo 2. modified bddl
         mapping_pth = f"libero/mappings/{self.benchmark}.json"
         with open(mapping_pth, 'r') as json_file:
             mapping = json.load(json_file)
         self.ori_task_names = sorted(self.ori_task_names)
-        print(self.ori_task_names)
+        print(f"Original task names: {self.ori_task_names}")
+        # For each libero_90 task, obtain the modified version of dataset from it.
         for i, task_name in enumerate(self.ori_task_names[:num_task_to_process]):
+            print(f"===================================================================================================")
+            print(f">> Index: {i}; Original Task Name: {task_name}")
             ori_demo_path = self.demos_pths[i]
-            dst_demo_folder_path = os.path.join(self.dataset_path_tmp, "modified")
-            modified_bddl_ls = mapping[task_name]
+            # # Jump demos that don't contain any demos
+            # if os.path.exists(ori_demo_path):
+            #     f = h5py.File(ori_demo_path, "r")
+            #     demo_num = len(list(f["data"].keys()))
+            #     if demo_num > 0:
+            #         continue
+
+            modified_bddl_ls = mapping[task_name]  # list of modified envs' bddl files
             for modified_idx, modified_bddl_name in enumerate(modified_bddl_ls):
                 modified_bddl_path = os.path.join(self.modified_bddl_folder, modified_bddl_name)
-                dst_demo_path = os.path.join(dst_demo_folder_path, task_name + f"_{modified_idx}_demo.hdf5")
-                print(ori_demo_path)
-                print(modified_bddl_path)
-                print(dst_demo_path)
+                dst_demo_path = os.path.join(self.dataset_path, task_name + f"_{modified_idx}_demo.hdf5")
+                print(f"Modified bddl path: {modified_bddl_path}")
                 self.create_modified_demos(
                     ori_demo_path,
                     modified_bddl_path,
@@ -119,6 +128,7 @@ class CreateDemos:
         Inputs: 1 ori demo + 1 modified bddl
         Returns: Save 1 modified demo.hdf5 and return None
         """
+
         cmd = [
             "python", "scripts/DemoProcessor.py",
             "--use-camera-obs",
@@ -141,10 +151,6 @@ class CreateDemos:
             print("Command failed:")
             print(result.stderr)  # Error message
 
-
-        # demo_file = ori_demo_path
-        # cmd = f"python scripts/create_dataset.py --use-camera-obs  --dataset-path {dst_demo_path} --demo-file {demo_file} --bddl_path {modified_bddl_path}"
-        # exec(cmd)
 
 
     def replay_demos(
@@ -201,17 +207,17 @@ class CreateDemos:
             robot_states, states, dones = [], [], []
             actions = demo['actions']
             for i, action in enumerate(actions):
-                robot_states.append(env.get_robot_state_vector(obs)[None, ...])
-                states.append(env.sim.get_state().flatten()[None, ...])
+                # robot_states.append(env.get_robot_state_vector(obs)[None, ...])
+                # states.append(env.sim.get_state().flatten()[None, ...])
                 obs, _, done, info = env.step(action)
                 dones.append(done)
                 if self.is_render:
                     env.render()
                 if done:
                     cnt_succ += 1
-                    # Only append demos whose traj is successful
-                    robot_states, states, dones = np.vstack(robot_states), np.vstack(states), np.vstack(dones)
-                    demo_bl3['robot_states'], demo_bl3['states'], demo_bl3['dones'] = robot_states, states, dones
+                    # # Only append demos whose traj is successful
+                    # robot_states, states, dones = np.vstack(robot_states), np.vstack(states), np.vstack(dones)
+                    # demo_bl3['robot_states'], demo_bl3['states'], demo_bl3['dones'] = robot_states, states, dones
                     break
 
             print(f"#succ_demo_{cnt_succ} / #total_demo_{len(demo_keys)}")
@@ -222,4 +228,8 @@ class CreateDemos:
 
 
 if __name__ == '__main__':
-    create_demos = CreateDemos(benchmark="single_step")
+    create_demos = CreateDemos(benchmark="single_step", is_render=False)
+    # create_demos.replay_demos(
+    #     bddl_path="/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/libero_90/LIVING_ROOM_SCENE5_put_the_red_mug_on_the_right_plate.bddl",
+    #     demos_path="/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/LIVING_ROOM_SCENE5_put_the_red_mug_on_the_right_plate_demo.hdf5"
+    # )

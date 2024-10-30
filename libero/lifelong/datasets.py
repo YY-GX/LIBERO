@@ -137,3 +137,143 @@ class TruncatedSequenceDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.sequence_dataset.__getitem__(idx)
+
+
+# Below ones are implemented by me - designed for BL3
+import h5py
+import pickle
+import torch
+from torch.utils.data import Dataset
+
+
+def get_combined_dataset(
+    dataset_path_ls,
+    obs_modality,
+    ratios_ls,
+    only_success=False,
+    succ_dict_path_ls=None,
+    initialize_obs_utils=True,
+    seq_len=1,
+    frame_stack=1,
+    filter_key=None,
+    hdf5_cache_mode="low_dim",
+    *args,
+    **kwargs
+):
+    """
+    Load and combine multiple datasets based on specified ratios.
+
+    Parameters:
+    - dataset_path_ls (list of str): List of paths to datasets to combine.
+    - obs_modality (dict): Observation modalities to use.
+    - ratios_ls (list of float): Ratios for combining datasets.
+    - only_success (bool): If True, only use success cases from each dataset.
+    - succ_dict_path_ls (list of str): List of paths to pickle files containing success and failure indices.
+    - initialize_obs_utils (bool): Whether to initialize observation utilities.
+    - seq_len (int): Sequence length for the datasets.
+    - frame_stack (int): Frame stacking for the datasets.
+    - filter_key (optional): Key to filter the datasets.
+    - hdf5_cache_mode (str): HDF5 caching mode.
+    - *args, **kwargs: Additional arguments passed to SequenceDataset.
+
+    Returns:
+    - Combined_Dataset: An instance of Combined_Dataset containing the datasets.
+    - shape_meta: Metadata about the shapes of the datasets.
+    """
+    if initialize_obs_utils:
+        ObsUtils.initialize_obs_utils_with_obs_specs({"obs": obs_modality})
+
+    all_obs_keys = []
+    for modality_name, modality_list in obs_modality.items():
+        all_obs_keys += modality_list
+
+    shape_meta_list = []
+    datasets = []
+
+    for i, dataset_path in enumerate(dataset_path_ls):
+        shape_meta = FileUtils.get_shape_metadata_from_dataset(
+            dataset_path=dataset_path, all_obs_keys=all_obs_keys, verbose=False
+        )
+        shape_meta_list.append(shape_meta)
+
+        # Create the dataset
+        dataset = SequenceDataset(
+            hdf5_path=dataset_path,
+            obs_keys=shape_meta["all_obs_keys"],
+            dataset_keys=["actions"],
+            load_next_obs=False,
+            frame_stack=frame_stack,
+            seq_length=seq_len,
+            pad_frame_stack=True,
+            pad_seq_length=True,
+            get_pad_mask=False,
+            goal_mode=None,
+            hdf5_cache_mode=hdf5_cache_mode,
+            hdf5_use_swmr=False,
+            hdf5_normalize_obs=None,
+            filter_by_attribute=filter_key,
+        )
+
+        # Filter for success cases if required
+        # Last element (i.e., Original dataset) will not be affected, only augmented datasets are affected
+        if only_success and succ_dict_path_ls is not None and i < len(succ_dict_path_ls):
+            with open(succ_dict_path_ls[i], 'rb') as f:
+                succ_dict = pickle.load(f)
+
+            success_indices = succ_dict["success_idx"]
+            # Filter the dataset to only include success cases
+            dataset = torch.utils.data.Subset(dataset, success_indices)
+
+        datasets.append(dataset)
+
+    # Create the combined dataset with the specified ratios
+    combined_dataset = Combined_Dataset(datasets, ratios_ls)
+
+    return combined_dataset, shape_meta_list
+
+
+class Combined_Dataset(Dataset):
+    def __init__(self, datasets, ratios):
+        """
+        Combined_Dataset to combine multiple datasets with specific ratios.
+
+        Parameters:
+        - datasets (list of Dataset): List of datasets to combine.
+        - ratios (list of float): Corresponding ratios for each dataset.
+        """
+        assert len(datasets) == len(ratios), "Datasets and ratios must have the same length"
+        assert sum(ratios) > 0, "Sum of ratios must be greater than 0"
+
+        self.datasets = datasets
+        self.ratios = ratios
+        self.total_length = self._calculate_total_length()
+
+    def _calculate_total_length(self):
+        """Calculate the total length of the combined dataset."""
+        return sum(int(len(dataset) * (ratio / sum(self.ratios))) for dataset, ratio in zip(self.datasets, self.ratios))
+
+    def __len__(self):
+        """Return the total length of the combined dataset."""
+        return self.total_length
+
+    def __getitem__(self, idx):
+        """Retrieve an item from the combined dataset based on the index."""
+        # Determine which dataset to sample from
+        cumulative_ratios = [sum(self.ratios[:i + 1]) for i in range(len(self.ratios))]
+        total_sum = sum(self.ratios)
+        normalized_idx = idx * total_sum / self.total_length
+
+        for i, cumulative in enumerate(cumulative_ratios):
+            if normalized_idx <= cumulative:
+                dataset_idx = i
+                break
+
+        # Adjust the index to the selected dataset
+        dataset_idx = dataset_idx if dataset_idx == 0 else dataset_idx - 1
+        adjusted_idx = int(
+            (idx - sum(int(len(self.datasets[j]) * (self.ratios[j] / total_sum)) for j in range(dataset_idx))) * (
+                        len(self.datasets[dataset_idx]) * (self.ratios[dataset_idx] / sum(self.ratios))))
+
+        return self.datasets[dataset_idx][adjusted_idx]
+
+
