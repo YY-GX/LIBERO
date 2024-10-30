@@ -73,7 +73,7 @@ def main(hydra_cfg):
     mapping_pth = f"libero/mappings/{cfg.bl3_mapping}"
     with open(mapping_pth, 'r') as json_file:
         mapping = json.load(json_file)
-    task_name = benchmark.get_task_demonstration(i).split("/")[-1][-10]
+    task_name = benchmark.get_task_demonstration(i).split("/")[-1][:-10]
     num_modified_task = len(mapping[task_name])
     dataset_pth_ls = []
     succ_dict_pth_ls = []
