@@ -107,7 +107,7 @@ def compute_flops(algo, dataset, cfg):
 
 
 def create_experiment_dir(cfg, version=None):
-    prefix = "experiments"
+    prefix = "libero/experiments"
     # if cfg.pretrain_model_path != "":
     #     prefix += "_finetune"
     # if cfg.data.task_order_index > 0:
