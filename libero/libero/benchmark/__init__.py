@@ -326,7 +326,7 @@ class modified_libero(Benchmark):
 
 @register_benchmark
 class single_step(Benchmark):
-    def __init__(self, task_order_index=0, n_tasks_=1):
+    def __init__(self, task_order_index=0, n_tasks_=None):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         self.name = "single_step"
         self._make_benchmark()
