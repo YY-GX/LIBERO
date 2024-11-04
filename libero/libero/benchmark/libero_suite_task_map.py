@@ -195,6 +195,7 @@ libero_task_map = {
         "LIVING_ROOM_SCENE6_put_the_red_mug_on_the_plate",
         "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate",
     ],
+
 }
 
 
