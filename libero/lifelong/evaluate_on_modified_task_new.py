@@ -125,7 +125,6 @@ def main():
             model_path, map_location=args.device_id
         )
 
-
         # Modify some attributes of cfg via args
         cfg.benchmark_name = args.benchmark
         cfg.folder = get_libero_path("datasets")
