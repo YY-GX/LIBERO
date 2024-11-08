@@ -1,4 +1,5 @@
 import copy
+import os.path
 
 import numpy as np
 import robomimic.utils.file_utils as FileUtils
@@ -217,6 +218,9 @@ def get_combined_dataset(
         # Filter for success cases if required
         # Last element (i.e., Original dataset) will not be affected, only augmented datasets are affected
         if only_success and succ_dict_path_ls is not None and i < len(succ_dict_path_ls):
+            if not os.path.exists(succ_dict_path_ls[i]):
+                print(f"[WARNING] Whole dataset dropped because {succ_dict_path_ls[i]} doesn't exist!!")
+                continue
             with open(succ_dict_path_ls[i], 'rb') as f:
                 succ_dict = pickle.load(f)
 
