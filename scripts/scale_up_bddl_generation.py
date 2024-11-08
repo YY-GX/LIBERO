@@ -97,7 +97,7 @@ def bddl_dict2file(parsed_problem, new_bddl_filename="./debug.bddl"):
     with open(new_bddl_filename, "w") as f:
         f.write(bddl_content)
 
-    print(f"New BDDL file generated: {new_bddl_filename}")
+    # print(f"New BDDL file generated: {new_bddl_filename}")
 
 
 if __name__ == '__main__':

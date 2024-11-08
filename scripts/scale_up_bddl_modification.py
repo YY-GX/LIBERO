@@ -67,18 +67,18 @@ containers = ['plate', 'akita_black_bowl', 'chefmate_8_frypan']
 state_change_objects = {'cabinet': ['close', 'open'], 'microwave': ['close', 'open'], 'stove': ['turnoff', 'turnon']}
 # TODO: Do this if time permit
 open_regions_for_each_scene = {
-    "KITCHEN_SCENE1": [],
-    "KITCHEN_SCENE2": [],
-    "KITCHEN_SCENE3": [],
-    "KITCHEN_SCENE4": [],
-    "KITCHEN_SCENE5": [],
-    "KITCHEN_SCENE6": [],
-    "KITCHEN_SCENE7": [],
+    "KITCHEN_SCENE1": [[-0.3, -0.025, -0.12, 0.3], [0.12, -0.025, 0.3, 0.3]],
+    "KITCHEN_SCENE2": [[-0.3, 0.025, -0.25, 0.3], [0.2, 0.025, 0.3, 0.3]],
+    "KITCHEN_SCENE3": [[-0.3, -0.275, -0.175, 0.3], [0.25, -0.275, 0.3, 0.3]],
+    "KITCHEN_SCENE4": [[0.15, -0.5, 0.275, 0.055]],
+    "KITCHEN_SCENE5": [[-0.3, -0.275, -0.2, -0.025], [0.15, -0.275, 0.3, -0.025]],
+    "KITCHEN_SCENE6": [[-0.3, -0.3, -0.2, 0.05], [0.1, -0.3, 0.3, 0.05]],
+    "KITCHEN_SCENE7": [[-0.3, -0.1, -0.15, 0.15], [0.15, -0.1, 0.3, 0.15]],
     "KITCHEN_SCENE8": [[0.08, -0.18, 0.13, -0.13], [0.025, 0.225, 0.075, 0.275]],
-    "KITCHEN_SCENE9": [],
-    "KITCHEN_SCENE10": [],
-    "LIVING_ROOM_SCENE5": [],
-    "LIVING_ROOM_SCENE6": [],
+    "KITCHEN_SCENE9": [[-0.3, -0.2, -0.2, 0.2], [0.15, -0.2, 0.3, 0.2]],
+    "KITCHEN_SCENE10": [[-0.3, -0.2, -0.2, 0.3], [0.15, -0.2, 0.3, 0.3]],
+    "LIVING_ROOM_SCENE5": [[0.15, -0.3, 0.25, 0.3]],
+    "LIVING_ROOM_SCENE6": [[0.15, -0.15, 0.25, -0.1], [0.15, 0.1, 0.25, 0.15]],
 }
 
 # For type-1
@@ -147,17 +147,23 @@ def modify_environment(parsed_problem, open_regions=[], is_debug=False):
 
 
         reg_open, reg_container = regions_available_for_putting(parsed_problem)
-        diversity_num = (len(open_regions) + len(reg_open)) * (len(existing_objects) + len(large_objects) + len(small_objects)) + len(reg_container) * len(small_objects)
+        diversity_num = 1 * (len(large_objects) + len(small_objects)) + len(reg_open) * (len(existing_objects) + len(large_objects) + len(small_objects)) + len(reg_container) * len(small_objects)
         if diversity_num == 0:
             raise ValueError(f"[ERROR] Diversity number is {diversity_num}!")
         if is_debug:
             print(f">> Diversity number is {diversity_num}")
 
-        if random.choice([True, False]) and existing_objects:
+        type_1_category = random.choice([1, 2, 3, 4])
+
+        # Modify existing objects
+        if type_1_category == 1:
+            # if random.choice([True, False]):
             if len(reg_open) == 0:
                 raise ValueError(f"[ERROR] No reg_open!")
             chosen_region_open = random.choice(reg_open)
             # Modify position of an existing object
+            if len(existing_objects) == 0:
+                raise ValueError(f"[ERROR] existing_objects have 0 objects!")
             chosen_object = random.choice(existing_objects)
             if is_debug:
                 print(f"> Modify existing object {chosen_object} to region {chosen_region_open}")
@@ -165,53 +171,66 @@ def modify_environment(parsed_problem, open_regions=[], is_debug=False):
             parsed_problem['initial_state'] = [state for state in parsed_problem['initial_state'] if state[1] != chosen_object]
             # Add new state
             parsed_problem['initial_state'].append(['on', chosen_object, chosen_region_open])
-        else:
+
+        # elif type_1_category == 1.5:
+        #     # Add existing objects to open_regions_for_each_scene
+        #     if debug:
+        #         print(f"len(open_regions): {len(open_regions)}")
+        #     if len(open_regions) == 0:
+        #         raise ValueError(f"[ERROR] open_regions empty!")
+        #     if len(existing_objects) == 0:
+        #         raise ValueError(f"[ERROR] existing_objects have 0 objects!")
+        #     chosen_object = random.choice(existing_objects)
+        #     if debug:
+        #         print(f"chosen_object: {chosen_object}")
+        #     # TODO
+        #     parsed_problem['regions'][f'kitchen_table_{chosen_object[:-2]}_init_region']['ranges'] = open_regions
+
+        elif type_1_category == 2:
             # Add external object
-            if random.choice([True, False]):
-                if random.choice([True, False]):
-                    if len(reg_open) == 0:
-                        raise ValueError(f"[ERROR] No reg_open!")
-                    chosen_region_open = random.choice(reg_open)
-                    external_object = random.choice(small_objects + large_objects)
-                    if is_debug:
-                        print(f"> Add external object {external_object} to open region {chosen_region_open}")
-                    if external_object not in parsed_problem['objects']:
-                        parsed_problem['objects'][external_object] = [f'{external_object}_1']
-                    else:
-                        raise ValueError(f"[ERROR] external object already exists!")
-                    parsed_problem['initial_state'].append(['on', f'{external_object}_1', chosen_region_open])
-                # TODO: add external objects to open_regions_for_each_scene
-                else:
-                    if len(open_regions) == 0:
-                        raise ValueError(f"[ERROR] open_regions empty!")
-                    external_object = random.choice(small_objects + large_objects)
-                    if external_object not in parsed_problem['objects']:
-                        parsed_problem['objects'][external_object] = [f'{external_object}_1']
-                    else:
-                        raise ValueError(f"[ERROR] external object already exists!")
-
-                    parsed_problem['regions'][f'kitchen_table_{external_object}_init_region'] = {
-                        'target': 'kitchen_table',
-                        'ranges': open_regions,
-                        'extra': [],
-                        'yaw_rotation': [0.0, 0.0],
-                        'rgba': [0, 0, 1, 0]
-                    }
-                    parsed_problem['objects'][external_object] = [f"{external_object}_1"]
-                    parsed_problem['initial_state'].append(['on', f"{external_object}_1", f'kitchen_table_{external_object}_init_region'])
-
+            if len(reg_open) == 0:
+                raise ValueError(f"[ERROR] No reg_open!")
+            chosen_region_open = random.choice(reg_open)
+            external_object = random.choice(small_objects + large_objects)
+            if is_debug:
+                print(f"> Add external object {external_object} to open region {chosen_region_open}")
+            if external_object not in parsed_problem['objects']:
+                parsed_problem['objects'][external_object] = [f'{external_object}_1']
             else:
-                if len(reg_container) == 0:
-                    raise ValueError(f"[ERROR] No reg_container!")
-                chosen_region_container = random.choice(reg_container)
-                external_object = random.choice(small_objects)
-                if is_debug:
-                    print(f"> Add external object {external_object} to container region {chosen_region_container}")
-                if external_object not in parsed_problem['objects']:
-                    parsed_problem['objects'][external_object] = [f'{external_object}_1']
-                else:
-                    raise ValueError(f"[ERROR] external object already exists!")
-                parsed_problem['initial_state'].append(['on', f'{external_object}_1', chosen_region_container])
+                raise ValueError(f"[ERROR] external object already exists!")
+            parsed_problem['initial_state'].append(['on', f'{external_object}_1', chosen_region_open])
+
+        elif type_1_category == 3:
+            # Add external objects to open_regions_for_each_scene
+            if len(open_regions) == 0:
+                raise ValueError(f"[ERROR] open_regions empty!")
+            external_object = random.choice(small_objects + large_objects)
+            if external_object not in parsed_problem['objects']:
+                parsed_problem['objects'][external_object] = [f'{external_object}_1']
+            else:
+                raise ValueError(f"[ERROR] external object already exists!")
+
+            parsed_problem['regions'][f'kitchen_table_{external_object}_init_region'] = {
+                'target': 'kitchen_table',
+                'ranges': open_regions,
+                'extra': [],
+                'yaw_rotation': [0.0, 0.0],
+                'rgba': [0, 0, 1, 0]
+            }
+            parsed_problem['objects'][external_object] = [f"{external_object}_1"]
+            parsed_problem['initial_state'].append(['on', f"{external_object}_1", f'kitchen_table_{external_object}_init_region'])
+        elif type_1_category == 4:
+            if len(reg_container) == 0:
+                raise ValueError(f"[ERROR] No reg_container!")
+            chosen_region_container = random.choice(reg_container)
+            external_object = random.choice(small_objects)
+            if is_debug:
+                print(f"> Add external object {external_object} to container region {chosen_region_container}")
+            if external_object not in parsed_problem['objects']:
+                parsed_problem['objects'][external_object] = [f'{external_object}_1']
+            else:
+                raise ValueError(f"[ERROR] external object already exists!")
+            parsed_problem['initial_state'].append(['on', f'{external_object}_1', chosen_region_container])
 
 
     elif modification_type == 2:
@@ -326,7 +345,7 @@ def modify_environment(parsed_problem, open_regions=[], is_debug=False):
 #     print(f">> Random seed: {seed}")
 #     available_region_number = []
 #     diversity_num_total_ls = []
-#     for bddl_file in bddl_files:
+#     for bddl_file in sorted(bddl_files):
 #         if '.bddl' not in bddl_file:
 #             continue
 #         print('----------------------------------------------------------------')
