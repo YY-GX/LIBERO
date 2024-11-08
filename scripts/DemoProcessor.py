@@ -157,7 +157,7 @@ def main():
         env.sim.set_state_from_flattened(states[init_idx])
         env.sim.forward()
         env.reset()
-        model_xml = env.sim.model.get_xml()
+        # model_xml = env.sim.model.get_xml()
 
         ee_states = []
         gripper_states = []
