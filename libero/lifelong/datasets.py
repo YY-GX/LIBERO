@@ -222,11 +222,11 @@ def get_combined_dataset(
 
             success_indices = succ_dict["success_idx"]
             # Filter the dataset to only include success cases
-            print(dataset.n_demos)
             sequence_ds_n_demos = dataset.n_demos
+            sequence_ds_total_num_sequences = dataset.total_num_sequences
             dataset = torch.utils.data.Subset(dataset, success_indices)
             dataset.n_demos = sequence_ds_n_demos
-            print(dataset.n_demos)
+            dataset.total_num_sequences = sequence_ds_total_num_sequences
 
         datasets.append(dataset)
 
