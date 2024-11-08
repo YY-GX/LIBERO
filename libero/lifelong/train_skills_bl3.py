@@ -142,7 +142,7 @@ def main(hydra_cfg):
     Start training
     """
     # prepare experiment and update the config
-    create_experiment_dir(cfg, version="bl3")
+    create_experiment_dir(cfg, version=cfg.bl3_folder)
     cfg.shape_meta = shape_meta
     if cfg.use_wandb:
         wandb.init(project="libero", config=cfg)
