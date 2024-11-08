@@ -153,6 +153,7 @@ def main():
         # yy: I commented this
         # env.reset_from_xml_string(model_xml)
         env.sim.reset()
+        # yy: SUPER IMPORTANT: I changed /home/yygx/anaconda3/envs/libero/lib/python3.8/site-packages/robosuite/utils/binding_utils.py file's 1167 line.
         env.sim.set_state_from_flattened(states[init_idx])
         env.sim.forward()
         env.reset()
