@@ -220,6 +220,7 @@ def get_combined_dataset(
         if only_success and succ_dict_path_ls is not None and i < len(succ_dict_path_ls):
             if not os.path.exists(succ_dict_path_ls[i]):
                 print(f"[WARNING] Whole dataset dropped because {succ_dict_path_ls[i]} doesn't exist!!")
+                ratios_ls.pop(i)
                 continue
             with open(succ_dict_path_ls[i], 'rb') as f:
                 succ_dict = pickle.load(f)
