@@ -40,7 +40,7 @@ class CreateDemos:
                            self.ori_task_names])
 
         # self.dataset_path = "libero/datasets/bl3"
-        self.dataset_path = "libero/datasets/bl3_seed10000"
+        self.dataset_path = f"libero/datasets/{self.benchmark}"
         Path(self.dataset_path).mkdir(parents=True, exist_ok=True)
 
         self.initialize()
@@ -235,7 +235,7 @@ if __name__ == '__main__':
     # create_demos = CreateDemos(benchmark="single_step", is_render=False)
 
     # This is for scalable demo creation
-    create_demos = CreateDemos(benchmark="bl3_seed10000", is_render=False)
+    create_demos = CreateDemos(benchmark="bl3_all", is_render=False)
 
     # create_demos.replay_demos(
     #     bddl_path="/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/libero_90/LIVING_ROOM_SCENE5_put_the_red_mug_on_the_right_plate.bddl",
