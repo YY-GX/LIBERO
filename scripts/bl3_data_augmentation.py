@@ -17,6 +17,7 @@ import robosuite.macros as macros
 import robosuite.utils.transform_utils as T
 import libero.libero.utils.utils as libero_utils
 from libero.libero.benchmark import get_benchmark, task_orders
+from pathlib import Path
 
 class CreateDemos:
     def __init__(
@@ -38,7 +39,9 @@ class CreateDemos:
         self.demos_pths = sorted([os.path.join(self.ori_demos_folder, task_name + "_demo.hdf5") for task_name in
                            self.ori_task_names])
 
-        self.dataset_path = "libero/datasets/bl3"
+        # self.dataset_path = "libero/datasets/bl3"
+        self.dataset_path = "libero/datasets/bl3_seed10000"
+        Path(self.dataset_path).mkdir(parents=True, exist_ok=True)
 
         self.initialize()
 
@@ -228,7 +231,12 @@ class CreateDemos:
 
 
 if __name__ == '__main__':
-    create_demos = CreateDemos(benchmark="single_step", is_render=False)
+    # This is for single_step demo creation
+    # create_demos = CreateDemos(benchmark="single_step", is_render=False)
+
+    # This is for scalable demo creation
+    create_demos = CreateDemos(benchmark="bl3_seed10000", is_render=False)
+
     # create_demos.replay_demos(
     #     bddl_path="/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/libero_90/LIVING_ROOM_SCENE5_put_the_red_mug_on_the_right_plate.bddl",
     #     demos_path="/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/LIVING_ROOM_SCENE5_put_the_red_mug_on_the_right_plate_demo.hdf5"
