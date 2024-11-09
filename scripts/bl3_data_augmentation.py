@@ -32,8 +32,9 @@ class CreateDemos:
         self.ori_demos_folder = "libero/datasets/libero_90/"
         self.ori_bddl_folder = f"libero/libero/bddl_files/libero_90/"
         self.modified_bddl_folder = f"libero/libero/bddl_files/{self.benchmark}/"
+        self.task_order_index = 0
 
-        benchmark = get_benchmark("libero_90")(0)
+        benchmark = get_benchmark("libero_90")(task_order_index=self.task_order_index)
         self.ori_task_names = benchmark.get_task_names()
         # self.ori_task_names = [bddl_name.split('.')[0] for bddl_name in os.listdir(self.ori_bddl_folder)]
         self.demos_pths = sorted([os.path.join(self.ori_demos_folder, task_name + "_demo.hdf5") for task_name in
@@ -56,6 +57,10 @@ class CreateDemos:
         print(f"Original task names: {self.ori_task_names}")
         # For each libero_90 task, obtain the modified version of dataset from it.
         for i, task_name in enumerate(self.ori_task_names[:num_task_to_process]):
+            # yy: I added this here
+            if i < 5:
+                continue
+
             print(f"===================================================================================================")
             print(f">> Index: {i}; Original Task Name: {task_name}")
             ori_demo_path = self.demos_pths[i]
