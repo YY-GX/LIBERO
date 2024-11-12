@@ -116,7 +116,7 @@ for yy_suite in yy_suites:
             mapping_pth = f"libero/mappings/{yy_suite}.json"
             with open(mapping_pth, 'r') as json_file:
                 mapping = json.load(json_file)
-            if task == 'ablation_1':
+            if yy_suite == 'ablation_1':
                 print(mapping)
                 print(find_keys_by_value(mapping, task + ".bddl"))
             task_ori = find_keys_by_value(mapping, task + ".bddl")[0]
