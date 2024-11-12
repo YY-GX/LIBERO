@@ -137,7 +137,7 @@ def main():
             model_path_folder_modified = os.path.join(args.model_path_folder, f"modify_back")
             save_dir = os.path.join(model_path_folder_modified, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_on_modified_envs")
         else:
-            save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_on_modified_envs")
+            save_dir = os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"evaluation_task{task_id}_benchmark_{args.benchmark}on_modified_envs")
         print(f">> Create folder {save_dir}")
         os.system(f"mkdir -p {save_dir}")
 
@@ -318,10 +318,10 @@ def main():
             succ_list.append(success_rate)
             torch.save(eval_stats, save_stats_pth)
 
-            with open(os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_benchmark_{args.benchmark}_seed{args.seed}", f"succ_list_evaluation_on_modified_envs.npy"), 'wb') as f:
+            with open(os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"succ_list_evaluation_on_modified_envs_benchmark_{args.benchmark}.npy"), 'wb') as f:
                 np.save(f, np.array(succ_list))
 
-        with open(os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_benchmark_{args.benchmark}_seed{args.seed}", f"succ_list_evaluation_on_modified_envs.npy"), 'wb') as f:
+        with open(os.path.join(args.model_path_folder, f"eval_tasks_on_modified_envs_seed{args.seed}", f"succ_list_evaluation_on_modified_envs_benchmark_{args.benchmark}.npy"), 'wb') as f:
             np.save(f, np.array(succ_list))
         print(
             f"[info] finish for ckpt at {model_path} in {t.get_elapsed_time()} sec for rollouts"
