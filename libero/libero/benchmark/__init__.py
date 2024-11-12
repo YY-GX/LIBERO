@@ -103,7 +103,8 @@ for libero_suite in libero_suites:
 yy_suites = [
     # "yy_try",
     "modified_libero",
-    "single_step"
+    "single_step",
+    "ablation_1"
 ]
 # yy: if you wanna the task description the same as the original one, set True here.
 keep_language_unchanged = True
@@ -159,6 +160,8 @@ task_orders = [
     [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
     [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
     [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43],
+    # ablation-1
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
     # old ones
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -334,4 +337,12 @@ class single_step(Benchmark):
     def __init__(self, task_order_index=0, n_tasks_=None):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         self.name = "single_step"
+        self._make_benchmark()
+
+
+@register_benchmark
+class ablation_1(Benchmark):
+    def __init__(self, task_order_index=0, n_tasks_=None):
+        super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
+        self.name = "ablation_1"
         self._make_benchmark()
