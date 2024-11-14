@@ -196,6 +196,7 @@ def get_combined_dataset(
         dataset_path = os.path.expanduser(dataset_path)
         f = h5py.File(dataset_path, "r")
         if len(list(f["data"].keys())) == 0:
+            ratios_ls.pop(i)
             continue
 
         shape_meta = FileUtils.get_shape_metadata_from_dataset(
