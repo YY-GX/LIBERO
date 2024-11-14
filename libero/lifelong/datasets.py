@@ -244,10 +244,7 @@ def get_combined_dataset(
         datasets.append(dataset)
 
     # Pop error cases ratio
-    for err_ratio_idx in empty_ds_idx_ls:
-        print(empty_ds_idx_ls)
-        print(ratios_ls)
-        ratios_ls.pop(err_ratio_idx)
+    ratios_ls = [value for idx, value in enumerate(ratios_ls) if idx not in empty_ds_idx_ls]
 
     # Create the combined dataset with the specified ratios
     combined_dataset = Combined_Dataset(datasets, ratios_ls)
