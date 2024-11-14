@@ -71,37 +71,6 @@ def main(hydra_cfg):
 
 
     for i in range(n_manip_tasks):
-        if i != 27:
-            continue
-        # BL3 dataset
-        mapping_pth = f"libero/mappings/{cfg.bl3_mapping}"
-        with open(mapping_pth, 'r') as json_file:
-            mapping = json.load(json_file)
-        task_name = benchmark.get_task_demonstration(i).split("/")[-1][:-10]
-        num_modified_task = len(mapping[task_name])
-        dataset_pth_ls = []
-        succ_dict_pth_ls = []
-        for modified_task_idx in range(num_modified_task):
-            bl3_dataset_pth = os.path.join(cfg.folder, cfg.bl3_folder,
-                                           task_name + f"_{modified_task_idx}_demo.hdf5")
-            dataset_pth_ls.append(bl3_dataset_pth)
-            bl3_success_dict_pth = os.path.join(cfg.folder, cfg.bl3_folder,
-                                                task_name + f"_{modified_task_idx}_demo.pkl")
-            succ_dict_pth_ls.append(bl3_success_dict_pth)
-
-        # Create Combined Dataset
-        dataset_pth_ls.append(os.path.join(cfg.folder, benchmark.get_task_demonstration(i)))
-        ratios_ls = [cfg.ratio for _ in range(num_modified_task)] + [1.0]
-        task_i_dataset, shape_meta_list = get_combined_dataset(
-            dataset_path_ls=dataset_pth_ls,
-            obs_modality=cfg.data.obs.modality,
-            ratios_ls=ratios_ls,
-            only_success=cfg.only_success,
-            succ_dict_path_ls=succ_dict_pth_ls,
-            initialize_obs_utils=True,
-            seq_len=cfg.data.seq_len,
-        )
-        shape_meta = shape_meta_list[-1]
         # currently we assume tasks from same benchmark have the same shape_meta
         try:
             # BL3 dataset
