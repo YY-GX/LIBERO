@@ -191,14 +191,13 @@ def get_combined_dataset(
     shape_meta_list = []
     datasets = []
 
+    empty_ds_idx_ls = []
     for i, dataset_path in enumerate(dataset_path_ls):
         # yy: Jump is ds size is 0
         dataset_path = os.path.expanduser(dataset_path)
         f = h5py.File(dataset_path, "r")
         if len(list(f["data"].keys())) == 0:
-            print(ratios_ls)
-            print(i)
-            ratios_ls.pop(i)
+            empty_ds_idx_ls.append(i)
             continue
 
         shape_meta = FileUtils.get_shape_metadata_from_dataset(
@@ -229,7 +228,7 @@ def get_combined_dataset(
         if only_success and succ_dict_path_ls is not None and i < len(succ_dict_path_ls):
             if not os.path.exists(succ_dict_path_ls[i]):
                 print(f"[WARNING] Whole dataset dropped because {succ_dict_path_ls[i]} doesn't exist!!")
-                ratios_ls.pop(i)
+                empty_ds_idx_ls.append(i)
                 continue
             with open(succ_dict_path_ls[i], 'rb') as f:
                 succ_dict = pickle.load(f)
@@ -243,6 +242,10 @@ def get_combined_dataset(
             dataset.total_num_sequences = sequence_ds_total_num_sequences
 
         datasets.append(dataset)
+
+    # Pop error cases ratio
+    for err_ratio_idx in empty_ds_idx_ls:
+        ratios_ls.pop(err_ratio_idx)
 
     # Create the combined dataset with the specified ratios
     combined_dataset = Combined_Dataset(datasets, ratios_ls)
