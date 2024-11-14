@@ -41,7 +41,12 @@ task_num_to_use: null
 #only_success: false
 #ratio: 1.0
 
-bl3_folder: "bl3_seed10000"
-bl3_mapping: "bl3_seed10000.json"
+#bl3_folder: "bl3_seed10000"
+#bl3_mapping: "bl3_seed10000.json"
+#only_success: true
+#ratio: 1.0
+
+bl3_folder: "bl3_all"
+bl3_mapping: "bl3_all.json"
 only_success: true
 ratio: 1.0
