@@ -245,6 +245,8 @@ def get_combined_dataset(
 
     # Pop error cases ratio
     for err_ratio_idx in empty_ds_idx_ls:
+        print(empty_ds_idx_ls)
+        print(ratios_ls)
         ratios_ls.pop(err_ratio_idx)
 
     # Create the combined dataset with the specified ratios
