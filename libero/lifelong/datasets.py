@@ -196,6 +196,8 @@ def get_combined_dataset(
         dataset_path = os.path.expanduser(dataset_path)
         f = h5py.File(dataset_path, "r")
         if len(list(f["data"].keys())) == 0:
+            print(ratios_ls)
+            print(i)
             ratios_ls.pop(i)
             continue
 
