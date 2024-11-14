@@ -192,6 +192,12 @@ def get_combined_dataset(
     datasets = []
 
     for i, dataset_path in enumerate(dataset_path_ls):
+        # yy: Jump is ds size is 0
+        dataset_path = os.path.expanduser(dataset_path)
+        f = h5py.File(dataset_path, "r")
+        if list(f["data"].keys()) == 0:
+            continue
+
         shape_meta = FileUtils.get_shape_metadata_from_dataset(
             dataset_path=dataset_path, all_obs_keys=all_obs_keys, verbose=False
         )
