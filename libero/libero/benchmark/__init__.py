@@ -134,7 +134,7 @@ for yy_suite in yy_suites:
         )
 
 
-bl3_all_task_order = list(range(1, 1728))
+bl3_all_task_order = list(range(0, 1727))
 
 task_orders = [
     # train skills (0 ~ 3)
