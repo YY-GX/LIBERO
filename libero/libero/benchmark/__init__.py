@@ -104,7 +104,8 @@ yy_suites = [
     # "yy_try",
     "modified_libero",
     "single_step",
-    "ablation_1"
+    "ablation_1",
+    "bl3_all"
 ]
 # yy: if you wanna the task description the same as the original one, set True here.
 keep_language_unchanged = True
@@ -133,7 +134,7 @@ for yy_suite in yy_suites:
         )
 
 
-
+bl3_all_task_order = list(range(1, 1728))
 
 task_orders = [
     # train skills (0 ~ 3)
@@ -163,8 +164,10 @@ task_orders = [
     [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
     [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
     [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43],
-    # ablation-1
+    # ablation-1 (21)
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33],
+    # bl3_all (22)
+    bl3_all_task_order,
 
     # old ones
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -348,4 +351,12 @@ class ablation_1(Benchmark):
     def __init__(self, task_order_index=0, n_tasks_=None):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         self.name = "ablation_1"
+        self._make_benchmark()
+
+
+@register_benchmark
+class bl3_all(Benchmark):
+    def __init__(self, task_order_index=22, n_tasks_=None):
+        super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
+        self.name = "bl3_all"
         self._make_benchmark()
