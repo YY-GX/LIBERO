@@ -42,12 +42,20 @@ def create_init(bddl_file_name, suite_name):
 # suite_name = "single_step"
 # suite_name = "libero_90"
 # suite_name = "ablation_1"
-suite_name = "ablation_2"
+suite_name = "multi_step_2"
+# suite_name = "multi_step_3"
 # folder = f"/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}"
 folder = f"/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/libero/bddl_files/{suite_name}"
+ran_string = """
+
+"""
 for bddl_file_name in os.listdir(folder):
     if not (".bddl" in bddl_file_name):
+        continue
+    if bddl_file_name in ran_string:
         continue
     print(bddl_file_name)
     bddl_file_name_pth = os.path.join(folder, bddl_file_name)
     create_init(bddl_file_name_pth, suite_name)
+
+

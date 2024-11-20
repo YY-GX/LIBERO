@@ -74,7 +74,7 @@ open_regions_for_each_scene = {
     "KITCHEN_SCENE5": [[-0.3, -0.275, -0.2, -0.025], [0.15, -0.275, 0.3, -0.025]],
     "KITCHEN_SCENE6": [[-0.3, -0.3, -0.2, 0.05], [0.1, -0.3, 0.3, 0.05]],
     "KITCHEN_SCENE7": [[-0.3, -0.1, -0.15, 0.15], [0.15, -0.1, 0.3, 0.15]],
-    "KITCHEN_SCENE8": [[0.08, -0.18, 0.13, -0.13], [0.025, 0.225, 0.075, 0.275]],
+    "KITCHEN_SCENE8": [[0.08, -0.18, 0.13, -0.13], [0.025, 0.225, 0.075, 0.275], [-0.35, -0.18, -0.25, 0.2]],
     "KITCHEN_SCENE9": [[-0.3, -0.2, -0.2, 0.2], [0.15, -0.2, 0.3, 0.2]],
     "KITCHEN_SCENE10": [[-0.3, -0.2, -0.2, 0.3], [0.15, -0.2, 0.3, 0.3]],
     "LIVING_ROOM_SCENE5": [[0.15, -0.3, 0.25, 0.3]],
@@ -205,22 +205,23 @@ def modify_environment(parsed_problem, open_regions=[], is_debug=False, is_multi
             # Add external objects to open_regions_for_each_scene
             if len(open_regions) == 0:
                 raise ValueError(f"[ERROR] open_regions empty!")
-            chosen_open_regions = []
+            chosen_open_region = [random.choice(open_regions)]
+            chosen_open_regions = [region for region in open_regions if region != chosen_open_region]
             external_object = random.choice(small_objects + large_objects)
             if external_object not in parsed_problem['objects']:
                 parsed_problem['objects'][external_object] = [f'{external_object}_1']
             else:
                 raise ValueError(f"[ERROR] external object already exists!")
-
-            parsed_problem['regions'][f'kitchen_table_{external_object}_init_region'] = {
+            table_name = [fixture for fixture in parsed_problem['fixtures'].keys() if 'table' in fixture][0]
+            parsed_problem['regions'][f'{table_name}_{external_object}_init_region'] = {
                 'target': 'kitchen_table',
-                'ranges': open_regions,
+                'ranges': chosen_open_region,
                 'extra': [],
                 'yaw_rotation': [0.0, 0.0],
                 'rgba': [0, 0, 1, 0]
             }
             parsed_problem['objects'][external_object] = [f"{external_object}_1"]
-            parsed_problem['initial_state'].append(['on', f"{external_object}_1", f'kitchen_table_{external_object}_init_region'])
+            parsed_problem['initial_state'].append(['on', f"{external_object}_1", f'{table_name}_{external_object}_init_region'])
         elif type_1_category == 4:
             if len(reg_container) == 0:
                 raise ValueError(f"[ERROR] No reg_container!")
