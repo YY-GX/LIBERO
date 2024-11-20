@@ -107,7 +107,7 @@ yy_suites = [
     "ablation_1",
     "ablation_2",
     "multi_step_2",
-    "multi_step_3"
+    "multi_step_3",
     "bl3_all"
 ]
 # yy: if you wanna the task description the same as the original one, set True here.
