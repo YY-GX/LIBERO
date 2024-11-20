@@ -105,6 +105,7 @@ yy_suites = [
     "modified_libero",
     "single_step",
     "ablation_1",
+    "ablation_2",
     "bl3_all"
 ]
 # yy: if you wanna the task description the same as the original one, set True here.
@@ -351,6 +352,14 @@ class ablation_1(Benchmark):
     def __init__(self, task_order_index=0, n_tasks_=None):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         self.name = "ablation_1"
+        self._make_benchmark()
+
+
+@register_benchmark
+class ablation_2(Benchmark):
+    def __init__(self, task_order_index=0, n_tasks_=None):
+        super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
+        self.name = "ablation_2"
         self._make_benchmark()
 
 

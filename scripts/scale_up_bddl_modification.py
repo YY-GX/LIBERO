@@ -116,7 +116,7 @@ def regions_available_for_putting(parsed_problem):
 
 
 # Create a modified version of parsed_problem
-def modify_environment(parsed_problem, open_regions=[], is_debug=False):
+def modify_environment(parsed_problem, open_regions=[], is_debug=False, is_multiple=False):
     """
 
     Usage: The output of this function will be either be ValueError or correct output (i.e., modified parsed_problem)
@@ -131,6 +131,7 @@ def modify_environment(parsed_problem, open_regions=[], is_debug=False):
         diversity_num: number of combinations of different modified env
 
     """
+    chosen_open_regions = open_regions
     diversity_num = None
     parsed_problem = copy.deepcopy(parsed_problem)
     modification_type = random.choice([1, 2, 3])
@@ -204,6 +205,7 @@ def modify_environment(parsed_problem, open_regions=[], is_debug=False):
             # Add external objects to open_regions_for_each_scene
             if len(open_regions) == 0:
                 raise ValueError(f"[ERROR] open_regions empty!")
+            chosen_open_regions = []
             external_object = random.choice(small_objects + large_objects)
             if external_object not in parsed_problem['objects']:
                 parsed_problem['objects'][external_object] = [f'{external_object}_1']
@@ -291,8 +293,10 @@ def modify_environment(parsed_problem, open_regions=[], is_debug=False):
         parsed_problem['initial_state'].append(['on', f'{chosen_small_object}_1', chosen_container])
         diversity_num = len(containers_of_interests) * len(small_objects)
 
-
-    return parsed_problem, diversity_num
+    if is_multiple:
+        return parsed_problem, diversity_num, chosen_open_regions
+    else:
+        return parsed_problem, diversity_num
 
 
 
