@@ -63,7 +63,7 @@ def parse_args():
         type=str,
         required=True,
         choices=["libero_10", "libero_90", "libero_spatial", "libero_object", "libero_goal", "yy_try",
-                 "modified_libero", "single_step", "ablation_1"],
+                 "modified_libero", "single_step", "ablation_1", "ablation_2"],
         default="modified_libero"
     )
     parser.add_argument("--task_num_to_use", type=int,
