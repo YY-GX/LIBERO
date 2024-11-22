@@ -173,6 +173,10 @@ task_orders = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
     # bl3_all (23)
     bl3_all_task_order,
+    # diffusion policy - 1 (24)
+    [4],
+    [3],
+    [0],
 
     # old ones
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -388,3 +392,4 @@ class bl3_all(Benchmark):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         self.name = "bl3_all"
         self._make_benchmark()
+
