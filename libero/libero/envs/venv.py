@@ -50,6 +50,8 @@ class CloudpickleWrapper(object):
         self.data = data
 
     def __getstate__(self) -> str:
+        print(f">> type(self.data): {type(self.data)}")
+        print(self.data)
         return cloudpickle.dumps(self.data)
 
     def __setstate__(self, data: str) -> None:
