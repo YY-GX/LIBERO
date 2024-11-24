@@ -156,9 +156,12 @@ class OffScreenRenderEnv(ControlEnv):
     """
 
     def __init__(self, **kwargs):
-        self.metadata = None
-        self.observation_space = None
-        self.action_space = None
+        if kwargs['metadata']:
+            self.metadata = kwargs['metadata']
+        if kwargs['observation_space']:
+            self.observation_space = kwargs['observation_space']
+        if kwargs['action_space']:
+            self.action_space = kwargs['action_space']
         # This shouldn't be customized
         kwargs["has_renderer"] = False
         kwargs["has_offscreen_renderer"] = True
