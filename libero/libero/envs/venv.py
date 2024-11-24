@@ -359,9 +359,8 @@ class SubprocEnvWorker(EnvWorker):
     """Subprocess worker used in SubprocVectorEnv and ShmemVectorEnv."""
 
     def __init__(
-        self, env_fn: Callable[[], gym.Env], share_memory: bool = False, num_envs=20
+        self, env_fn: Callable[[], gym.Env], share_memory: bool = False
     ) -> None:
-        self.num_envs = num_envs
         self.parent_remote, self.child_remote = Pipe()
         self.share_memory = share_memory
         self.buffer: Optional[Union[dict, tuple, ShArray]] = None
@@ -936,6 +935,8 @@ class SubprocVectorEnv(BaseVectorEnv):
     """
 
     def __init__(self, env_fns: List[Callable[[], gym.Env]], **kwargs: Any) -> None:
+        self.num_envs = self.env_num
+
         # yy: I comment this
         if multiprocessing.get_start_method(allow_none=True) != "spawn":
             multiprocessing.set_start_method("spawn", force=True)
