@@ -935,7 +935,7 @@ class SubprocVectorEnv(BaseVectorEnv):
     """
 
     def __init__(self, env_fns: List[Callable[[], gym.Env]], **kwargs: Any) -> None:
-        self.num_envs = self.env_num
+        self.num_envs = len(env_fns)
 
         # yy: I comment this
         if multiprocessing.get_start_method(allow_none=True) != "spawn":
