@@ -361,6 +361,7 @@ class SubprocEnvWorker(EnvWorker):
     def __init__(
         self, env_fn: Callable[[], gym.Env], share_memory: bool = False
     ) -> None:
+        self.num_envs = len(env_fn)
         self.parent_remote, self.child_remote = Pipe()
         self.share_memory = share_memory
         self.buffer: Optional[Union[dict, tuple, ShArray]] = None
