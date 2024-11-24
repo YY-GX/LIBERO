@@ -63,6 +63,7 @@ def parse_args():
     args.device_id = "cuda:" + str(args.device_id)
     return args
 
+
 def initialize_robot_state(crr_state, robot_init_sim_state):
     # yy: 0: timestep; 1-40: states; 41-76: vel_info;
     modified_state = crr_state.copy()
