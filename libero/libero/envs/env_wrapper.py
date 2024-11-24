@@ -156,11 +156,11 @@ class OffScreenRenderEnv(ControlEnv):
     """
 
     def __init__(self, **kwargs):
-        if kwargs['metadata']:
+        if 'metadata' in kwargs:
             self.metadata = kwargs['metadata']
-        if kwargs['observation_space']:
+        if 'observation_space' in kwargs:
             self.observation_space = kwargs['observation_space']
-        if kwargs['action_space']:
+        if 'action_space' in kwargs:
             self.action_space = kwargs['action_space']
         # This shouldn't be customized
         kwargs["has_renderer"] = False
