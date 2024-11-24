@@ -359,9 +359,9 @@ class SubprocEnvWorker(EnvWorker):
     """Subprocess worker used in SubprocVectorEnv and ShmemVectorEnv."""
 
     def __init__(
-        self, env_fn: Callable[[], gym.Env], share_memory: bool = False
+        self, env_fn: Callable[[], gym.Env], share_memory: bool = False, num_envs=20
     ) -> None:
-        self.num_envs = len(env_fn)
+        self.num_envs = num_envs
         self.parent_remote, self.child_remote = Pipe()
         self.share_memory = share_memory
         self.buffer: Optional[Union[dict, tuple, ShArray]] = None
