@@ -34,7 +34,7 @@
       ))
     )
     (popcorn_init_region
-      (:target kitchen_table)
+      (:target living_room_table)
       (:ranges (
         (0.15 -0.3 0.25 0.3)
       ))
@@ -64,7 +64,7 @@
     (on red_coffee_mug_1 living_room_table_red_coffee_mug_init_region)
     (on white_yellow_mug_1 living_room_table_white_yellow_mug_init_region)
     (on porcelain_mug_1 living_room_table_porcelain_mug_init_region)
-    (on popcorn_1 kitchen_table_popcorn_init_region)
+    (on popcorn_1 living_room_table_popcorn_init_region)
       )
     
       (:goal

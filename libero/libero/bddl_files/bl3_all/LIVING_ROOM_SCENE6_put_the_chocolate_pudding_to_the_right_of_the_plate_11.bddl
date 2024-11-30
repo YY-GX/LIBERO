@@ -40,7 +40,7 @@
       ))
     )
     (chefmate_8_frypan_init_region
-      (:target kitchen_table)
+      (:target living_room_table)
       (:ranges (
         (0.15 -0.15 0.25 -0.1)
         (0.15 0.1 0.25 0.15)
@@ -70,7 +70,7 @@
     (on red_coffee_mug_1 living_room_table_red_coffee_mug_init_region)
     (on chocolate_pudding_1 living_room_table_chocolate_pudding_init_region)
     (on porcelain_mug_1 living_room_table_porcelain_mug_init_region)
-    (on chefmate_8_frypan_1 kitchen_table_chefmate_8_frypan_init_region)
+    (on chefmate_8_frypan_1 living_room_table_chefmate_8_frypan_init_region)
       )
     
       (:goal
