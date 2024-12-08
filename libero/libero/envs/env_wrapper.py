@@ -293,7 +293,7 @@ class SequentialEnv(OffScreenRenderEnv):
 
     def __init__(self, n_tasks, init_states_ls, **kwargs):
         # yy: note - in this class code, task == env
-
+        print(**kwargs)
         self.n_tasks = n_tasks
         self.init_states_ls = init_states_ls
 
@@ -309,6 +309,7 @@ class SequentialEnv(OffScreenRenderEnv):
                 "camera_widths": kwargs["camera_widths"][i],
                 "ignore_done": True
             }
+            print(env_args)
             env_instance = OffScreenRenderEnv(**env_args)  # Initialize the superclass with env_args
             self.env_ls.append(env_instance)
 
