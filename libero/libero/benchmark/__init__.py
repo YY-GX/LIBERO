@@ -211,7 +211,7 @@ class Benchmark(abc.ABC):
         self.task_embs = None
         self.task_order_index = task_order_index
         self.n_tasks_ = n_tasks_
-        print(f"[INFO] Benchmark task order index: {self.task_order_index}")
+        # print(f"[INFO] Benchmark task order index: {self.task_order_index}")
 
     def _make_benchmark(self):
         tasks = list(task_maps[self.name].values())
@@ -221,7 +221,6 @@ class Benchmark(abc.ABC):
         if (self.name == "yy_try"):
             self.tasks = tasks
         else:
-            print(f"[info] using task orders {task_orders[self.task_order_index]}")
             self.tasks = [tasks[i] for i in task_orders[self.task_order_index]]
         # yy: set 1 for just traininig 1 task
         if self.n_tasks_:
