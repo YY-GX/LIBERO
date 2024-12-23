@@ -117,7 +117,7 @@ for yy_suite in yy_suites:
 
     for task in yy_task_map[yy_suite]:
         if keep_language_unchanged:
-            mapping_pth = f"/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/mappings/{yy_suite}.json"
+            mapping_pth = f"libero/mappings/{yy_suite}.json"
             with open(mapping_pth, 'r') as json_file:
                 mapping = json.load(json_file)
             # if yy_suite == 'ablation_1':
@@ -177,25 +177,7 @@ task_orders = [
     [4],
     [3],
     [0],
-    # bl3 all for mail (27~42)
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [9, 10, 11],
-    [12, 13, 14],
-    [15, 16, 17],
-    [18, 19, 20],
-    [21, 22, 23],
-    [24, 25, 26],
-    [27, 28, 29],
-    [30, 31],
-    [32, 33],
-    [34, 35],
-    [36, 37],
-    [38, 39, 40],
-    [41, 42, 43],
-    # mail - test (43)
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    [0, 1, 2, 3]
 
     # old ones
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -230,7 +212,7 @@ class Benchmark(abc.ABC):
         self.task_embs = None
         self.task_order_index = task_order_index
         self.n_tasks_ = n_tasks_
-        # print(f"[INFO] Benchmark task order index: {self.task_order_index}")
+        print(f"[INFO] Benchmark task order index: {self.task_order_index}")
 
     def _make_benchmark(self):
         tasks = list(task_maps[self.name].values())
@@ -240,6 +222,7 @@ class Benchmark(abc.ABC):
         if (self.name == "yy_try"):
             self.tasks = tasks
         else:
+            print(f"[info] using task orders {task_orders[self.task_order_index]}")
             self.tasks = [tasks[i] for i in task_orders[self.task_order_index]]
         # yy: set 1 for just traininig 1 task
         if self.n_tasks_:
@@ -281,6 +264,7 @@ class Benchmark(abc.ABC):
 
     def get_task_emb(self, i):
         return self.task_embs[i]
+
 
     def get_task_init_states(self, i):
         init_states_path = os.path.join(
