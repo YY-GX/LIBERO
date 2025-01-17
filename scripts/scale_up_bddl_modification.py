@@ -115,6 +115,8 @@ def regions_available_for_putting(parsed_problem):
     return available_open_regions, available_container_regions
 
 
+
+
 # Create a modified version of parsed_problem
 def modify_environment(parsed_problem, open_regions=[], is_debug=False, is_multiple=False):
     """
