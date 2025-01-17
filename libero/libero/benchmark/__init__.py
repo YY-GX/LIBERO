@@ -398,3 +398,4 @@ class bl3_all(Benchmark):
         self.name = "bl3_all"
         self._make_benchmark()
 
+
