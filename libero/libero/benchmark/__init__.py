@@ -79,11 +79,14 @@ libero_suites = [
     "libero_goal",
     "libero_90",
     "libero_10",
+    "libero_90_full"
 ]
 task_maps = {}
 max_len = 0
 for libero_suite in libero_suites:
     task_maps[libero_suite] = {}
+
+    problem_folder = libero_suite if libero_suite != "libero_90_full" else "libero_90"
 
     for task in libero_task_map[libero_suite]:
         language = grab_language_from_filename(task + ".bddl")
@@ -91,7 +94,7 @@ for libero_suite in libero_suites:
             name=task,
             language=language,
             problem="Libero",
-            problem_folder=libero_suite,
+            problem_folder=problem_folder,
             bddl_file=f"{task}.bddl",
             init_states_file=f"{task}.pruned_init",
         )
@@ -306,14 +309,22 @@ class LIBERO_GOAL(Benchmark):
 
 @register_benchmark
 class LIBERO_90(Benchmark):
-    # TODO: remember to change 28 back to 0 later
-    def __init__(self, task_order_index=28, n_tasks_=None):
+    # FIXED: remember to change 28 back to 0 later
+    def __init__(self, task_order_index=0, n_tasks_=None):
         super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
         # yy: I comment this
         # assert (
         #     task_order_index == 0
         # ), "[error] currently only support task order for 10-task suites"
         self.name = "libero_90"
+        self._make_benchmark()
+
+
+@register_benchmark
+class LIBERO_90_Full(Benchmark):
+    def __init__(self, task_order_index=28, n_tasks_=None):
+        super().__init__(task_order_index=task_order_index, n_tasks_=n_tasks_)
+        self.name = "libero_90_full"
         self._make_benchmark()
 
 
