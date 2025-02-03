@@ -334,6 +334,7 @@ if __name__ == "__main__":
     demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/yy_try/SHELF_TABLE_SCENE_moving_popcorn_from_table_to_topside_of_wooden_shelf_demo.hdf5"
     demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE10_put_the_black_bowl_in_the_top_drawer_of_the_cabinet_demo.hdf5"
     demo_pth = "/home/yygx/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE2_stack_the_black_bowl_at_the_front_on_the_black_bowl_in_the_middle_demo.hdf5"
+    demo_pth = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/datasets/libero_90/KITCHEN_SCENE1_open_the_bottom_drawer_of_the_cabinet_demo.hdf5"
 
     data_dict = load_hdf5_file_to_dict(demo_pth)['data']
     action_to_remove_1 = np.array([0., 0., 0., 0., 0., -0., -1.])
